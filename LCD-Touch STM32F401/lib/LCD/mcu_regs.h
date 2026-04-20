@@ -182,42 +182,4 @@ if (!((uint32_t)(x) > width || (uint32_t)(y) > height)) { \
     CS_IDLE; \
 }*/
 
-const inline char* Get_STM32_Name(void) {
-    uint32_t dev_id = HAL_GetDEVID(); 
-    switch (dev_id) {
-        // STM32 F Serisi
-        case 0x412: return "STM32F1 Low-density"; //72mhz
-        case 0x410: return "STM32F1 Medium-density"; //72mhz
-        case 0x414: return "STM32F1 High-density"; //72mhz
-        case 0x430: return "STM32F1 XL-density"; 
-        case 0x411: return "STM32F2 Series";
-        case 0x440: return "STM32F030x4/x6/x8 / F05x"; //48mhz
-        case 0x444: return "STM32F030xC"; //48mhz
-        case 0x445: return "STM32F042 / F070x6";
-        case 0x448: return "STM32F071 / F072 / F091";
-        case 0x413: return "STM32F405/407/415/417"; //168mhz
-        case 0x419: return "STM32F42x/43x"; //180mhz
-        case 0x423: return "STM32F401xB/C"; //84mhz
-        case 0x433: return "STM32F401xD/E";
-        case 0x431: return "STM32F411xC/E"; //100mhz
-        case 0x449: return "STM32F74x/75x";
-        case 0x451: return "STM32F76x/77x";
-        // STM32 L Serisi (Düşük Güç)
-        case 0x416: return "STM32L1 Medium-density / Plus";
-        case 0x427: return "STM32L1 High-density";
-        case 0x417: return "STM32L0 Series";
-        case 0x435: return "STM32L4 Series";
-        // STM32 G Serisi (Yeni Nesil)
-        case 0x460: return "STM32G0 Series";
-        case 0x466: return "STM32G4 Series";
-        // STM32 H Serisi (Yüksek Performans)
-        case 0x450: return "STM32H74x/75x";
-        case 0x480: return "STM32H72x/73x";
-        // Bilinmeyen
-        default: return "Unknown or new STM32";
-    }
-}
-
-//const char* Get_STM32_Name(void);
-
 #endif // mcu_regs
