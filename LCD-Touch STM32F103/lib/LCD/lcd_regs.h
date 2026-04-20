@@ -1,0 +1,506 @@
+#ifndef _LCD_REGS_H_
+#define _LCD_REGS_H_
+
+//#define LCD_MODEL ILI9325 //0 0x9325,240,320, LCD_DRIVER ID_932X
+//#define LCD_MODEL ILI9328 //1 0x9328,240,320, LCD_DRIVER ID_932X
+#define LCD_MODEL ILI9341 //2 0x9341,240,320, LCD_DRIVER ID_9341
+//#define LCD_MODEL HX8357D //3 0x9090,320,480, LCD_DRIVER ID_HX8357D
+//#define LCD_MODEL HX8347G //4 0x7575,240,320, LCD_DRIVER ID_7575
+//#define LCD_MODEL HX8347I //5 0x9595,240,320, LCD_DRIVER ID_7575
+//#define LCD_MODEL ILI9486 //6 0x9486,320,480, LCD_DRIVER ID_9486
+//#define LCD_MODEL ST7735S //7 0x7735,128,160, LCD_DRIVER ID_7735
+//#define LCD_MODEL ILI9488 //8 0x9488,320,480, LCD_DRIVER ID_9488
+//#define LCD_MODEL ILI9481 //9 0x9481,320,480, LCD_DRIVER ID_9481
+
+#define TFTLCD_DELAY16  0xFFFF
+#define TFTLCD_DELAY8   0x7F
+#define MAX_REG_NUM     24
+
+#define ILI932X_START_OSC          0x00
+#define ILI932X_DRIV_OUT_CTRL      0x01
+#define ILI932X_DRIV_WAV_CTRL      0x02
+#define ILI932X_ENTRY_MOD          0x03
+#define ILI932X_RESIZE_CTRL        0x04
+#define ILI932X_DISP_CTRL1         0x07
+#define ILI932X_DISP_CTRL2         0x08
+#define ILI932X_DISP_CTRL3         0x09
+#define ILI932X_DISP_CTRL4         0x0A
+#define ILI932X_RGB_DISP_IF_CTRL1  0x0C
+#define ILI932X_FRM_MARKER_POS     0x0D
+#define ILI932X_RGB_DISP_IF_CTRL2  0x0F
+#define ILI932X_POW_CTRL1          0x10
+#define ILI932X_POW_CTRL2          0x11
+#define ILI932X_POW_CTRL3          0x12
+#define ILI932X_POW_CTRL4          0x13
+#define ILI932X_GRAM_HOR_AD        0x20
+#define ILI932X_GRAM_VER_AD        0x21
+#define ILI932X_RW_GRAM            0x22
+#define ILI932X_POW_CTRL7          0x29
+#define ILI932X_FRM_RATE_COL_CTRL  0x2B
+#define ILI932X_GAMMA_CTRL1        0x30
+#define ILI932X_GAMMA_CTRL2        0x31
+#define ILI932X_GAMMA_CTRL3        0x32
+#define ILI932X_GAMMA_CTRL4        0x35
+#define ILI932X_GAMMA_CTRL5        0x36
+#define ILI932X_GAMMA_CTRL6        0x37
+#define ILI932X_GAMMA_CTRL7        0x38
+#define ILI932X_GAMMA_CTRL8        0x39
+#define ILI932X_GAMMA_CTRL9        0x3C
+#define ILI932X_GAMMA_CTRL10       0x3D
+#define ILI932X_HOR_START_AD       0x50
+#define ILI932X_HOR_END_AD         0x51
+#define ILI932X_VER_START_AD       0x52
+#define ILI932X_VER_END_AD         0x53
+#define ILI932X_GATE_SCAN_CTRL1    0x60
+#define ILI932X_GATE_SCAN_CTRL2    0x61
+#define ILI932X_GATE_SCAN_CTRL3    0x6A
+#define ILI932X_PART_IMG1_DISP_POS 0x80
+#define ILI932X_PART_IMG1_START_AD 0x81
+#define ILI932X_PART_IMG1_END_AD   0x82
+#define ILI932X_PART_IMG2_DISP_POS 0x83
+#define ILI932X_PART_IMG2_START_AD 0x84
+#define ILI932X_PART_IMG2_END_AD   0x85
+#define ILI932X_PANEL_IF_CTRL1     0x90
+#define ILI932X_PANEL_IF_CTRL2     0x92
+#define ILI932X_PANEL_IF_CTRL3     0x93
+#define ILI932X_PANEL_IF_CTRL4     0x95
+#define ILI932X_PANEL_IF_CTRL5     0x97
+#define ILI932X_PANEL_IF_CTRL6     0x98
+
+#define HX8347G_COLADDRSTART_HI    0x02
+#define HX8347G_COLADDRSTART_LO    0x03
+#define HX8347G_COLADDREND_HI      0x04
+#define HX8347G_COLADDREND_LO      0x05
+#define HX8347G_ROWADDRSTART_HI    0x06
+#define HX8347G_ROWADDRSTART_LO    0x07
+#define HX8347G_ROWADDREND_HI      0x08
+#define HX8347G_ROWADDREND_LO      0x09
+#define HX8347G_MEMACCESS          0x16
+
+#define ILI9341_SOFTRESET          0x01
+#define ILI9341_SLEEPIN            0x10
+#define ILI9341_SLEEPOUT           0x11
+#define ILI9341_NORMALDISP         0x13
+#define ILI9341_INVERTOFF          0x20
+#define ILI9341_INVERTON           0x21
+#define ILI9341_GAMMASET           0x26
+#define ILI9341_DISPLAYOFF         0x28
+#define ILI9341_DISPLAYON          0x29
+#define ILI9341_COLADDRSET         0x2A
+#define ILI9341_PAGEADDRSET        0x2B
+#define ILI9341_MEMORYWRITE        0x2C
+#define ILI9341_MEMORYACCESS       0x36
+#define ILI9341_PIXELFORMAT        0x3A
+#define ILI9341_RGBSIGNAL          0xB0
+#define ILI9341_FRAMECONTROL       0xB1
+#define ILI9341_INVERSIONCONRTOL   0xB4
+#define ILI9341_DISPLAYFUNC        0xB6
+#define ILI9341_ENTRYMODE          0xB7
+#define ILI9341_POWERCONTROL1      0xC0
+#define ILI9341_POWERCONTROL2      0xC1
+#define ILI9341_VCOMCONTROL1       0xC5
+#define ILI9341_VCOMCONTROL2       0xC7
+#define ILI9341_POWERCONTROLB      0xCF
+#define ILI9341_POWERCONTROLA      0xCB
+#define ILI9341_UNDEFINE0          0xE0
+#define ILI9341_UNDEFINE1          0xE1
+#define ILI9341_DRIVERTIMINGA      0xE8
+#define ILI9341_DRIVERTIMINGB      0xEA
+#define ILI9341_POWERONSEQ         0xED
+#define ILI9341_ENABLE3G           0xF2
+#define ILI9341_INTERFACECONTROL   0xF6
+#define ILI9341_RUMPRATIO          0xF7
+#define ILI9341_MEMCONTROL         0x36
+#define ILI9341_MADCTL             0x36
+
+#define ILI9341_MADCTL_MY  0x80
+#define ILI9341_MADCTL_MX  0x40
+#define ILI9341_MADCTL_MV  0x20
+#define ILI9341_MADCTL_ML  0x10
+#define ILI9341_MADCTL_RGB 0x00
+#define ILI9341_MADCTL_BGR 0x08
+#define ILI9341_MADCTL_MH  0x04
+
+#define HX8357_NOP     0x00
+#define HX8357_SWRESET 0x01
+#define HX8357_RDDID   0x04
+#define HX8357_RDDST   0x09
+
+#define HX8357B_RDPOWMODE  0x0A
+#define HX8357B_RDMADCTL  0x0B
+#define HX8357B_RDCOLMOD  0x0C
+#define HX8357B_RDDIM  0x0D
+#define HX8357B_RDDSDR  0x0F
+
+#define HX8357_SLPIN   0x10
+#define HX8357_SLPOUT  0x11
+#define HX8357B_PTLON   0x12
+#define HX8357B_NORON   0x13
+
+#define HX8357_INVOFF  0x20
+#define HX8357_INVON   0x21
+#define HX8357_DISPOFF 0x28
+#define HX8357_DISPON  0x29
+
+#define HX8357_CASET   0x2A
+#define HX8357_PASET   0x2B
+#define HX8357_RAMWR   0x2C
+#define HX8357_RAMRD   0x2E
+
+#define HX8357B_PTLAR   0x30
+#define HX8357_TEON  0x35
+#define HX8357_TEARLINE  0x44
+#define HX8357_MADCTL  0x36
+#define HX8357_COLMOD  0x3A
+
+#define HX8357_SETOSC 0xB0
+#define HX8357_SETPWR1 0xB1
+#define HX8357B_SETDISPLAY 0xB2
+#define HX8357_SETRGB 0xB3
+#define HX8357D_SETCOM  0xB6
+
+#define HX8357B_SETDISPMODE  0xB4
+#define HX8357D_SETCYC  0xB4
+#define HX8357B_SETOTP 0xB7
+#define HX8357D_SETC 0xB9
+
+#define HX8357B_SET_PANEL_DRIVING 0xC0
+#define HX8357D_SETSTBA 0xC0
+#define HX8357B_SETDGC  0xC1
+#define HX8357B_SETID  0xC3
+#define HX8357B_SETDDB  0xC4
+#define HX8357B_SETDISPLAYFRAME 0xC5
+#define HX8357B_GAMMASET 0xC8
+#define HX8357B_SETCABC  0xC9
+#define HX8357_SETPANEL  0xCC
+
+
+#define HX8357B_SETPOWER 0xD0
+#define HX8357B_SETVCOM 0xD1
+#define HX8357B_SETPWRNORMAL 0xD2
+
+#define HX8357B_RDID1   0xDA
+#define HX8357B_RDID2   0xDB
+#define HX8357B_RDID3   0xDC
+#define HX8357B_RDID4   0xDD
+
+#define HX8357D_SETGAMMA 0xE0
+
+#define HX8357B_SETGAMMA 0xC8
+#define HX8357B_SETPANELRELATED  0xE9
+
+#define HX8357B_MADCTL_MY  0x80
+#define HX8357B_MADCTL_MX  0x40
+#define HX8357B_MADCTL_MV  0x20
+#define HX8357B_MADCTL_ML  0x10
+#define HX8357B_MADCTL_RGB 0x00
+#define HX8357B_MADCTL_BGR 0x08
+#define HX8357B_MADCTL_MH  0x04
+
+// LCD controller chip identifiers
+#define ID_932X    0
+#define ID_7575    1
+#define ID_9341    2
+#define ID_HX8357D 3
+#define ID_4535    4
+#define ID_9486    5
+#define ID_7735    6
+#define ID_9488    7
+#define ID_9481    8
+#define ID_UNKNOWN 0xFF
+
+//LCD controller chip mode identifiers
+#define ILI9325 0 //0x9325,240,320, LCD_DRIVER ID_932X
+#define ILI9328 1 //0x9328,240,320, LCD_DRIVER ID_932X
+#define ILI9341 2 //0x9341,240,320, LCD_DRIVER ID_9341
+#define HX8357D 3 //0x9090,320,480, LCD_DRIVER ID_HX8357D
+#define HX8347G 4 //0x7575,240,320, LCD_DRIVER ID_7575
+#define HX8347I 5 //0x9595,240,320, LCD_DRIVER ID_7575
+#define ILI9486 6 //0x9486,320,480, LCD_DRIVER ID_9486
+#define ST7735S 7 //0x7735,128,160, LCD_DRIVER ID_7735
+#define ILI9488 8 //0x9488,320,480, LCD_DRIVER ID_9488
+#define ILI9481 9 //0x9481,320,480, LCD_DRIVER ID_9481
+
+#if (LCD_MODEL == ILI9325 || LCD_MODEL == ILI9328) 
+    #define LCD_DRIVER ID_932X
+    #define XS 0
+    #define YS 0
+    #define MW ILI932X_RW_GRAM
+    #define MR ILI932X_RW_GRAM
+    #define SC1 ILI932X_GATE_SCAN_CTRL2
+    #define SC2 ILI932X_GATE_SCAN_CTRL3
+    #define MD 0x0003
+    #define VL 1
+    #define R24BIT 0
+    #define WIDTH 240
+    #define HEIGHT 320
+    static const uint16_t _regValues[] = {
+        ILI932X_START_OSC       , 0x0001,
+        TFTLCD_DELAY16          , 50,
+        ILI932X_DRIV_OUT_CTRL   , 0x0100,
+        ILI932X_DRIV_WAV_CTRL   , 0x0700,
+        ILI932X_ENTRY_MOD       , 0x1030,
+        ILI932X_RESIZE_CTRL     , 0x0000,
+        ILI932X_DISP_CTRL2      , 0x0202,
+        ILI932X_DISP_CTRL3      , 0x0000,
+        ILI932X_DISP_CTRL4      , 0x0000,
+        ILI932X_RGB_DISP_IF_CTRL1,0x0,
+        ILI932X_FRM_MARKER_POS  , 0x0,
+        ILI932X_RGB_DISP_IF_CTRL2,0x0,
+        ILI932X_POW_CTRL1       , 0x0000,
+        ILI932X_POW_CTRL2       , 0x0007,
+        ILI932X_POW_CTRL3       , 0x0000,
+        ILI932X_POW_CTRL4       , 0x0000,
+        TFTLCD_DELAY16          , 200,
+        ILI932X_POW_CTRL1       , 0x1690,
+        ILI932X_POW_CTRL2       , 0x0227,
+        TFTLCD_DELAY16          , 50,
+        ILI932X_POW_CTRL3       , 0x001A,
+        TFTLCD_DELAY16          , 50,
+        ILI932X_POW_CTRL4       , 0x1800,
+        ILI932X_POW_CTRL7       , 0x002A,
+        TFTLCD_DELAY16          , 50,
+        ILI932X_GAMMA_CTRL1     , 0x0000,
+        ILI932X_GAMMA_CTRL2     , 0x0000,
+        ILI932X_GAMMA_CTRL3     , 0x0000,
+        ILI932X_GAMMA_CTRL4     , 0x0206,
+        ILI932X_GAMMA_CTRL5     , 0x0808,
+        ILI932X_GAMMA_CTRL6     , 0x0007,
+        ILI932X_GAMMA_CTRL7     , 0x0201,
+        ILI932X_GAMMA_CTRL8     , 0x0000,
+        ILI932X_GAMMA_CTRL9     , 0x0000,
+        ILI932X_GAMMA_CTRL10    , 0x0000,
+        ILI932X_GRAM_HOR_AD     , 0x0000,
+        ILI932X_GRAM_VER_AD     , 0x0000,
+        ILI932X_HOR_START_AD    , 0x0000,
+        ILI932X_HOR_END_AD      , 0x00EF,
+        ILI932X_VER_START_AD    , 0X0000,
+        ILI932X_VER_END_AD      , 0x013F,
+        ILI932X_GATE_SCAN_CTRL1 , 0xA700,
+        ILI932X_GATE_SCAN_CTRL2 , 0x0003,
+        ILI932X_GATE_SCAN_CTRL3 , 0x0000,
+        ILI932X_PANEL_IF_CTRL1  , 0X0010,
+        ILI932X_PANEL_IF_CTRL2  , 0X0000,
+        ILI932X_PANEL_IF_CTRL3  , 0X0003,
+        ILI932X_PANEL_IF_CTRL4  , 0X1100,
+        ILI932X_PANEL_IF_CTRL5  , 0X0000,
+        ILI932X_PANEL_IF_CTRL6  , 0X0000,
+        ILI932X_DISP_CTRL1      , 0x0133
+    };
+
+#elif (LCD_MODEL == ILI9341)
+    #define LCD_DRIVER ID_9341
+    #define XS ILI9341_COLADDRSET
+    #define YS ILI9341_PAGEADDRSET
+    #define MW ILI9341_MEMORYWRITE
+    #define MR HX8357_RAMRD
+    #define SC1 0x33
+    #define SC2 0x37
+    #define MD ILI9341_MADCTL
+    #define VL 0
+    #define R24BIT 1
+    #define WIDTH 240
+    #define HEIGHT 320
+    static const uint8_t _regValues[] = {
+        ILI9341_SOFTRESET,0,
+        TFTLCD_DELAY8, 50,
+        ILI9341_DISPLAYOFF, 0,
+        ILI9341_INTERFACECONTROL, 3, 0x01, 0x01, 0x00,
+        ILI9341_POWERCONTROLB, 3, 0x00, 0x81, 0x30,
+        ILI9341_POWERONSEQ, 4, 0x64, 0x03, 0x12, 0x81,
+        ILI9341_DRIVERTIMINGA, 3, 0x85, 0x10, 0x78,
+        ILI9341_POWERCONTROLA, 5, 0x39, 0x2C, 0x00, 0x34, 0x02,
+        ILI9341_RUMPRATIO, 1, 0x20,
+        ILI9341_DRIVERTIMINGB, 2, 0x00, 0x00,
+        ILI9341_RGBSIGNAL, 1, 0x00,
+        ILI9341_INVERSIONCONRTOL, 1, 0x00,
+        ILI9341_POWERCONTROL1, 1, 0x21,
+        ILI9341_POWERCONTROL2, 1, 0x11,
+        ILI9341_VCOMCONTROL1, 2, 0x3F, 0x3C,
+        ILI9341_VCOMCONTROL2, 1, 0xB5,
+        ILI9341_MEMCONTROL, 1, ILI9341_MADCTL_MY | ILI9341_MADCTL_BGR,
+        ILI9341_PIXELFORMAT, 1, 0x55,
+        ILI9341_FRAMECONTROL, 2, 0x00, 0x1B,
+        ILI9341_MEMORYACCESS, 1, 0x48,
+        ILI9341_ENABLE3G, 1, 0x00,
+        ILI9341_GAMMASET, 1, 0x01,
+        ILI9341_UNDEFINE0, 15, 0x0f,0x26,0x24,0x0b,0x0e,0x09,0x54,0xa8,0x46,0x0c,0x17,0x09,0x0f,0x07,0x00,
+        ILI9341_UNDEFINE1, 15, 0x00,0x19,0x1b,0x04,0x10,0x07,0x2a,0x47,0x39,0x03,0x06,0x06,0x30,0x38,0x0f,
+        ILI9341_ENTRYMODE, 1, 0x07,
+        ILI9341_SLEEPOUT, 0,
+        TFTLCD_DELAY8, 150,
+        ILI9341_DISPLAYON, 0
+    };
+
+#elif (LCD_MODEL == HX8357D)
+    #define LCD_DRIVER ID_HX8357D
+    #define XS ILI9341_COLADDRSET
+    #define YS ILI9341_PAGEADDRSET
+    #define MW HX8357_RAMWR
+    #define MR HX8357_RAMRD
+    #define SC1 0x33
+    #define SC2 0x37
+    #define MD HX8357_MADCTL
+    #define VL 1
+    #define R24BIT 1
+    #define WIDTH 320
+    #define HEIGHT 480
+    static const uint8_t _regValues[] {
+        HX8357_SWRESET, 0,
+        HX8357D_SETC, 3, 0xFF, 0x83, 0x57,
+        TFTLCD_DELAY8, 250,
+        HX8357_SETRGB, 4, 0x00, 0x00, 0x06, 0x06,
+        HX8357D_SETCOM, 1, 0x25,
+        HX8357_SETOSC, 1, 0x68,
+        HX8357_SETPANEL, 1, 0x05,
+        HX8357_SETPWR1, 6, 0x00, 0x15, 0x1C, 0x1C, 0x83, 0xAA,
+        HX8357D_SETSTBA, 6, 0x50, 0x50, 0x01, 0x3C, 0x1E, 0x08,
+        HX8357D_SETCYC, 7, 0x02, 0x40, 0x00, 0x2A, 0x2A, 0x0D, 0x78,
+        HX8357_COLMOD, 1, 0x55,
+        HX8357_MADCTL, 1, 0xC0,
+        HX8357_TEON, 1, 0x00,
+        HX8357_TEARLINE, 2, 0x00, 0x02,
+        HX8357_SLPOUT, 0,
+        TFTLCD_DELAY8, 150,
+        HX8357_DISPON, 0,
+        TFTLCD_DELAY8, 50
+    };
+
+#elif (LCD_MODEL == HX8347G || LCD_MODEL == HX8347I)
+    #define LCD_DRIVER ID_7575
+    #define XS 0
+    #define YS 0
+    #define MW 0x22
+    #define MR ILI932X_RW_GRAM
+    #define SC1 0x0E
+    #define SC2 0x14
+    #define MD HX8347G_MEMACCESS
+    #define VL 1
+    #define R24BIT 1
+    #define WIDTH 240
+    #define HEIGHT 320
+    static const uint8_t _regValues[] {
+            0x2E,1,0x89, 0x29,1,0x8F, 0x2B,1,0x02, 0xE2,1,0x00,
+            0xE4,1,0x01, 0xE5,1,0x10, 0xE6,1,0x01, 0xE7,1,0x10,
+            0xE8,1,0x70, 0xF2,1,0x00, 0xEA,1,0x00, 0xEB,1,0x20,
+            0xEC,1,0x3C, 0xED,1,0xC8, 0xE9,1,0x38, 0xF1,1,0x01,
+            0x1B,1,0x1A, 0x1A,1,0x01, 0x24,1,0x61, 0x25,1,0x5C,
+            0x23,1,0x88, 0x18,1,0x36, 0x19,1,0x01, 0x1F,1,0x88,
+            TFTLCD_DELAY8,5, 0x1F,1,0x80, TFTLCD_DELAY8,5,
+            0x1F,1,0x90, TFTLCD_DELAY8,5, 0x1F,1,0xD4, TFTLCD_DELAY8,5,
+            0x17,1,0x05, 0x36,1,0x00, 0x28,1,0x38, TFTLCD_DELAY8,40,
+            0x28,1,0x3C, 0x02,1,0x00, 0x03,1,0x00, 0x04,1,0x00,
+            0x05,1,0xEF, 0x06,1,0x00, 0x07,1,0x00, 0x08,1,0x01,
+            0x09,1,0x3F
+    };
+
+#elif (LCD_MODEL == ILI9486)
+    #define LCD_DRIVER ID_9486
+    #define XS ILI9341_COLADDRSET
+    #define YS ILI9341_PAGEADDRSET
+    #define MW ILI9341_MEMORYWRITE
+    #define MR HX8357_RAMRD
+    #define SC1 0x33
+    #define SC2 0x37
+    #define MD ILI9341_MADCTL
+    #define VL 0
+    #define R24BIT 0
+    #define WIDTH 320
+    #define HEIGHT 480
+    static const uint8_t _regValues[] {
+        0xF9,2,0x00,0x08,
+        0xC0,2,0x19,0x1A, 0xC1,2,0x45,0x00, 0xC2,1,0x33,
+        0xC5,2,0x00,0x28, 0xB1,2,0x90,0x11, 0xB4,1,0x02,
+        0xB6,3,0x00,0x42,0x3B, 0xB7,1,0x07,
+        0xE0,15,0x1F,0x25,0x22,0x0B,0x06,0x0A,0x4E,0xC6,0x39,0x00,0x00,0x00,0x00,0x00,0x00,
+        0xE1,15,0x1F,0x3F,0x3F,0x0F,0x1F,0x0F,0x46,0x49,0x31,0x05,0x09,0x03,0x1C,0x1A,0x00,
+        0xF1,8,0x36,0x04,0x00,0x3C,0x0F,0x0F,0xA4,0x02,
+        0xF2,9,0x18,0xA3,0x12,0x02,0x32,0x12,0xFF,0x32,0x00,
+        0xF4,5,0x40,0x00,0x08,0x91,0x04,
+        0xF8,2,0x21,0x04,
+        0x36,1,0x48, 0x3A,1,0x55,
+        0x11,0, TFTLCD_DELAY8,120, 0x29,0
+    };
+
+#elif (LCD_MODEL == ST7735S)
+    #define LCD_DRIVER ID_7735
+    #define XS ILI9341_COLADDRSET
+    #define YS ILI9341_PAGEADDRSET
+    #define MW ILI9341_MEMORYWRITE
+    #define MR HX8357_RAMRD
+    #define SC1 0x33
+    #define SC2 0x37
+    #define MD ILI9341_MADCTL
+    #define VL 0
+    #define R24BIT 0;
+    #define WIDTH 128
+    #define HEIGHT 160
+    static const uint8_t regValues[] {
+        0x011,0, TFTLCD_DELAY8,120,
+        0xB1,3,0x05,0x3C,0x3C, 0xB2,3,0x05,0x3C,0x3C,
+        0xB3,6,0x05,0x3C,0x3C,0x05,0x3C,0x3C,
+        0xB4,1,0x03,
+        0xC0,3,0x28,0x08,0x04, 0xC1,1,0xC0,
+        0xC2,2,0x0D,0x00, 0xC3,2,0x8D,0x2A,
+        0xC4,2,0x8D,0xEE, 0xC5,1,0x1A,
+        0xE0,16,0x03,0x22,0x07,0x0A,0x2E,0x30,0x25,0x2A,0x28,0x26,0x2E,0x3A,0x00,0x01,0x03,0x13,
+        0xE1,16,0x04,0x16,0x06,0x0D,0x2D,0x26,0x23,0x27,0x27,0x25,0x2D,0x3B,0x00,0x01,0x04,0x13,
+        0x3A,1,0x05, TFTLCD_DELAY8,150, 0x29,0
+    };
+
+#elif (LCD_MODEL == ILI9488)
+    #define LCD_DRIVER ID_9488
+    #define XS ILI9341_COLADDRSET
+    #define YS ILI9341_PAGEADDRSET
+    #define MW ILI9341_MEMORYWRITE
+    #define MR HX8357_RAMRD
+    #define SC1 0x33
+    #define SC2 0x37
+    #define MD ILI9341_MADCTL
+    #define VL 0
+    #define R24BIT 1
+    #define WIDTH 320
+    #define HEIGHT 480
+    static const uint8_t _regValues[] {
+        0xF7,4,0xA9,0x51,0x2C,0x82,
+        0xC0,2,0x11,0x09, 0xC1,1,0x41,
+        0xC5,3,0x00,0x0A,0x80, 0xB1,2,0xB0,0x11,
+        0xB4,1,0x02, 0xB6,2,0x02,0x22, 0xB7,1,0xC6,
+        0xBE,2,0x00,0x04, 0xE9,1,0x00,
+        0x36,1,0x08, 0x3A,1,0x55,
+        0xE0,15,0x00,0x07,0x10,0x09,0x17,0x0B,0x41,0x89,0x4B,0x0A,0x0C,0x0E,0x18,0x1B,0x0F,
+        0xE1,15,0x00,0x17,0x1A,0x04,0x0E,0x06,0x2F,0x45,0x43,0x02,0x0A,0x09,0x32,0x36,0x0F,
+        0x11,0, TFTLCD_DELAY8,120, 0x29,0
+    };
+
+#elif (LCD_MODEL == ILI9481)
+    #define LCD_DRIVER ID_9481
+    #define XS ILI9341_COLADDRSET
+    #define YS ILI9341_PAGEADDRSET
+    #define MW ILI9341_MEMORYWRITE
+    #define MR HX8357_RAMRD
+    #define SC1 0x33
+    #define SC2 0x37
+    #define MD ILI9341_MADCTL
+    #define VL 0
+    #define R24BIT 0
+    #define WIDTH 320
+    #define HEIGHT 480
+    static const uint8_t _regValues[] {
+        0x11,0, TFTLCD_DELAY8,20,
+        0xD0,3,0x07,0x42,0x18, 0xD1,3,0x00,0x07,0x10,
+        0xD2,2,0x01,0x02,
+        0xC0,5,0x10,0x3B,0x00,0x02,0x11,
+        0xC5,1,0x03,
+        0xC8,12,0x00,0x32,0x36,0x45,0x06,0x16,0x37,0x75,0x77,0x54,0x0C,0x00,
+        0x36,1,0x0A, 0x3A,1,0x55,
+        0x2A,4,0x00,0x00,0x01,0x3F,
+        0x2B,4,0x00,0x00,0x01,0xE0,
+        TFTLCD_DELAY8,120, 0x29,0
+    };
+
+#else
+    #define LCD_DRIVER ID_UNKNOWN;
+#endif	
+
+#endif // lcd registers
