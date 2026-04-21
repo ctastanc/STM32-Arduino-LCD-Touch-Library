@@ -348,21 +348,21 @@ unsigned long (*show_function[])(void) =  {
     show_random_bit_map,
 };
 uint8_t *show_str[]= {
-    (uint8_t *)"show text                    :", 
-    (uint8_t *)"show triangle function       :",
-    (uint8_t *)"show sinewave                :",
-    (uint8_t *)"show fill rectangle          :",
-    (uint8_t *)"show fill round rectangle    :",
-    (uint8_t *)"show fill circle             :",
-    (uint8_t *)"show fill triangle           :",
-    (uint8_t *)"show grid lines              :",
-    (uint8_t *)"show random pixels           :",
-    (uint8_t *)"show random lines            :",
-    (uint8_t *)"show random rectangles       :",
+    (uint8_t *)"show text :", 
+    (uint8_t *)"show triangle function :",
+    (uint8_t *)"show sinewave :",
+    (uint8_t *)"show fill rectangle :",
+    (uint8_t *)"show fill round rectangle :",
+    (uint8_t *)"show fill circle :",
+    (uint8_t *)"show fill triangle :",
+    (uint8_t *)"show grid lines :",
+    (uint8_t *)"show random pixels :",
+    (uint8_t *)"show random lines :",
+    (uint8_t *)"show random rectangles :",
     (uint8_t *)"show random round rectangles :",
-    (uint8_t *)"show random circles          :",
-    (uint8_t *)"show random triangles        :",
-    (uint8_t *)"show random bit_map          :"
+    (uint8_t *)"show random circles :",
+    (uint8_t *)"show random triangles :",
+    (uint8_t *)"show random bit_map :"
 };
 
 //display the running time of programs 
