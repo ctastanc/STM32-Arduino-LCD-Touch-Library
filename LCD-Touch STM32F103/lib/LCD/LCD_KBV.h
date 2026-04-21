@@ -275,28 +275,10 @@ class LCD_KBV:public LCD_GUI
         }
     }
 
-    uint32_t convert_tr(uint8_t c) {
-        switch(c) {
-            case 0xC7: return 128; break; // 
-            case 0xD0: return 129; break; // 
-            case 0xDD: return 130; break; // 
-            case 0xD6: return 131; break; // 
-            case 0xDE: return 132; break; // 
-            case 0xDC: return 133; break; // 
-            case 0xE7: return 134; break; // 
-            case 0xF0: return 135; break; // 
-            case 0xFD: return 136; break; // 
-            case 0xF6: return 137; break; //
-            case 0xFE: return 138; break; // 
-            case 0xFC: return 139; break; // 
-            default: return c;   }
-    }
-
     void Print_fr(uint8_t *st, uint32_t str_len, uint32_t x, uint32_t y, uint32_t f, uint32_t t) {
         uint32_t x_curr = x; const uint32_t tt = t*t;
         while(str_len--) {
             uint32_t ch = *st++; 
-            //ch = convert_tr(ch); 
             //if (ch >= 176) ch++;
             uint32_t cl = 0; 
             for(uint32_t col = (ch == ' ') ? 2 : 5; col > 0;col--) {
@@ -322,7 +304,6 @@ class LCD_KBV:public LCD_GUI
         const uint32_t t8 = 8* text_size; 
         while(str_len--) {
             uint32_t ch = *st++; 
-            //ch = convert_tr(ch);
             //if (ch >= 176) ch++;
             uint32_t cl = 0;  
             for(uint32_t col = (ch == ' ') ? 2 : 5; col > 0;col--) {
