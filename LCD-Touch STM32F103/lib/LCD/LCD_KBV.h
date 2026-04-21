@@ -18,7 +18,7 @@ class LCD_KBV:public LCD_GUI
         static LCD_KBV instance(1); 
         return instance;
     }
-    uint8_t char_spc = 2;
+    //uint8_t char_spc = 2;
 	int16_t Width, Height, rotation, rot_val;
 
     LCD_KBV(uint16_t m) {  
@@ -292,12 +292,13 @@ class LCD_KBV:public LCD_GUI
             default: return c;   }
     }
 
-    __attribute__((optimize("unroll-loops")))
-    __attribute__((optimize("Ofast")))
     void Print_fr(uint8_t *st, uint32_t str_len, uint32_t x, uint32_t y, uint32_t f, uint32_t t) {
         uint32_t x_curr = x; const uint32_t tt = t*t;
         while(str_len--) {
-            uint32_t ch = *st++; uint32_t cl = 0;//ch = convert_tr(ch); if (ch >= 176) ch++; 
+            uint32_t ch = *st++; 
+            //ch = convert_tr(ch); 
+            //if (ch >= 176) ch++;
+            uint32_t cl = 0; 
             for(uint32_t col = (ch == ' ') ? 2 : 5; col > 0;col--) {
                 uint32_t line = lcd_font[ch*5 + cl++];
                 if constexpr(LCD_DRIVER != ID_932X && LCD_DRIVER != ID_7575) SET_X(x_curr, x_curr + t-1);
@@ -305,31 +306,43 @@ class LCD_KBV:public LCD_GUI
                     if (line & 1) {
                         if constexpr(LCD_DRIVER == ID_932X || LCD_DRIVER == ID_7575) {
                             SET_ADDR_WINDOW(x_curr, y+row*t , x_curr + t-1, y+row*t  + t-1);}
-                        else { SET_Y( y+row*t,  y+(row+1)*t -1);} CMD8(MW);
-                        switch (t) { case 1: DATA16(f);break; case 2: BLOCK4(f);break;
-                        default: uint32_t p = tt; do {DATA16(f); } while (--p);break;}
+                        else { SET_Y( y+row*t,  y+(row+1)*t -1);} 
+                        CMD8(MW);
+                        switch (t) { 
+                            case 1: DATA16(f);break; 
+                            case 2: BLOCK4(f);break;
+                            default: uint32_t p = tt; do {DATA16(f); } while (--p); break;}
                     } line >>= 1;
                 } x_curr += t;
-            }  x_curr +=char_spc;
+            }  x_curr ++;
         }
     }
 
-    //__attribute__((optimize("unroll-loops")))
-    __attribute__((optimize("Ofast")))
     void Print_bg(uint8_t *st, uint32_t str_len) {
         const uint32_t t8 = 8* text_size; 
         while(str_len--) {
-            uint32_t ch = *st++; uint32_t cl = 0; //ch = convert_tr(ch); if (ch >= 176) ch++; 
+            uint32_t ch = *st++; 
+            //ch = convert_tr(ch);
+            //if (ch >= 176) ch++;
+            uint32_t cl = 0;  
             for(uint32_t col = (ch == ' ') ? 2 : 5; col > 0;col--) {
-                uint32_t line = lcd_font[ch*5 + cl++]; uint32_t row= 8;
+                uint32_t line = lcd_font[ch*5 + cl++]; 
+                uint32_t row= 8;
                 if (text_size==1) {
-                    while(row--) { DATA16(((line & 1) ? text_color:text_bgcolor));line >>= 1;}
+                    while(row--) { 
+                        DATA16(((line & 1) ? text_color:text_bgcolor));
+                        line >>= 1;
+                    }
                 }else { 
                     for (uint32_t row = 0; row < t8;) {
-                    uint32_t c = (line >> (row++ & 7) & 1) ? text_color : text_bgcolor;
-                    if(text_size >=2){DATA16(c);DATA16(c);} if(text_size >=3) DATA16(c);
-                    if(text_size >=4) DATA16(c); if(text_size >=5) DATA16(c);}} 
-            }  {uint32_t r = text_size*char_spc; do {BLOCK8(text_bgcolor)} while(--r);}
+                        uint32_t c = (line >> (row++ & 7) & 1) ? text_color : text_bgcolor;
+                        if(text_size >=2) {DATA16(c);DATA16(c)}
+                        if(text_size >=3) DATA16(c);
+                        if(text_size >=4) DATA16(c);
+                        if(text_size >=5) DATA16(c);
+                    }
+                } 
+            }  uint32_t r = text_size; do BLOCK8(text_bgcolor) while(--r);
         }
     }
 
@@ -338,7 +351,7 @@ class LCD_KBV:public LCD_GUI
         uint32_t str_len = strlen((const char *)st); 
         uint32_t total_w = 0, tw = 0;
         for(uint32_t i=0; i < str_len; i++) {
-            tw = char_spc+((st[i] == ' ' ? 2 : 5) * text_size); 
+            tw = 1+((st[i] == ' ' ? 2 : 5) * text_size); 
             if(total_w + tw > Width) { str_len = i; break;} 
             total_w += tw;}
         if (x == CENTER) x = (Width - total_w) / 2; else if (x == RIGHT) x = Width - total_w - 1;
