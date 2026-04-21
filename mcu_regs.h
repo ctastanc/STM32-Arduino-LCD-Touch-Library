@@ -79,7 +79,6 @@
     #define SET_WRITE_DIR() DATA_PORT->MODER = (DATA_PORT->MODER & 0xFFFF0000) | 0x00005555; /*PA0..PA7 Output*/
     #define SET_READ_DIR()  DATA_PORT->MODER &= ~0x0000FFFF; /*PA0..PA7 Input*/
 
-    //#define WRITE8(d) { DATA_PORT->BSRR = DATA_MASK | (d); WR_L; WR_H; } //For frequencies above 84Mhz.
     #define WRITE8(d) { DATA_PORT->BSRR = DATA_MASK | (d); WRL_DELAY; WR_H; WRH_DELAY; } //WR_L state is triggered by the BSRR register.
     #define READ8(dst) { RD_L; RD_DELAY; dst = (uint8_t)(DATA_PORT->IDR & ~(0xFF00U)); RD_H; }
     #define READ16(dst) { uint8_t hi; READ8(hi); READ8(dst); dst |= (hi << 8); }
@@ -172,14 +171,5 @@
     CMD8(XS); DATA16(x1); DATA16(x2); \
     CMD8(YS); DATA16(y1); DATA16(y2); }
 #endif
-
-/*#define DRAW_PIXEL(x, y, color) \
-if (!((uint32_t)(x) > width || (uint32_t)(y) > height)) { \
-    CS_ACTIVE; \
-    SET_ADDR_WINDOW(x, y, x, y); \
-    CMD8(0x2C); \
-    DATA16(color); \
-    CS_IDLE; \
-}*/
 
 #endif // mcu_regs
