@@ -31,7 +31,7 @@ class LCD_KBV:public LCD_GUI
     }
 
     void Init_LCD(void) {
-        reset(); delay(100);//200
+        reset(); delay(300);//200
         if constexpr( LCD_DRIVER == ID_932X ) {	init_table16(_regValues, sizeof(_regValues));}
         else if constexpr(LCD_DRIVER == ID_9341 || LCD_DRIVER == ID_HX8357D || LCD_DRIVER == ID_7575 || LCD_DRIVER 
                         == ID_9486 || LCD_DRIVER == ID_7735    || LCD_DRIVER == ID_9488 || LCD_DRIVER == ID_9481 ) 
@@ -68,7 +68,7 @@ class LCD_KBV:public LCD_GUI
 
     void reset(void) {
         CS_H; RD_H; WR_H;
-        RST_L;	delay(2); RST_H;
+        RST_L; delay(2); RST_H;
         CS_L;
         CMD8(0x00);
         for(uint8_t i=0; i<3; i++) { WR_L; WR_H; }
@@ -156,7 +156,7 @@ class LCD_KBV:public LCD_GUI
         int16_t n = w * h;
         uint8_t r, g, b;
         CS_L;
-        SET_ADDR_WINDOW(x, y, x+w-1, y+h-1);
+        Set_Addr_Window(x, y, x+w-1, y+h-1);
         while (n > 0) {
             CMD16(MR);
             SET_READ_DIR();
@@ -165,7 +165,7 @@ class LCD_KBV:public LCD_GUI
                 for(int i=0; i<2; i++) { READ8(r); READ8(r); READ8(r); READ8(g); }
                 *block++ = (r<<8 | g); n--;
             }
-            SET_ADDR_WINDOW(0, 0, Width-1, Height-1);
+            Set_Addr_Window(0, 0, Width-1, Height-1);
             #else 
             READ8(r);
             while (n) {
@@ -243,9 +243,46 @@ class LCD_KBV:public LCD_GUI
             case 3: rot_val=ILI9341_MADCTL_MX|ILI9341_MADCTL_MY|ILI9341_MADCTL_ML|ILI9341_MADCTL_MV|ILI9341_MADCTL_BGR;break;}
         CMDDATA8(MD, rot_val);
         #endif
-        SET_ADDR_WINDOW(0, 0, Width-1, Height-1);
+        Set_Addr_Window(0, 0, Width-1, Height-1);
         Vert_Scroll(0, HEIGHT, 0);
         CS_H;
+    }
+
+    void Set_Addr_Window(int16_t x1, int16_t y1, int16_t x2, int16_t y2) {
+        #if (LCD_DRIVER == ID_932X)
+            int x, y, t;
+            switch(rotation) {
+                default: x = x1; y = y1; break;
+                case 1:
+                    t=y1; y1=x1; x1=WIDTH-1-y2; y2=x2; x2=WIDTH-1-t;
+                    x=x2; y=y1; break;
+                case 2:
+                    t=x1; x1=WIDTH-1-x2; x2=WIDTH-1-t;
+                    t=y1; y1=HEIGHT-1-y2; y2=HEIGHT-1-t;
+                    x=x2; y=y2; break;
+                case 3:
+                    t=x1; x1=y1; y1=HEIGHT-1-x2; x2=y2; y2=HEIGHT-1-t;
+                    x=x1; y=y2; break;
+            }
+            CMDDATA16(ILI932X_HOR_START_AD, x1); 
+            CMDDATA16(ILI932X_HOR_END_AD,   x2); 
+            CMDDATA16(ILI932X_VER_START_AD, y1); 
+            CMDDATA16(ILI932X_VER_END_AD,   y2); 
+            CMDDATA16(ILI932X_GRAM_HOR_AD,  x); 
+            CMDDATA16(ILI932X_GRAM_VER_AD,  y); CMD8(ILI932X_START_OSC);
+        #elif (LCD_DRIVER == ID_7575)
+            CMDDATA8(HX8347G_COLADDRSTART_HI, (x1) >> 8); 
+            CMDDATA8(HX8347G_COLADDRSTART_LO, (x1)); 
+            CMDDATA8(HX8347G_ROWADDRSTART_HI, (y1) >> 8); 
+            CMDDATA8(HX8347G_ROWADDRSTART_LO, (y1)); 
+            CMDDATA8(HX8347G_COLADDREND_HI,   (x2) >> 8); 
+            CMDDATA8(HX8347G_COLADDREND_LO,   (x2)); 
+            CMDDATA8(HX8347G_ROWADDREND_HI,   (y2) >> 8); 
+            CMDDATA8(HX8347G_ROWADDREND_LO,   (y2));
+        #else
+            CMD8(XS); DATA16(x1); DATA16(x2); 
+            CMD8(YS); DATA16(y1); DATA16(y2);
+        #endif
     }
 
     int16_t Get_Width(void) const { return Width; }
@@ -263,7 +300,7 @@ class LCD_KBV:public LCD_GUI
 
     void Draw_Bit_Map(int16_t x, int16_t y, int16_t sx, int16_t sy, const uint16_t *data, int16_t scale) {
         int16_t color;
-        CS_L; SET_ADDR_WINDOW(x, y, x + sx*scale - 1, y + sy*scale - 1); CS_H;
+        CS_L; Set_Addr_Window(x, y, x + sx*scale - 1, y + sy*scale - 1); CS_H;
         if(1 == scale) { Push_Any_Color((uint16_t *)data, sx * sy, 1, 0); }
         else {
             for (int16_t row = 0; row < sy; row++) {
@@ -276,27 +313,29 @@ class LCD_KBV:public LCD_GUI
     }
 
     void Print_fr(uint8_t *st, uint32_t str_len, uint32_t x, uint32_t y, uint32_t f, uint32_t t) {
-        uint32_t x_curr = x; const uint32_t tt = t*t;
+        uint32_t x_curr = x;
         while(str_len--) {
-            uint32_t ch = *st++; 
+            uint32_t ch = *st++;
             //if (ch >= 176) ch++;
-            uint32_t cl = 0; 
+            uint32_t cl = 0;
             for(uint32_t col = (ch == ' ') ? 2 : 5; col > 0;col--) {
                 uint32_t line = lcd_font[ch*5 + cl++];
                 if constexpr(LCD_DRIVER != ID_932X && LCD_DRIVER != ID_7575) SET_X(x_curr, x_curr + t-1);
                 for(uint32_t row = 0; row < 8; row++) {
                     if (line & 1) {
+                        uint32_t rt = y+row*t;
                         if constexpr(LCD_DRIVER == ID_932X || LCD_DRIVER == ID_7575) {
-                            SET_ADDR_WINDOW(x_curr, y+row*t , x_curr + t-1, y+row*t  + t-1);}
-                        else { SET_Y( y+row*t,  y+(row+1)*t -1);} 
+                            Set_Addr_Window(x_curr, y+row*t , x_curr + t-1, y+row*t + t-1);}
+                        else { SET_Y( rt, rt + t-1); }
                         CMD8(MW);
-                        switch (t) { 
-                            case 1: DATA16(f);break; 
-                            case 2: BLOCK4(f);break;
-                            default: uint32_t p = tt; do {DATA16(f); } while (--p); break;}
+                        switch (t) {
+                            case 1: DATA16(f); break;
+                            case 2: BLOCK4(f); break;
+                            default: uint32_t p = t*t; do {DATA16(f); } while (--p); break;
+                        }
                     } line >>= 1;
                 } x_curr += t;
-            }  x_curr ++;
+            } x_curr ++;
         }
     }
 
@@ -305,14 +344,14 @@ class LCD_KBV:public LCD_GUI
         while(str_len--) {
             uint32_t ch = *st++; 
             //if (ch >= 176) ch++;
-            uint32_t cl = 0;  
+            uint32_t cl = 0;
             for(uint32_t col = (ch == ' ') ? 2 : 5; col > 0;col--) {
                 uint32_t line = lcd_font[ch*5 + cl++]; 
                 uint32_t row= 8;
                 if (text_size==1) {
                     while(row--) { 
                         DATA16(((line & 1) ? text_color:text_bgcolor));
-                        line >>= 1;
+                        line >>= 1; 
                     }
                 }else { 
                     for (uint32_t row = 0; row < t8;) {
@@ -320,7 +359,7 @@ class LCD_KBV:public LCD_GUI
                         if(text_size >=2) {DATA16(c);DATA16(c)}
                         if(text_size >=3) DATA16(c);
                         if(text_size >=4) DATA16(c);
-                        if(text_size >=5) DATA16(c);
+                        if(text_size >=5) DATA16(c); 
                     }
                 } 
             }  uint32_t r = text_size; do BLOCK8(text_bgcolor) while(--r);
@@ -341,27 +380,28 @@ class LCD_KBV:public LCD_GUI
         Set_Text_Cursor(x, y); 
         CS_L;
         if (text_mode ==0) {
-            Print_fr(st, str_len, text_x, text_y, text_color, text_size);
-        } else {
+            Print_fr(st, str_len, text_x, text_y, text_color, text_size);}
+        else {
             CMDDATA8(MD, rot_val ^ 0x20); 
-            SET_ADDR_WINDOW(text_y, text_x, text_y + (text_size*8) - 1, text_x + total_w - 1); CMD8(MW); 
+            Set_Addr_Window(text_y, text_x, text_y + (text_size*8) - 1, text_x + total_w - 1); 
+            CMD8(MW); 
             Print_bg(st, str_len);
-            CMDDATA8(MD, rot_val); 
-        } CS_H;
+            CMDDATA8(MD, rot_val);} 
+        CS_H;
     }
 
     void Draw_Pixe(int16_t x, int16_t y, uint16_t color)  {
         if((uint32_t)x > Width || (uint32_t)y > Height) return;
-        CS_L; SET_ADDR_WINDOW(x, y, x, y); CMD8(MW); DATA16(color); CS_H;
+        CS_L; Set_Addr_Window(x, y, x, y); CMD8(MW); DATA16(color); CS_H;
     }
-
+    
     void Fill_Scree(uint16_t c) {
         uint8_t rt=PORTRAIT;
         if (rotation != PORTRAIT) {rt = rotation; Set_Rotation(PORTRAIT);} // Rotation 0 to reduce tearing
-        CS_L; SET_ADDR_WINDOW(0, 0, 239, 319);	CMD8(MW);
+        CS_L; Set_Addr_Window(0, 0, 239, 319);	CMD8(MW);
         uint32_t n = (240UL * 320UL) / 48;
         while (n--) { BLOCK8(c); BLOCK8(c); BLOCK8(c); BLOCK8(c); BLOCK8(c); BLOCK8(c);}
-        if constexpr(LCD_DRIVER == ID_932X) {SET_ADDR_WINDOW(0, 0, Width-1, Height-1);}
+        if constexpr(LCD_DRIVER == ID_932X) {Set_Addr_Window(0, 0, Width-1, Height-1);}
         else if constexpr(LCD_DRIVER == ID_7575) Set_LR(); 
         CS_H;
         if (rotation != rt) Set_Rotation(rt);
@@ -377,13 +417,13 @@ class LCD_KBV:public LCD_GUI
         if (y < 0) { y = 0; }
         if (end > Height) { end = Height; } h = end - y;
         uint32_t n = h * w;
-        CS_L; SET_ADDR_WINDOW(x, y, x+w-1, y+h-1);	CMD8(MW);
+        CS_L; Set_Addr_Window(x, y, x+w-1, y+h-1);	CMD8(MW);
         //while(n--){DATA16(c);}
         uint32_t batches = n >> 3;      //3: n / 8 
         uint8_t remainder = n & 0x07;   //7: n % 8 
         while (batches--) {	BLOCK8(c);}
         while (remainder--) { DATA16(c); }
-        if constexpr(LCD_DRIVER == ID_932X) {SET_ADDR_WINDOW(0, 0, Width-1, Height-1);}
+        if constexpr(LCD_DRIVER == ID_932X) {Set_Addr_Window(0, 0, Width-1, Height-1);}
         else if constexpr(LCD_DRIVER == ID_7575) Set_LR(); 
         CS_H; 
     }
