@@ -16,7 +16,7 @@ class swi{
     void show_picture( uint8_t *color_buf,int16_t buf_size,int16_t x1,int16_t y1,int16_t x2,int16_t y2)
     {  
         CS_L;
-        SET_ADDR_WINDOW(x1, y1, x2, y2); //CMD8(MW);
+        lcd.Set_Addr_Window(x1, y1, x2, y2); //CMD8(MW);
         lcd.Push_Any_Color(color_buf, buf_size, 1, 1);
         CS_H;
     }
