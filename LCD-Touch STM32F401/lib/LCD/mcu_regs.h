@@ -132,44 +132,5 @@
 #define SET_Y(y1,y2) {CMD8(YS); DATA16(y1); DATA16(y2);}
 #define BLOCK4(c) {DATA16(c); DATA16(c); DATA16(c); DATA16(c);}
 #define BLOCK8(c) {BLOCK4(c); BLOCK4(c);} 
-   
-#if (LCD_DRIVER == ID_932X)
-    #define SET_ADDR_WINDOW(x1, y1, x2, y2) {\
-    int16_t _nx1 = (x1), _ny1 = (y1), _nx2 = (x2), _ny2 = (y2); \
-    int16_t _x, _y, _t; \
-    switch(this->rotation) { \
-        case 1: \
-            _t=_ny1; _ny1=_nx1; _nx1=WIDTH-1-_ny2; _ny2=_nx2; _nx2=WIDTH-1-_t; \
-            _x=_nx2; _y=_ny1; break; \
-        case 2: \
-            _t=_nx1; _nx1=WIDTH-1-_nx2; _nx2=WIDTH-1-_t; \
-            _t=_ny1; _ny1=HEIGHT-1-_ny2; _ny2=HEIGHT-1-_t; \
-            _x=_nx2; _y=_ny2; break; \
-        case 3: \
-            _t=_nx1; _nx1=_ny1; _ny1=HEIGHT-1-_nx2; _nx2=_ny2; _ny2=HEIGHT-1-_t; \
-            _x=_nx1; _y=_ny2; break; \
-        default: _x = _nx1; _y = _ny1; break; \
-    } \
-    CMDDATA16(ILI932X_HOR_START_AD, _nx1); \
-    CMDDATA16(ILI932X_HOR_END_AD,   _nx2); \
-    CMDDATA16(ILI932X_VER_START_AD, _ny1); \
-    CMDDATA16(ILI932X_VER_END_AD,   _ny2); \
-    CMDDATA16(ILI932X_GRAM_HOR_AD,  _x); \
-    CMDDATA16(ILI932X_GRAM_VER_AD,  _y); CMD8(ILI932X_START_OSC);}
-#elif (LCD_DRIVER == ID_7575)
-    #define SET_ADDR_WINDOW(x1, y1, x2, y2) {\
-    CMDDATA8(HX8347G_COLADDRSTART_HI, (x1) >> 8); \
-    CMDDATA8(HX8347G_COLADDRSTART_LO, (x1)); \
-    CMDDATA8(HX8347G_ROWADDRSTART_HI, (y1) >> 8); \
-    CMDDATA8(HX8347G_ROWADDRSTART_LO, (y1)); \
-    CMDDATA8(HX8347G_COLADDREND_HI,   (x2) >> 8); \
-    CMDDATA8(HX8347G_COLADDREND_LO,   (x2)); \
-    CMDDATA8(HX8347G_ROWADDREND_HI,   (y2) >> 8); \
-    CMDDATA8(HX8347G_ROWADDREND_LO,   (y2)); } 
-#else
-    #define SET_ADDR_WINDOW(x1, y1, x2, y2) {\
-    CMD8(XS); DATA16(x1); DATA16(x2); \
-    CMD8(YS); DATA16(y1); DATA16(y2); }
-#endif
 
 #endif // mcu_regs
