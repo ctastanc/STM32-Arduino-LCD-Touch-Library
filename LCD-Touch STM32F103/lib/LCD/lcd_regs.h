@@ -432,10 +432,10 @@
     #define SC2 0x37
     #define MD ILI9341_MADCTL
     #define VL 0
-    #define R24BIT 0;
+    #define R24BIT 0
     #define WIDTH 128
     #define HEIGHT 160
-    static const uint8_t regValues[] {
+    static const uint8_t _regValues[] {
         0x011,0, TFTLCD_DELAY8,120,
         0xB1,3,0x05,0x3C,0x3C, 0xB2,3,0x05,0x3C,0x3C,
         0xB3,6,0x05,0x3C,0x3C,0x05,0x3C,0x3C,
