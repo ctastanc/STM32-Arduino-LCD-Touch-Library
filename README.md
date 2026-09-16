@@ -5,11 +5,9 @@ The library is compatible with the ILI9341, ILI9325, ILI9328, HX8357D, HX8347G, 
 
 It has also been tested with the ILI9341 (2.4 inch MAR 2406) LCD on STM32F103 and WeAct BlackPill STM32F401 MCUs.
 
-The LCD-Touch STM32F103 and LCD-Touch STM32F401 folders can be run directly in VsCode-Platformio. Alternatively, you can add the library files from the main directory to your project.
+LCD-Touch STM32F401 folders can be run directly in VsCode-Platformio. Alternatively, you can add the library files from the main directory to your project.
 
-In the mcu_regs.h file, specify the frequency of the MCU you are working with using CPU_F. This is because the latencies set for MCUs faster than 84MHz depend on this frequency.
-
-Define the PINs in the mcu_regs.h file and the LCDs in the lcd_regs.h file.
+LCD_SYS_INTERFACE, MCU_SPEED, LCD_MODEL and PIN DEFNITIONS are defined in setting.h
 
 Arduino Mega
 <img width="1208" height="812" alt="Arduino Mega" src="https://github.com/user-attachments/assets/d1829a96-a10e-4b38-a220-4c55a2efb88d" />
