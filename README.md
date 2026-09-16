@@ -15,3 +15,4 @@ Arduino Mega
 
 STM32F401
 <img width="1208" height="878" alt="Image" src="https://github.com/user-attachments/assets/1ea4812e-17d2-4bff-9a00-c4ea44a90a10" />
+<img width="1208" height="878" alt="Adsız" src="https://github.com/user-attachments/assets/dea38244-a199-4fc6-911a-26c889317401" />
