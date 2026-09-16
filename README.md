@@ -5,7 +5,7 @@ The library is compatible with the ILI9341, ILI9325, ILI9328, HX8357D, HX8347G, 
 
 It has also been tested with the ILI9341 (2.4 inch MAR 2406) LCD on STM32F103 and WeAct BlackPill STM32F401 MCUs.
 
-LCD-Touch STM32F401 folders can be run directly in VsCode-Platformio. Alternatively, you can add the library files from the main directory to your project.
+LCD-Touch STM32F401 folders can be run directly in VsCode-Platformio framework-arduino. Alternatively, you can add the library files from the main directory to your project.
 
 LCD_SYS_INTERFACE, MCU_SPEED, LCD_MODEL and PIN DEFNITIONS are defined in setting.h
 
