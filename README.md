@@ -12,4 +12,4 @@ LCD_SYS_INTERFACE, MCU_SPEED, LCD_MODEL and PIN DEFNITIONS are defined in settin
 Arduino Mega
 <img width="1208" height="812" alt="Arduino Mega" src="https://github.com/user-attachments/assets/d1829a96-a10e-4b38-a220-4c55a2efb88d" />
 STM32F401
-<img width="1239" height="839" alt="STM32F401" src="https://github.com/user-attachments/assets/4d259987-92c5-48ad-bebd-11ccfa07f51d" />
+<img width="1208" height="878" alt="Image" src="https://github.com/user-attachments/assets/1ea4812e-17d2-4bff-9a00-c4ea44a90a10" />
