@@ -155,7 +155,7 @@ void rotate_rect(void) {
     }
 }
 
-void test_read() {
+void read_test() {
     for(int i= 0; i<16;i++){
         lcd.Pixel(50, i*15+10 ,cols[i]);
         int p=lcd.Read_Pixel(50,i*15+10);
@@ -181,7 +181,7 @@ void loop(void) {
     //lcd.Print_HScroll((uint8_t*)("What will happen in the future is also one of the mysteries of the universe."),1,1,lcd.Height-125,2,RED,BLACK,10);
     //lcd.Print(String(12345,BIN),CENTER,100,2,RED);
     //full_screen_test();
-    test_read();
+    read_test();
 }
 ```
 The library is very fast. The full-screen test takes 3.2ms.
