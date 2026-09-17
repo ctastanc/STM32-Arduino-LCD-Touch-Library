@@ -101,7 +101,7 @@ void test_read() {
         lcd.Pixel(50, i*15+10 ,cols[i]);
         int p=lcd.Read_Pixel(50,i*15+10);
         lcd.Print(p,70,i*15+5,1,p);
-        lcd.Print((String)("ILI"+String(lcd.Read_ID(),HEX)),160,110,2,GREEN,0,0,16);
+        lcd.Print((String)("ILI"+String(lcd.Read_ID(),HEX)),160,110,2,GREEN);
     }
 }
 
