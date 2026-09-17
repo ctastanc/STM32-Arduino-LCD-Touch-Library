@@ -184,12 +184,16 @@ void loop(void) {
 ```
 The library is very fast. The full-screen test takes 3.2ms.
 
+| full_screen_test(); | 3.2 ms |
+
 The colligate_test(); results:
-                        Arduino Mega        STM32F401   Difference
-show text:              163224 us           1217 us     163224/1217 = 134 times
-show triangle function: 525444 us           54388 us    52544/54388 = 9 times
-show fill rectangle   : 95412 us            827 us      95412/827 = 115 times
-show random pixels    : 6003092 us          60083 us    6003092/60083 = 99 times
+
+| colligate_test();       | Arduino Mega       | STM32F401  | Difference                |
+| ----------------------- | ------------------ | ---------- | ------------------------- |
+| show text:              | 163224 us          | 1217 us    | 163224/1217   = 134 times |
+| show triangle function: | 525444 us          | 54388 us   | 52544/54388   = 9 times   |
+| show fill rectangle   : | 95412 us           | 827 us     | 95412/827     = 115 times |
+| show random pixels    : | 6003092 us         | 60083 us   | 6003092/60083 = 99 times  |
 ---
 
 ## 🤝 Contributing
