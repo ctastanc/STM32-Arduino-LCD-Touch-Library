@@ -15,6 +15,7 @@ extern "C" {
 void SystemClock_Cfg(int PLLN, uint32_t PLLP, int PLLQ, uint32_t AHB, uint32_t APB1, uint32_t APB2);
 
 void SystemClock_OC(int OC) {
+    #if defined(STM32F4xx)
     switch(OC) {
         case 90:  SystemClock_Cfg(180, RCC_PLLP_DIV2, 4, RCC_SYSCLK_DIV1, RCC_HCLK_DIV2, RCC_HCLK_DIV1); break;
         case 96:  SystemClock_Cfg(192, RCC_PLLP_DIV2, 4, RCC_SYSCLK_DIV1, RCC_HCLK_DIV2, RCC_HCLK_DIV1); break;
@@ -25,6 +26,9 @@ void SystemClock_OC(int OC) {
         case 144: SystemClock_Cfg(288, RCC_PLLP_DIV2, 6, RCC_SYSCLK_DIV1, RCC_HCLK_DIV4, RCC_HCLK_DIV2); break;
         default: Serial.println("Overclock could not be applied !");
     }
+    #else
+        #error "----- This function can be used for the STM32F401. -----"
+    #endif
 }
 
 void SystemClock_Cfg(int PLLN, uint32_t PLLP, int PLLQ, uint32_t AHB, uint32_t APB1, uint32_t APB2)  {
