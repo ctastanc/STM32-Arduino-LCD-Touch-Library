@@ -184,6 +184,7 @@ void loop(void) {
 ```
 The library is very fast. The full-screen test takes 3.2ms.
 
+| ------------------- | ------ |
 | full_screen_test(); | 3.2 ms |
 
 The colligate_test(); results:
