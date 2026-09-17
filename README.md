@@ -37,6 +37,7 @@ According to the library's default configuration, the pins must be connected as 
 | D5          | PA5       | Port A5  |
 | D6          | PA6       | Port A6  |
 | D7          | PA7       | Port A7  |
+
 For 16 Bit Parallel
 | Display Pin | STM32 Pin | Port Pin |
 | ----------- | --------- | -------- |
@@ -48,6 +49,7 @@ For 16 Bit Parallel
 | D13         | PB8       | Port B8  |
 | D14         | PB9       | Port B9  |
 | D15         | PB10      | Port B10 |
+
 ### Control & Touch Pins
 
 | Display Pin | STM32 Pin | Description / Touch Mapping |
