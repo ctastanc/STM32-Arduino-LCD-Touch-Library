@@ -94,7 +94,7 @@ void rotate_rect(void) {
     }
 }
 
-void test_read() {
+void read_test() {
     const uint16_t cols[16] ={ BLUE, RED, GREEN, CYAN, MAGENTA,  YELLOW, WHITE, ORANGE,
     DARKGREEN, DARKCYAN,MAROON,PURPLE,OLIVE,LIGHTGREY, GREENYELLOW,PINK};
     for(int i= 0; i<16;i++){
@@ -138,5 +138,5 @@ void loop(void) {
 
     //Scroll_Test();
     //pn.pong();
-    //test_read();
+    //read_test();
 }
