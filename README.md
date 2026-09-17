@@ -1,6 +1,6 @@
 # STM32 Arduino LCD Touch Library 🚀
 
-A highly optimized C++ library for interfacing **ILI9341 LCD displays** with **analog touch screens** using **STM32 microcontrollers** (e.g., STM32F103  (Blue Pill), STM32F401/F411 (Black Pill)). 
+A highly optimized C++ library for interfacing **ILI9341 LCD displays** with **analog touch screens** using **STM32 microcontrollers** (e.g., STM32F103  (Blue Pill), STM32F401/F411 (Black Pill) and others). 
 
 Specifically designed and structured for development within **VS Code + PlatformIO** using the **Arduino framework**. It utilizes Low-Layer (LL) GPIO registers to achieve maximum speed on 8-bit parallel communication.
 
@@ -15,7 +15,7 @@ Specifically designed and structured for development within **VS Code + Platform
 ---
 
 ## 🛠️ Supported Hardware
-* **Microcontroller:** STM32F103 series (Blue Pill) and compatible STM32 boards.
+* **Microcontroller:** Fully compatible with STM32F1, STM32F4, and other popular STM32 boards.
 * **Display Driver:**  ILI9341, ILI9325, ILI9328, HX8357D, HX8347G, HX8347I, ILI9486, ST7735S, ILI9488, and ILI9481.
 * **Touch Mechanism:** 4-Wire Resistive Touch (Connected directly to control and data pins).
 
