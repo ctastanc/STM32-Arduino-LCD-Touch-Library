@@ -12,7 +12,7 @@
 #define TS_MINY 85//83
 #define TS_MAXY 895//893
 //touch sensitivity for press
-#define MINPRESSURE 50
+#define MINPRESSURE 49
 #define MAXPRESSURE 1000
 #define MAP(x,in_min,in_max,out_min,out_max) {(x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min}
 // Oversampling :
