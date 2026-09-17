@@ -17,11 +17,11 @@ class LCD_KBV:public LCD_GUI
 	int16_t Width, Height, rotation, rot_val;
 
     static LCD_KBV& getInstance() {
-        static LCD_KBV instance(1); 
+        static LCD_KBV instance; 
         return instance;
     }
 
-    LCD_KBV(uint16_t m) {
+    LCD_KBV() {
         SET_PORTS();
         RS_DATA; CS_H; WR_H; RD_H; RST_L; RST_H;
         rotation  = 0;
