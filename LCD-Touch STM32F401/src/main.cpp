@@ -125,7 +125,7 @@ void loop(void) {
     //fast_sin_cos();
     //touch_demo();
     //phonecall();
-    b2.bench2();
+    //b2.bench2();
     //b1.bench1();
     //ml.Meter_Linear();
     //cl.clock_analog();
@@ -134,7 +134,7 @@ void loop(void) {
     //cb.cube_demo();
     //rp.read_pixel();
     //sw.switch_test();
-    //colligate_test(); 
+    colligate_test(); 
 
     //Scroll_Test();
     //pn.pong();
