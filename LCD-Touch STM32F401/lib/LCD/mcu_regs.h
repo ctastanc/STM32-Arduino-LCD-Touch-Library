@@ -65,7 +65,6 @@
 #endif
 // If your MCU is not in the include list above, you must add it manually.
 
-
 static constexpr uint32_t Ctrl_Pins[]  =      {RS, CS, RD, RST};
 static constexpr uint32_t Data_Pins_8Bit[]  = {D0, D1, D2, D3, D4, D5, D6, D7, WR};
 static constexpr uint32_t Data_Pins_16Bit[] = {D8, D9, D10, D11, D12, D13, D14, D15};
@@ -129,21 +128,44 @@ inline void enable_gpio_clock(GPIO_TypeDef* GPIOx) {
     #endif
 }
 
+#if defined(STM32F1xx)
+    #define LL_GPIO_MODE_OUT LL_GPIO_MODE_OUTPUT_50MHz
+#else
+    #define LL_GPIO_MODE_OUT LL_GPIO_MODE_OUTPUT
+#endif
+
 #define LL_SET_PINS(SET, PORT, PINS, NUM, MODE) { for(int i=0; i<NUM;i++) { SET(PORT, PINS[i], MODE); }; }
 
 #if(LCD_SYS_INTERFACE==8) 
-    #define SET_PORTS() { \
-        enable_gpio_clock(DATA_PORT1); \
-        enable_gpio_clock(CTRL_PORT); \
-        LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_MODE_OUTPUT) \
-        LL_SET_PINS(LL_GPIO_SetPinOutputType, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_OUTPUT_PUSHPULL) \
-        LL_SET_PINS(LL_GPIO_SetPinSpeed, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_SPEED_FREQ_HIGH) \
-        LL_SET_PINS(LL_GPIO_SetPinMode, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_MODE_OUTPUT) \
-        LL_SET_PINS(LL_GPIO_SetPinOutputType, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_OUTPUT_PUSHPULL) \
-        LL_SET_PINS(LL_GPIO_SetPinSpeed, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_SPEED_FREQ_HIGH) \
-    }
-    #define SET_WRITE_DIR() LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 8, LL_GPIO_MODE_OUTPUT)
-    #define SET_READ_DIR()  LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 8, LL_GPIO_MODE_INPUT)
+    #if defined(STM32F1xx)
+        #define SET_PORTS() { \
+            enable_gpio_clock(DATA_PORT1); \
+            enable_gpio_clock(CTRL_PORT); \
+            LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_MODE_OUTPUT_50MHz) \
+            LL_SET_PINS(LL_GPIO_SetPinOutputType, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_OUTPUT_PUSHPULL) \
+            LL_SET_PINS(LL_GPIO_SetPinSpeed, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_SPEED_FREQ_HIGH) \
+            LL_SET_PINS(LL_GPIO_SetPinMode, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_MODE_OUTPUT_50MHz) \
+            LL_SET_PINS(LL_GPIO_SetPinOutputType, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_OUTPUT_PUSHPULL) \
+            LL_SET_PINS(LL_GPIO_SetPinSpeed, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_SPEED_FREQ_HIGH) \
+        }
+        #define SET_WRITE_DIR() LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 8, LL_GPIO_MODE_OUTPUT_50MHz)
+        #define SET_READ_DIR()  LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 8, LL_GPIO_MODE_INPUT)
+    #else
+        #define SET_PORTS() { \
+            enable_gpio_clock(DATA_PORT1); \
+            enable_gpio_clock(CTRL_PORT); \
+            LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_MODE_OUTPUT) \
+            LL_SET_PINS(LL_GPIO_SetPinOutputType, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_OUTPUT_PUSHPULL) \
+            LL_SET_PINS(LL_GPIO_SetPinSpeed, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_SPEED_FREQ_HIGH) \
+            LL_SET_PINS(LL_GPIO_SetPinPull, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_PULL_NO) \
+            LL_SET_PINS(LL_GPIO_SetPinMode, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_MODE_OUTPUT) \
+            LL_SET_PINS(LL_GPIO_SetPinOutputType, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_OUTPUT_PUSHPULL) \
+            LL_SET_PINS(LL_GPIO_SetPinSpeed, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_SPEED_FREQ_HIGH) \
+            LL_SET_PINS(LL_GPIO_SetPinPull, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_PULL_NO) \
+        }
+        #define SET_WRITE_DIR() LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 8, LL_GPIO_MODE_OUTPUT)
+        #define SET_READ_DIR()  LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 8, LL_GPIO_MODE_INPUT)
+    #endif
 
     #define WRITE8(d) { DATA_PORT1->BSRR = DATA_MASK1 | (d); WRL_DELAY; WR_H; WRH_DELAY; }
     #define READ8(dst) { RD_L; RD_DELAY; dst = (uint8_t)(DATA_PORT1->IDR & (0x00FFU)); RD_H; }
@@ -157,24 +179,48 @@ inline void enable_gpio_clock(GPIO_TypeDef* GPIOx) {
 #endif
 
 #if(LCD_SYS_INTERFACE==16) 
-    #define SET_PORTS() { \
-        enable_gpio_clock(DATA_PORT1); \
-        enable_gpio_clock(DATA_PORT2); \
-        enable_gpio_clock(CTRL_PORT); \
-        LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_MODE_OUTPUT) \
-        LL_SET_PINS(LL_GPIO_SetPinOutputType, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_OUTPUT_PUSHPULL) \
-        LL_SET_PINS(LL_GPIO_SetPinSpeed, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_SPEED_FREQ_HIGH) \
-        LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT2, Data_Pins_8Bit, 8, LL_GPIO_MODE_OUTPUT) \
-        LL_SET_PINS(LL_GPIO_SetPinOutputType, DATA_PORT2, Data_Pins_8Bit, 8, LL_GPIO_OUTPUT_PUSHPULL) \
-        LL_SET_PINS(LL_GPIO_SetPinSpeed, DATA_PORT2, Data_Pins_8Bit, 8, LL_GPIO_SPEED_FREQ_HIGH) \
-        LL_SET_PINS(LL_GPIO_SetPinMode, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_MODE_OUTPUT) \
-        LL_SET_PINS(LL_GPIO_SetPinOutputType, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_OUTPUT_PUSHPULL) \
-        LL_SET_PINS(CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_SPEED_FREQ_HIGH) \
-    }
-    #define SET_WRITE_DIR() { LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 8, LL_GPIO_MODE_OUTPUT);\
-                              LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT2, Data_Pins_16Bit, 8, LL_GPIO_MODE_OUTPUT); }
-    #define SET_READ_DIR()  { LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 8, LL_GPIO_MODE_INPUT);\
-                              LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT2, Data_Pins_16Bit, 8, LL_GPIO_MODE_INPUT); }
+    #if defined(STM32F1xx)
+        #define SET_PORTS() { \
+            enable_gpio_clock(DATA_PORT1); \
+            enable_gpio_clock(DATA_PORT2); \
+            enable_gpio_clock(CTRL_PORT); \
+            LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_MODE_OUTPUT_50MHz) \
+            LL_SET_PINS(LL_GPIO_SetPinOutputType, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_OUTPUT_PUSHPULL) \
+            LL_SET_PINS(LL_GPIO_SetPinSpeed, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_SPEED_FREQ_HIGH) \
+            LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT2, Data_Pins_16Bit, 8, LL_GPIO_MODE_OUTPUT_50MHz) \
+            LL_SET_PINS(LL_GPIO_SetPinOutputType, DATA_PORT2, Data_Pins_16Bit, 8, LL_GPIO_OUTPUT_PUSHPULL) \
+            LL_SET_PINS(LL_GPIO_SetPinSpeed, DATA_PORT2, Data_Pins_16Bit, 8, LL_GPIO_SPEED_FREQ_HIGH) \
+            LL_SET_PINS(LL_GPIO_SetPinMode, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_MODE_OUTPUT_50MHz) \
+            LL_SET_PINS(LL_GPIO_SetPinOutputType, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_OUTPUT_PUSHPULL) \
+            LL_SET_PINS(LL_GPIO_SetPinSpeed, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_SPEED_FREQ_HIGH) \
+        }
+        #define SET_WRITE_DIR() { LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 8, LL_GPIO_MODE_OUTPUT_50MHz);\
+                                  LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT2, Data_Pins_16Bit, 8, LL_GPIO_MODE_OUTPUT_50MHz); }
+        #define SET_READ_DIR()  { LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 8, LL_GPIO_MODE_INPUT);\
+                                  LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT2, Data_Pins_16Bit, 8, LL_GPIO_MODE_INPUT); }
+    #else
+        #define SET_PORTS() { \
+            enable_gpio_clock(DATA_PORT1); \
+            enable_gpio_clock(DATA_PORT2); \
+            enable_gpio_clock(CTRL_PORT); \
+            LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_MODE_OUTPUT) \
+            LL_SET_PINS(LL_GPIO_SetPinOutputType, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_OUTPUT_PUSHPULL) \
+            LL_SET_PINS(LL_GPIO_SetPinSpeed, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_SPEED_FREQ_HIGH) \
+            LL_SET_PINS(LL_GPIO_SetPinPull, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_PULL_NO) \
+            LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT2, Data_Pins_16Bit, 8, LL_GPIO_MODE_OUTPUT) \
+            LL_SET_PINS(LL_GPIO_SetPinOutputType, DATA_PORT2, Data_Pins_16Bit, 8, LL_GPIO_OUTPUT_PUSHPULL) \
+            LL_SET_PINS(LL_GPIO_SetPinSpeed, DATA_PORT2, Data_Pins_16Bit, 8, LL_GPIO_SPEED_FREQ_HIGH) \
+            LL_SET_PINS(LL_GPIO_SetPinPull, DATA_PORT2, Data_Pins_16Bit, 8, LL_GPIO_PULL_NO) \
+            LL_SET_PINS(LL_GPIO_SetPinMode, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_MODE_OUTPUT) \
+            LL_SET_PINS(LL_GPIO_SetPinOutputType, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_OUTPUT_PUSHPULL) \
+            LL_SET_PINS(LL_GPIO_SetPinSpeed, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_SPEED_FREQ_HIGH) \
+            LL_SET_PINS(LL_GPIO_SetPinPull, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_PULL_NO) \
+        }
+        #define SET_WRITE_DIR() { LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 8, LL_GPIO_MODE_OUTPUT);\
+                                  LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT2, Data_Pins_16Bit, 8, LL_GPIO_MODE_OUTPUT); }
+        #define SET_READ_DIR()  { LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 8, LL_GPIO_MODE_INPUT);\
+                                  LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT2, Data_Pins_16Bit, 8, LL_GPIO_MODE_INPUT); }
+    #endif
         
     #define WRITE16(d) {DATA_PORT1->BSRR = DATA_MASK1 | (d&0xFF);\
                        DATA_PORT2->BSRR = DATA_MASK2 | ((d&0xFF00)>>5); WRL_DELAY; WR_H; WRH_DELAY;}
