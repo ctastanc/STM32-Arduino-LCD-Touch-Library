@@ -107,7 +107,6 @@ void setup(void) {
     Serial.begin(115200);
     delay(150);
     Serial.println("system running...");
-    analogReadResolution(12);
     pinMode(PC13,OUTPUT);
     lcd.Init();
     lcd.Fill_Screen(BLACK);
