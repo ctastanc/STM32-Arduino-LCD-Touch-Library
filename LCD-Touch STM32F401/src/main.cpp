@@ -32,11 +32,12 @@
 #include <cube_demo.h>
 #include <clock_analog.h>
 #include <disp_scroll.h>
-
-#include <pong.h>
 #include <Scroll_Test.h>
 #include <bench1.h>
 #include <sys_oc.h>
+
+const uint16_t cols[16] ={ BLUE, RED, GREEN, CYAN, MAGENTA,  YELLOW, WHITE, ORANGE,
+                DARKGREEN, DARKCYAN,MAROON,PURPLE,OLIVE,LIGHTGREY, GREENYELLOW,PINK};
 
 void full_screen_test() {
     uint32_t start = micros(); 
@@ -57,8 +58,6 @@ void full_screen_test() {
 }
 
 void rotate_rect(void) { 
-    const uint16_t cols[16] ={ BLUE, RED, GREEN, CYAN, MAGENTA,  YELLOW, WHITE, ORANGE,
-    DARKGREEN, DARKCYAN,MAROON,PURPLE,OLIVE,LIGHTGREY, GREENYELLOW,PINK};
     lcd.Set_Rotation(LANDSCAPE);
     while(1) {
         srand(time(0));
@@ -95,8 +94,6 @@ void rotate_rect(void) {
 }
 
 void read_test() {
-    const uint16_t cols[16] ={ BLUE, RED, GREEN, CYAN, MAGENTA,  YELLOW, WHITE, ORANGE,
-    DARKGREEN, DARKCYAN,MAROON,PURPLE,OLIVE,LIGHTGREY, GREENYELLOW,PINK};
     for(int i= 0; i<16;i++){
         lcd.Pixel(50, i*15+10 ,cols[i]);
         int p=lcd.Read_Pixel(50,i*15+10);
@@ -110,7 +107,7 @@ void setup(void) {
     Serial.begin(115200);
     delay(150);
     Serial.println("system running...");
-    analogReadResolution(10); // STM32 ADC default 12-bit; touch 10-bit
+    analogReadResolution(12);
     pinMode(PC13,OUTPUT);
     lcd.Init_LCD();
     lcd.Fill_Screen(BLACK);
@@ -135,8 +132,6 @@ void loop(void) {
     //rp.read_pixel();
     //sw.switch_test();
     colligate_test(); 
-
     //Scroll_Test();
-    //pn.pong();
     //read_test();
 }

@@ -1,25 +1,24 @@
 // Touch screen library with X Y and Z (pressure) readings as well
 // as oversampling to avoid 'bouncing'
 
-#ifndef _TOUCHSCREEN_H_
-#define _TOUCHSCREEN_H_
+#pragma once
 
 #include <LCD_KBV.h>
-//touch sensitivity for x
-#define TS_MINX 125//124
-#define TS_MAXX 875//906
-//touch sensitivity for Y
-#define TS_MINY 85//83
-#define TS_MAXY 895//893
-//touch sensitivity for press
-#define MINPRESSURE 50
-#define MAXPRESSURE 1000
+//touch sensitivity for x (12-bit: 0..4095)
+#define TS_MINX 500//500 (10-bit karşılığı: 125)
+#define TS_MAXX 3500//3500 (10-bit karşılığı: 875)
+//touch sensitivity for Y (12-bit: 0..4095)
+#define TS_MINY 340//340 (10-bit karşılığı: 85)
+#define TS_MAXY 3580//3580 (10-bit karşılığı: 895)
+//touch sensitivity for press (12-bit: 0..4095)
+#define MINPRESSURE 300//200 (10-bit karşılığı: 50)
+#define MAXPRESSURE 4000//4000 (10-bit karşılığı: 1000)
 #define MAP(x,in_min,in_max,out_min,out_max) {(x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min}
 // Oversampling :
 //   1 = no oversample 
 //   2 = Double reading, if the two readings are not equal, consider it invalid (recommendation)
 //   3+ = median value (insert sort)
-#define NUMSAMPLES 2
+#define NUMSAMPLES 20
 
 #if (NUMSAMPLES > 2)
 static void insert_sort(int array[], uint8_t size) {
@@ -66,7 +65,7 @@ class TouchScreen {
         pin_set(_yp,_xm,_xp,_ym,_ym,_xp); // Z (pressure) reading: XP=LOW, YM=HIGH, XM ve YP INPUT
         int z1 = analogRead(_xm);
         int z2 = analogRead(_yp);
-        z = (1023 - (z2 - z1));
+        z = (4095 - (z2 - z1));
         if (z > MINPRESSURE && z < MAXPRESSURE) {
             pin_set(_ym,_yp,_xp,_xm,_xp,_xm); // X reading: XP=HIGH, XM=LOW; YP ve YM INPUT
             for (i = 0; i < NUMSAMPLES; i++) samples[i] = analogRead(_yp);
@@ -76,7 +75,7 @@ class TouchScreen {
             #if NUMSAMPLES == 2
                 if (samples[0] < samples[1]-2 || samples[0] > samples[1]+2) valid = 0; 
             #endif
-            x = (1023 - samples[NUMSAMPLES/2]);
+            x = (4095 - samples[NUMSAMPLES/2]);
             pin_set(_xp,_xm,_yp,_ym,_yp,_ym); // Y reading: YP=HIGH, YM=LOW; XP ve XM INPUT
             for (i = 0; i < NUMSAMPLES; i++) samples[i] = analogRead(_xm);
             #if NUMSAMPLES > 2
@@ -85,7 +84,7 @@ class TouchScreen {
             #if NUMSAMPLES == 2
                 if (samples[0] < samples[1]-2 || samples[0] > samples[1]+2) valid = 0;
             #endif
-            y = (1023 - samples[NUMSAMPLES/2]);
+            y = (4095 - samples[NUMSAMPLES/2]);
         } else z=0;
         if (!valid) z=0;
         pinMode(_xm, OUTPUT); pinMode(_xp, OUTPUT);
@@ -112,5 +111,3 @@ class TouchScreen {
 };
 
 TouchScreen ts=TouchScreen(295);
-
-#endif

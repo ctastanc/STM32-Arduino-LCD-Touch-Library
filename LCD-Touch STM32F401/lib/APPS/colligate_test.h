@@ -1,6 +1,5 @@
 #include <LCD_KBV.h> 
 
-void colligate() ;
 unsigned long show_triangle_function(void);
 //display main surface
 unsigned long show_text(void){
@@ -8,7 +7,7 @@ unsigned long show_text(void){
     lcd.Fill_Rectangle_XY(0, 0, lcd.Width-1, 14,RGB(32, 0,255));
     lcd.Print("* Universal Color TFT Display Library *",CENTER,3,1,0x07E0);
     lcd.Fill_Rectangle_XY(0, lcd.Height-15, lcd.Width-1, lcd.Height-1,RGB(128, 128, 128));
-    lcd.Print("---> http://www.lcdwiki.com <---",CENTER,lcd.Height-11,1,0xFFFF);
+    lcd.Print("---> http://www.........com <---",CENTER,lcd.Height-11,1,0xFFFF);
     lcd.Rectangle_XY(0, 15, lcd.Width-1, lcd.Height-16,RGB(32, 0, 255));   
     return micros() - time_start;
 }
@@ -348,21 +347,21 @@ unsigned long (*show_function[])(void) =  {
     show_random_bit_map,
 };
 uint8_t *show_str[]= {
-    (uint8_t *)"show text :", 
-    (uint8_t *)"show triangle function :",
-    (uint8_t *)"show sinewave :",
-    (uint8_t *)"show fill rectangle :",
-    (uint8_t *)"show fill round rectangle :",
-    (uint8_t *)"show fill circle :",
-    (uint8_t *)"show fill triangle :",
-    (uint8_t *)"show grid lines :",
-    (uint8_t *)"show random pixels :",
-    (uint8_t *)"show random lines :",
-    (uint8_t *)"show random rectangles :",
-    (uint8_t *)"show random round rectangles :",
-    (uint8_t *)"show random circles :",
-    (uint8_t *)"show random triangles :",
-    (uint8_t *)"show random bit_map :"
+    (uint8_t *)"show text ", 
+    (uint8_t *)"show triangle function ",
+    (uint8_t *)"show sinewave ",
+    (uint8_t *)"show fill rectangle ",
+    (uint8_t *)"show fill round rectangle ",
+    (uint8_t *)"show fill circle ",
+    (uint8_t *)"show fill triangle ",
+    (uint8_t *)"show grid lines ",
+    (uint8_t *)"show random pixels ",
+    (uint8_t *)"show random lines ",
+    (uint8_t *)"show random rectangles ",
+    (uint8_t *)"show random round rectangles ",
+    (uint8_t *)"show random circles ",
+    (uint8_t *)"show random triangles ",
+    (uint8_t *)"show random bit_map "
 };
 
 //display the running time of programs 

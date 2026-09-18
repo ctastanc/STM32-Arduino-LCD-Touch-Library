@@ -19,7 +19,8 @@ void touch_demo(void) {
             Serial.print("\tPressure = "); Serial.print(p.z);
             Serial.print("   X = "); Serial.print(p.x);
             Serial.print("\tY = "); Serial.println(p.y);
-            lcd.Print("*",p.x,p.y,2,RED);
+            //lcd.Print(".",p.x,p.y,1,RED);
+            lcd.Pixel(p.x,p.y,RED);
         }
     }
 }

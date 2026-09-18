@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Arduino.h>
 #include <settings.h>
 
 #define TFTLCD_DELAY16  0xFFFF
