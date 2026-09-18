@@ -202,7 +202,7 @@ The colligate_test(); results:
 
 Mega <img width="640" height="435" alt="mega-640" src="https://github.com/user-attachments/assets/e2a9142d-84ca-463a-ab4c-ebc2c97e61dd" />
 
-STM <img width="640" height="478" alt="stm-640" src="https://github.com/user-attachments/assets/b167c957-3293-48b0-bc20-58ed4c56bbfc" />
+STM <img width="640" height="455" alt="stm-640" src="https://github.com/user-attachments/assets/9ea40d65-af13-48f6-a03a-93abe292e586" />
 
 
 ## 🤝 Contributing
