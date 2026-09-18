@@ -200,9 +200,11 @@ The colligate_test(); results:
 | show random triangle    | 8017380 us         | 88212 us   | 8017380/88212 = 90 times  |
 ---
 Mega
-<img width="320" height="215" alt="mega" src="https://github.com/user-attachments/assets/c67d42a7-14b9-431b-bced-f52f9185dafd" />
+<img width="640" height="430" alt="mega-640" src="https://github.com/user-attachments/assets/818ecf7b-4330-4dbc-889f-feac1a72ef8f" />
+
 STM
-<img width="320" height="237" alt="stm" src="https://github.com/user-attachments/assets/91e0a333-f226-43d4-8a9f-f4fdfe17782e" />
+<img width="640" height="538" alt="stm 640" src="https://github.com/user-attachments/assets/751e5fc3-f137-4e2f-a958-265997ffae15" />
+
 
 ## 🤝 Contributing
 Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com).
