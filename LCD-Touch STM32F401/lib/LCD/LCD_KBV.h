@@ -30,7 +30,7 @@ class LCD_KBV:public LCD_GUI
         Height = HEIGHT;
     }
 
-    void Init_LCD(void) {
+    void Init(void) {
         reset(); delay(200);
         if constexpr( LCD_DRIVER == ID_932X ) {	init_table16(_regValues, sizeof(_regValues));}
         else if constexpr(LCD_DRIVER == ID_9341 || LCD_DRIVER == ID_HX8357D || LCD_DRIVER == ID_7575 || LCD_DRIVER 

@@ -109,7 +109,7 @@ void setup(void) {
     Serial.println("system running...");
     analogReadResolution(12);
     pinMode(PC13,OUTPUT);
-    lcd.Init_LCD();
+    lcd.Init();
     lcd.Fill_Screen(BLACK);
     lcd.Set_Rotation(LANDSCAPE);
 }
