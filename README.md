@@ -194,10 +194,10 @@ The colligate_test(); results:
 
 | colligate_test();       | Arduino Mega       | STM32F401  | Difference                |
 | ----------------------- | ------------------ | ---------- | ------------------------- |
-| show text:              | 163224 us          | 1217 us    | 163224/1217   = 134 times |
-| show triangle function: | 525444 us          | 54388 us   | 52544/54388   = 9 times   |
-| show fill rectangle   : | 95412 us           | 827 us     | 95412/827     = 115 times |
-| show random pixels    : | 6003092 us         | 60083 us   | 6003092/60083 = 99 times  |
+| show text               | 163224 us          | 1217 us    | 163224/1217   = 134 times |
+| show fill rectangle     | 95412 us           | 827 us     | 95412/827     = 115 times |
+| show random pixels      | 6003092 us         | 60083 us   | 6003092/60083 = 99 times  |
+| show random triangle    | 8017380 us         | 88212 us   | 8017380/88212 = 90 times  |
 ---
 
 ## 🤝 Contributing
