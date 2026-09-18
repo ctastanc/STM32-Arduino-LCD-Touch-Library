@@ -65,11 +65,9 @@
 #endif
 // If your MCU is not in the include list above, you must add it manually.
 
-#define CTRL_PORT  GPIOB
+
 static constexpr uint32_t Ctrl_Pins[]  =      {RS, CS, RD, RST};
-#define DATA_PORT1 GPIOA 
 static constexpr uint32_t Data_Pins_8Bit[]  = {D0, D1, D2, D3, D4, D5, D6, D7, WR};
-#define DATA_PORT2 GPIOB 
 static constexpr uint32_t Data_Pins_16Bit[] = {D8, D9, D10, D11, D12, D13, D14, D15};
 #define DATA_MASK1 0x01FF0000UL
 #define DATA_MASK2 0x07F80000UL

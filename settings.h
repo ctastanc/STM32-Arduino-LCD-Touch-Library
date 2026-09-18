@@ -47,11 +47,26 @@
 #define D13 LL_GPIO_PIN_8  // PB8
 #define D14 LL_GPIO_PIN_9  // PB9
 #define D15 LL_GPIO_PIN_10 // PB10
-
-// Set Touch Pins
+#define CTRL_PORT  GPIOB
+#define DATA_PORT1 GPIOA
+#define DATA_PORT2 GPIOB
+// Set Touch Pins (Port, Pin, ADC Channel)
 // ILI9341 Touch pins are very important. If XM and YP are not analog pins, it will not work. 
 // These correspond to XM:RS and YP:CS pins. XP and YM correspond to Dataport PA0 and PA1.
-#define XM PB0 
-#define YP PB1 
-#define XP PA0 
-#define YM PA1 
+#define TS_XP_PORT        GPIOA
+#define TS_XP_PIN         LL_GPIO_PIN_0
+
+#define TS_YM_PORT        GPIOA
+#define TS_YM_PIN         LL_GPIO_PIN_1
+
+#define TS_XM_PORT        GPIOB
+#define TS_XM_PIN         LL_GPIO_PIN_0
+#ifndef TS_XM_ADC_CHANNEL
+#define TS_XM_ADC_CHANNEL LL_ADC_CHANNEL_8
+#endif
+
+#define TS_YP_PORT        GPIOB
+#define TS_YP_PIN         LL_GPIO_PIN_1
+#ifndef TS_YP_ADC_CHANNEL
+#define TS_YP_ADC_CHANNEL LL_ADC_CHANNEL_9
+#endif
