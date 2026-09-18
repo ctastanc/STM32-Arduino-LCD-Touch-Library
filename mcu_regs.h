@@ -92,15 +92,15 @@ static constexpr uint32_t Data_Pins_16Bit[] = {D8, D9, D10, D11, D12, D13, D14, 
     #define WRH_DELAY
 #elif (TARGET_CPU_FREQ > 120000000 )  // 6.9ns
     #define RD_DELAY { __asm__ volatile(".rept 6 \n\t nop \n\t .endr"); }
-    #define WRL_DELAY WR_L//__asm__ volatile("nop");
+    #define WRL_DELAY {WR_L;}//__asm__ volatile("nop");
     #define WRH_DELAY 
 #elif (TARGET_CPU_FREQ > 100000000 )  // 7.6ns
     #define RD_DELAY { __asm__ volatile(".rept 5 \n\t nop \n\t .endr"); }
-    #define WRL_DELAY WR_L//__asm__ volatile("nop");
+    #define WRL_DELAY {WR_L;}//__asm__ volatile("nop");
     #define WRH_DELAY 
 #elif (TARGET_CPU_FREQ > 96000000 ) // 10ns
     #define RD_DELAY { __asm__ volatile(".rept 4 \n\t nop \n\t .endr"); }
-    #define WRL_DELAY //WR_L//__asm__ volatile("nop");
+    #define WRL_DELAY //{WR_L;}//__asm__ volatile("nop");
     #define WRH_DELAY 
 #elif (TARGET_CPU_FREQ <= 96000000L) // 11.9ns
     #define RD_DELAY { __asm__ volatile(".rept 3 \n\t nop \n\t .endr"); }
