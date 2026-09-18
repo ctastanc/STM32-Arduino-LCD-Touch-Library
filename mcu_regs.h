@@ -71,14 +71,14 @@ static constexpr uint32_t Data_Pins_16Bit[] = {D8, D9, D10, D11, D12, D13, D14, 
 #define DATA_MASK1 0x01FF0000UL
 #define DATA_MASK2 0x07F80000UL
 
-#define WR_L    { LL_GPIO_ResetOutputPin(DATA_PORT1, Data_Pins_8Bit[8]); } 
-#define WR_H    { LL_GPIO_SetOutputPin(DATA_PORT1, Data_Pins_8Bit[8]); } 
+#define WR_L    { LL_GPIO_ResetOutputPin(DATA_PORT1, Data_Pins_8Bit[8]); }
+#define WR_H    { LL_GPIO_SetOutputPin(DATA_PORT1, Data_Pins_8Bit[8]); }
 #define RS_CMD  { LL_GPIO_ResetOutputPin(CTRL_PORT, Ctrl_Pins[0]); }
 #define RS_DATA { LL_GPIO_SetOutputPin(CTRL_PORT, Ctrl_Pins[0]); }
 #define CS_L    { LL_GPIO_ResetOutputPin(CTRL_PORT, Ctrl_Pins[1]); }
 #define CS_H    { LL_GPIO_SetOutputPin(CTRL_PORT, Ctrl_Pins[1]); }
-#define RD_L    { LL_GPIO_ResetOutputPin(CTRL_PORT, Ctrl_Pins[2]); } 
-#define RD_H    { LL_GPIO_SetOutputPin(CTRL_PORT, Ctrl_Pins[2]); }  
+#define RD_L    { LL_GPIO_ResetOutputPin(CTRL_PORT, Ctrl_Pins[2]); }
+#define RD_H    { LL_GPIO_SetOutputPin(CTRL_PORT, Ctrl_Pins[2]); }
 #define RST_L   { LL_GPIO_ResetOutputPin(CTRL_PORT, Ctrl_Pins[3]); }
 #define RST_H   { LL_GPIO_SetOutputPin(CTRL_PORT, Ctrl_Pins[3]); }
 
@@ -136,7 +136,7 @@ inline void enable_gpio_clock(GPIO_TypeDef* GPIOx) {
 
 #define LL_SET_PINS(SET, PORT, PINS, NUM, MODE) { for(int i=0; i<NUM;i++) { SET(PORT, PINS[i], MODE); }; }
 
-#if(LCD_SYS_INTERFACE==8) 
+#if(LCD_SYS_INTERFACE==8)
     #if defined(STM32F1xx)
         #define SET_PORTS() { \
             enable_gpio_clock(DATA_PORT1); \
@@ -239,4 +239,4 @@ inline void enable_gpio_clock(GPIO_TypeDef* GPIOx) {
 #define SET_X(x1,x2) {CMD8(XS); DATA16(x1); DATA16(x2);}
 #define SET_Y(y1,y2) {CMD8(YS); DATA16(y1); DATA16(y2);}
 #define BLOCK4(c) {DATA16(c); DATA16(c); DATA16(c); DATA16(c);}
-#define BLOCK8(c) {BLOCK4(c); BLOCK4(c);} 
+#define BLOCK8(c) {BLOCK4(c); BLOCK4(c);}
