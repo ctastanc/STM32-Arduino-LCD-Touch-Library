@@ -194,15 +194,15 @@ The colligate_test(); results:
 
 | colligate_test();       | Arduino Mega       | STM32F401  | Difference                |
 | ----------------------- | ------------------ | ---------- | ------------------------- |
-| show text               | 163224 us          | 1217 us    | 163224/1217   = 134 times |
+| show text               | 163224 us          | 1194 us    | 163224/1194   = 136 times |
 | show fill rectangle     | 95412 us           | 827 us     | 95412/827     = 115 times |
-| show random pixels      | 6003092 us         | 60083 us   | 6003092/60083 = 99 times  |
-| show random triangle    | 8017380 us         | 88212 us   | 8017380/88212 = 90 times  |
+| show random pixels      | 6003092 us         | 60081 us   | 6003092/60081 = 99 times  |
+| show fill triangle      | 141516 us          | 1499 us    | 141516/1499   = 94 times  |
 ---
 
 Mega <img width="640" height="435" alt="mega-640" src="https://github.com/user-attachments/assets/e2a9142d-84ca-463a-ab4c-ebc2c97e61dd" />
 
-STM <img width="640" height="455" alt="stm-640" src="https://github.com/user-attachments/assets/9ea40d65-af13-48f6-a03a-93abe292e586" />
+STM <img width="640" height="472" alt="stm-640" src="https://github.com/user-attachments/assets/ca761a8e-09ce-470b-85e1-a07d9c2e4cdf" />
 
 
 ## 🤝 Contributing
