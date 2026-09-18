@@ -196,8 +196,11 @@ The colligate_test(); results:
 | ----------------------- | ------------------ | ---------- | ------------------------- |
 | show text               | 163224 us          | 1194 us    | 163224/1194   = 136 times |
 | show fill rectangle     | 95412 us           | 827 us     | 95412/827     = 115 times |
-| show random pixels      | 6003092 us         | 60081 us   | 6003092/60081 = 99 times  |
+| show fill round rect    | 139020 us          | 1552 us    | 139020/1552   = 89  times |
+| show fill circle        | 161296 us          | 2013 us    | 161296/2013   = 80 times  |
 | show fill triangle      | 141516 us          | 1499 us    | 141516/1499   = 94 times  |
+| show grid lines         | 4567916 us         | 53603 us   | 4567916/53603 = 85 times  |
+| show random pixels      | 6003092 us         | 60081 us   | 6003092/60081 = 99 times  |
 ---
 
 Mega <img width="640" height="435" alt="mega-640" src="https://github.com/user-attachments/assets/e2a9142d-84ca-463a-ab4c-ebc2c97e61dd" />
