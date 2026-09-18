@@ -11,7 +11,7 @@
 #define TS_MINY 340//340 (10-bit karşılığı: 85)
 #define TS_MAXY 3580//3580 (10-bit karşılığı: 895)
 //touch sensitivity for press (12-bit: 0..4095)
-#define MINPRESSURE 300//200 (10-bit karşılığı: 50)
+#define MINPRESSURE 1000//200 (10-bit karşılığı: 50)
 #define MAXPRESSURE 4000//4000 (10-bit karşılığı: 1000)
 #define MAP(x,in_min,in_max,out_min,out_max) {(x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min}
 // Oversampling :
