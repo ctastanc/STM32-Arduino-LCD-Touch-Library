@@ -199,6 +199,10 @@ The colligate_test(); results:
 | show random pixels      | 6003092 us         | 60083 us   | 6003092/60083 = 99 times  |
 | show random triangle    | 8017380 us         | 88212 us   | 8017380/88212 = 90 times  |
 ---
+Mega
+<img width="320" height="215" alt="mega" src="https://github.com/user-attachments/assets/c67d42a7-14b9-431b-bced-f52f9185dafd" />
+STM
+<img width="320" height="237" alt="stm" src="https://github.com/user-attachments/assets/91e0a333-f226-43d4-8a9f-f4fdfe17782e" />
 
 ## 🤝 Contributing
 Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com).
