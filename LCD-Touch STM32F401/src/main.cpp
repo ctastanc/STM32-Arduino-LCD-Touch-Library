@@ -36,7 +36,7 @@
 #include <pong.h>
 #include <Scroll_Test.h>
 #include <bench1.h>
-#include <sys_conf.h>
+#include <sys_oc.h>
 
 void full_screen_test() {
     uint32_t start = micros(); 
