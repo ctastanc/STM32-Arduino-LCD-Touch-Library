@@ -34,7 +34,13 @@
 #include <disp_scroll.h>
 #include <Scroll_Test.h>
 #include <bench1.h>
-#include <sys_oc.h>
+#if defined(STM32F4xx)
+    // This file applies to STM32F401 devices equipped with a 25MHz crystal. 
+    // Do not use it if you lack sufficient knowledge about your hardware.
+    // Adverse results may occur. You bear full responsibility.
+    #include <sys_oc.h>
+#endif
+
 
 const uint16_t cols[16] ={ BLUE, RED, GREEN, CYAN, MAGENTA,  YELLOW, WHITE, ORANGE,
                 DARKGREEN, DARKCYAN,MAROON,PURPLE,OLIVE,LIGHTGREY, GREENYELLOW,PINK};
@@ -103,7 +109,12 @@ void read_test() {
 }
 
 void setup(void) {
-    SystemClock_OC(OC_96MHz); // Overclock to 96MHz
+    #if defined(STM32F4xx)
+        // This line applies to STM32F401 devices equipped with a 25MHz crystal. 
+        // Do not use it if you lack sufficient knowledge about your hardware.
+        // Adverse results may occur. You bear full responsibility.
+        SystemClock_OC(OC_96MHz); // Overclock to 96MHz
+    #endif
     Serial.begin(115200);
     delay(150);
     Serial.println("system running...");
@@ -121,7 +132,7 @@ void loop(void) {
     //fast_sin_cos();
     //touch_demo();
     //phonecall();
-    //b2.bench2();
+    b2.bench2();
     //b1.bench1();
     //ml.Meter_Linear();
     //cl.clock_analog();
@@ -130,7 +141,7 @@ void loop(void) {
     //cb.cube_demo();
     //rp.read_pixel();
     //sw.switch_test();
-    colligate_test(); 
+    //colligate_test(); 
     //Scroll_Test();
     //read_test();
 }

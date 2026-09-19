@@ -1,5 +1,9 @@
 #pragma once
 
+    // This file applies to STM32F401 devices equipped with a 25MHz crystal. 
+    // Do not use it if you lack sufficient knowledge about your hardware.
+    // Adverse results may occur. You bear full responsibility.
+
 #ifdef __cplusplus
 extern "C" {
 #endif
