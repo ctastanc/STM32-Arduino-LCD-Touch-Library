@@ -34,7 +34,8 @@ struct RGB {
     uint16_t val;
     RGB(uint16_t c) : val(c) {}
     RGB(uint8_t r, uint8_t g, uint8_t b) : val(((uint16_t)(r&0xF8)<<8) | ((uint16_t)(g&0xFC)<<3) | (b>>3)) {} 
-};
+    constexpr operator uint16_t() const { return val; }
+}__attribute__((packed));
 
 class LCD_GUI
 {
@@ -57,8 +58,8 @@ class LCD_GUI
     void Print(T val, int16_t x, int16_t y, uint8_t size, const RGB& fc, const RGB& bc=0, bool mode=0, int16_t system = 10, uint8_t dec = 2) {
         text_mode = mode;
 		text_size = size;
-		text_fc = fc.val;
-		text_bc = bc.val;  
+		text_fc = fc;
+		text_bc = bc;  
 		if constexpr (std::is_same_v<T, uint8_t*> || std::is_same_v<T, const uint8_t*> || std::is_same_v<T, char*> 
 			|| std::is_same_v<T, const char*>) { Print_Str((uint8_t*)val, x, y);} 
 		else if constexpr (std::is_same_v<T, String>) {	Print_Str((uint8_t *)(val.c_str()), x, y); } 
@@ -70,8 +71,8 @@ class LCD_GUI
     void Print(T val, int16_t x, int16_t y, uint8_t size, const RGB& fc, const RGB& bc=0, bool mode=0, int16_t system = 10, uint8_t dec = 2) {
         text_mode = mode;
         text_size = size;
-        text_fc = fc.val;
-        text_bc = bc.val;  
+        text_fc = fc;
+        text_bc = bc;  
         text_x = x;
         text_y = y;
         // Sabit metinler, diziler ve işaretçiler için kontrol
@@ -110,7 +111,7 @@ class LCD_GUI
     LCD_GUI(void) {
         text_bc = 0xF800; //default red
         text_fc = 0x07E0;   //default green
-        draw_color= RGB(0xF800).val;// = 0xF800;   //default red
+        draw_color= RGB(0xF800);// = 0xF800;   //default red
         text_size = 1;
         text_mode = 0;
     }
@@ -121,11 +122,11 @@ class LCD_GUI
  
     int16_t Get_Text_Y_Cursor(void) const { return text_y; }
 
-    void Set_Text_Color(const RGB& color) { text_fc = color.val; }
+    void Set_Text_Color(const RGB& color) { text_fc = color; }
   
     uint16_t Get_Text_Color(void) const {	return text_fc; }
 
-    void Set_Text_Back_Color(const RGB& color) { text_bc = color.val; }
+    void Set_Text_Back_Color(const RGB& color) { text_bc = color; }
 
     uint16_t Get_Text_Back_Color(void) const { return text_bc; }
 
@@ -137,11 +138,11 @@ class LCD_GUI
 
     bool Get_Text_Mode(void) const { return text_mode; }
     
-    void Set_Draw_Color(const RGB& color) { draw_color = color.val; } //set 16bits or RGB draw color
+    void Set_Draw_Color(const RGB& color) { draw_color = color; } //set 16bits or RGB draw color
 
     uint16_t Get_Draw_Color(void) const { return draw_color; }
 
-    void Fill_Screen(const RGB& color) { Fill_Scree(color.val); }
+    void Fill_Screen(const RGB& color) { Fill_Scree(color); }
 
     /*!
     @brief    Write a pixel.
@@ -149,7 +150,7 @@ class LCD_GUI
         @param   y   y coordinate
         @param   color 16-bit or RGB(r,g,b) Color to fill with
     */
-    void Pixel(int16_t x, int16_t y, const RGB& color) { Draw_Pixe(x, y, color.val); }
+    void Pixel(int16_t x, int16_t y, const RGB& color) { Draw_Pixe(x, y, color); }
 
     /*!
     @brief    Read a pixel.
@@ -172,7 +173,7 @@ class LCD_GUI
         @param    color 16-bit or RGB(r,g,b) Color to fill with
     */
     void Fast_VLine(int16_t x, int16_t y, int16_t h, const RGB& color) {
-         Fill_Rect(x, y, 1, h, color.val);
+         Fill_Rect(x, y, 1, h, color);
     }
 
     /*!
@@ -184,7 +185,7 @@ class LCD_GUI
         @param    color 16-bit or RGB(r,g,b) Color to fill with
     */
     void Fast_HLine(int16_t x, int16_t y, int16_t w,const RGB& color) {
-        Fill_Rect(x, y, w, 1, color.val);
+        Fill_Rect(x, y, w, 1, color);
     }
 
     /*!
@@ -211,7 +212,7 @@ class LCD_GUI
             int16_t dx, dy;	 dx = x2 - x1;  dy = abs(y2 - y1); int16_t err = dx / 2; int16_t ystep;
             if (y1 < y2) { ystep = 1; }	else { ystep = -1; }
             for (; x1<=x2; x1++) {
-                if (steep) { Draw_Pixe(y1, x1,color.val); } else { Draw_Pixe(x1, y1, color.val); }
+                if (steep) { Draw_Pixe(y1, x1,color); } else { Draw_Pixe(x1, y1, color); }
                 err -= dy;
                 if (err < 0) { y1 += ystep;	err += dx; }
             }
@@ -230,10 +231,10 @@ class LCD_GUI
         int16_t w = x2 - x1 + 1, h = y2 - y1 + 1;
         if (w < 0) { x1 = x2; w = -w; }
         if (h < 0) { y1 = y2; h = -h; }
-        Fill_Rect(x1, y1, w, 1, color.val);
-        Fill_Rect(x1, y2, w, 1, color.val);
-        Fill_Rect(x1, y1, 1, h, color.val);
-        Fill_Rect(x2, y1, 1, h, color.val);
+        Fill_Rect(x1, y1, w, 1, color);
+        Fill_Rect(x1, y2, w, 1, color);
+        Fill_Rect(x1, y1, 1, h, color);
+        Fill_Rect(x2, y1, 1, h, color);
     }
 
     /*!
@@ -245,10 +246,10 @@ class LCD_GUI
         @param    color 16-bit or RGB(r,g,b) Color to draw with
     */
     void Rectangle_WH(int16_t x, int16_t y, int16_t w, int16_t h, const RGB& color) {
-        Fill_Rect(x, y, w, 1, color.val);
-        Fill_Rect(x, y+h-1, w, 1, color.val);
-        Fill_Rect(x, y, 1, h, color.val);
-        Fill_Rect(x+w-1, y, 1, h, color.val);
+        Fill_Rect(x, y, w, 1, color);
+        Fill_Rect(x, y+h-1, w, 1, color);
+        Fill_Rect(x, y, 1, h, color);
+        Fill_Rect(x+w-1, y, 1, h, color);
     }
 
     /*!
@@ -264,7 +265,7 @@ class LCD_GUI
         int w = x2 - x1 + 1, h = y2 - y1 + 1;
         if (w < 0) { x1 = x2; w = -w; }
         if (h < 0) { y1 = y2; h = -h; }
-        Fill_Rect(x1, y1, w, h, color.val);
+        Fill_Rect(x1, y1, w, h, color);
     }
 
     /*!
@@ -276,7 +277,7 @@ class LCD_GUI
         @param    color 16-bit or RGB(r,g,b) Color to fill with
     */
       void Fill_Rectangle_WH(int16_t x, int16_t y, int16_t w, int16_t h, const RGB& color) {
-        Fill_Rect(x, y, w, h, color.val);
+        Fill_Rect(x, y, w, h, color);
     }
 
     /*!
@@ -292,14 +293,14 @@ class LCD_GUI
         int w = x2 - x1 + 1, h = y2 - y1 + 1;
         if (w < 0) { x1 = x2; w = -w; }
         if (h < 0) { y1 = y2; h = -h; }
-        Fill_Rect(x1+r, y1, w-2*r, 1, color.val);
-        Fill_Rect(x1+r, y1+h-1, w-2*r, 1, color.val);
-        Fill_Rect(x1, y1+r, 1, h-2*r, color.val);
-        Fill_Rect(x1+w-1, y1+r, 1, h-2*r, color.val);
-        Circle_Helper(x1+r, y1+r, r, 1, color.val);
-        Circle_Helper(x1+w-r-1, y1+r, r, 2, color.val);
-        Circle_Helper(x1+w-r-1, y1+h-r-1, r, 4, color.val);
-        Circle_Helper(x1+r, y1+h-r-1, r, 8, color.val);
+        Fill_Rect(x1+r, y1, w-2*r, 1, color);
+        Fill_Rect(x1+r, y1+h-1, w-2*r, 1, color);
+        Fill_Rect(x1, y1+r, 1, h-2*r, color);
+        Fill_Rect(x1+w-1, y1+r, 1, h-2*r, color);
+        Circle_Helper(x1+r, y1+r, r, 1, color);
+        Circle_Helper(x1+w-r-1, y1+r, r, 2, color);
+        Circle_Helper(x1+w-r-1, y1+h-r-1, r, 4, color);
+        Circle_Helper(x1+r, y1+h-r-1, r, 8, color);
     }
 
     /*!
@@ -312,14 +313,14 @@ class LCD_GUI
         @param    color 16-bit or RGB(r,g,b) Color to draw with
     */
     void Round_Rectangle_WH(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r,const RGB& color) {
-        Fill_Rect(x+r, y, w-2*r, 1, color.val);
-        Fill_Rect(x+r, y+h-1, w-2*r, 1, color.val);
-        Fill_Rect(x, y+r, 1, h-2*r, color.val);
-        Fill_Rect(x+w-1, y+r, 1, h-2*r, color.val);
-        Circle_Helper(x+r, y+r, r, 1, color.val);
-        Circle_Helper(x+w-r-1, y+r, r, 2, color.val);
-        Circle_Helper(x+w-r-1, y+h-r-1, r, 4, color.val);
-        Circle_Helper(x+r, y+h-r-1, r, 8, color.val);
+        Fill_Rect(x+r, y, w-2*r, 1, color);
+        Fill_Rect(x+r, y+h-1, w-2*r, 1, color);
+        Fill_Rect(x, y+r, 1, h-2*r, color);
+        Fill_Rect(x+w-1, y+r, 1, h-2*r, color);
+        Circle_Helper(x+r, y+r, r, 1, color);
+        Circle_Helper(x+w-r-1, y+r, r, 2, color);
+        Circle_Helper(x+w-r-1, y+h-r-1, r, 4, color);
+        Circle_Helper(x+r, y+h-r-1, r, 8, color);
     }
 
     /*!
@@ -335,9 +336,9 @@ class LCD_GUI
         int w = x2 - x1 + 1, h = y2 - y1 + 1;
         if (w < 0) { x1 = x2; w = -w; }
         if (h < 0) { y1 = y2; h = -h; }
-        Fill_Rect(x1+r, y1, w-2*r, h, color.val);
-        Fill_Circle_Helper(x1+w-r-1, y1+r, r, 1, h-2*r-1, color.val);
-        Fill_Circle_Helper(x1+r, y1+r, r, 2, h-2*r-1, color.val);
+        Fill_Rect(x1+r, y1, w-2*r, h, color);
+        Fill_Circle_Helper(x1+w-r-1, y1+r, r, 1, h-2*r-1, color);
+        Fill_Circle_Helper(x1+r, y1+r, r, 2, h-2*r-1, color);
     }
 
     /*!
@@ -350,9 +351,9 @@ class LCD_GUI
         @param    color 16-bit or RGB(r,g,b) Color to draw/fill with
     */
     void Fill_Round_Rectangle_WH(int16_t x, int16_t y, int16_t w,int16_t h, int16_t r,const RGB& color) {
-        Fill_Rect(x+r, y, w-2*r, h, color.val);
-        Fill_Circle_Helper(x+w-r-1, y+r, r, 1, h-2*r-1, color.val);
-        Fill_Circle_Helper(x+r, y+r, r, 2, h-2*r-1, color.val);
+        Fill_Rect(x+r, y, w-2*r, h, color);
+        Fill_Circle_Helper(x+w-r-1, y+r, r, 1, h-2*r-1, color);
+        Fill_Circle_Helper(x+r, y+r, r, 2, h-2*r-1, color);
     }
 
     /*!
@@ -475,21 +476,21 @@ class LCD_GUI
     */
     void Circle(int16_t x, int16_t y, int16_t r, const RGB& color) {
         int16_t f = 1 - r, ddF_x = 1, ddF_y = -2 * r, x1= 0, y1= r;
-        Draw_Pixe(x, y+r, color.val);
-        Draw_Pixe(x, y-r, color.val);
-        Draw_Pixe(x+r, y, color.val);
-        Draw_Pixe(x-r, y, color.val);
+        Draw_Pixe(x, y+r, color);
+        Draw_Pixe(x, y-r, color);
+        Draw_Pixe(x+r, y, color);
+        Draw_Pixe(x-r, y, color);
         while (x1<y1) {
             if (f >= 0)	{ y1--; ddF_y += 2; f += ddF_y; }
             x1++; ddF_x += 2; f += ddF_x;
-            Draw_Pixe(x + x1, y + y1, color.val);
-            Draw_Pixe(x - x1, y + y1, color.val);
-            Draw_Pixe(x + x1, y - y1, color.val);
-            Draw_Pixe(x - x1, y - y1, color.val);
-            Draw_Pixe(x + y1, y + x1, color.val);
-            Draw_Pixe(x - y1, y + x1, color.val);
-            Draw_Pixe(x + y1, y - x1, color.val);
-            Draw_Pixe(x - y1, y - x1, color.val);
+            Draw_Pixe(x + x1, y + y1, color);
+            Draw_Pixe(x - x1, y + y1, color);
+            Draw_Pixe(x + x1, y - y1, color);
+            Draw_Pixe(x - x1, y - y1, color);
+            Draw_Pixe(x + y1, y + x1, color);
+            Draw_Pixe(x - y1, y + x1, color);
+            Draw_Pixe(x + y1, y - x1, color);
+            Draw_Pixe(x - y1, y - x1, color);
         }
     }
 
@@ -534,8 +535,8 @@ class LCD_GUI
         @param    color 16-bit or RGB(r,g,b) Color to fill with
     */
     void Fill_Circle(int16_t x, int16_t y, int16_t r, const RGB& color) {
-        Fill_Rect(x, y-r, 1, 2*r+1, color.val);
-        Fill_Circle_Helper(x, y, r, 3, 0, color.val);
+        Fill_Rect(x, y-r, 1, 2*r+1, color);
+        Fill_Circle_Helper(x, y, r, 3, 0, color);
     }
 
     /*!
@@ -575,9 +576,9 @@ class LCD_GUI
         @param    color 16-bit or RGB(r,g,b) Color to draw with
     */
     void Triangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1,int16_t x2, int16_t y2,const RGB& color) {
-        Line(x0, y0, x1, y1, color.val);
-        Line(x1, y1, x2, y2, color.val);
-        Line(x2, y2, x0, y0, color.val);
+        Line(x0, y0, x1, y1, color);
+        Line(x1, y1, x2, y2, color);
+        Line(x2, y2, x0, y0, color);
     }
 
     /*!
@@ -599,7 +600,7 @@ class LCD_GUI
             a = b = x0;
             if(x1 < a)	{ a = x1; }	else if(x1 > b)	{ b = x1; }
             if(x2 < a)	{ a = x2; }	else if(x2 > b)	{ b = x2; }
-            Fill_Rect(a, y0, b-a+1, 1, color.val);
+            Fill_Rect(a, y0, b-a+1, 1, color);
             return;
         }
         int16_t dx01 = x1 - x0, dy01 = y1 - y0, dx02 = x2 - x0, dy02 = y2 - y0, dx12 = x2 - x1, dy12 = y2 - y1;
@@ -609,7 +610,7 @@ class LCD_GUI
             a = x0 + sa / dy01;	b = x0 + sb / dy02;
             sa += dx01;	sb += dx02;
             if(a > b) { swap(a,b); }
-            Fill_Rect(a, y, b-a+1, 1, color.val);
+            Fill_Rect(a, y, b-a+1, 1, color);
         }
         sa = (int32_t)dx12 * (y - y1);
         sb = (int32_t)dx02 * (y - y0);
@@ -617,7 +618,7 @@ class LCD_GUI
             a = x1 + sa / dy12; b = x0 + sb / dy02;
             sa += dx12; sb += dx02;
             if(a > b) { swap(a,b); }
-            Fill_Rect(a, y, b-a+1, 1, color.val);
+            Fill_Rect(a, y, b-a+1, 1, color);
         }
     }
 
@@ -637,10 +638,10 @@ class LCD_GUI
         int32_t decision = rh2 - (rw2 * rh) + (rw2 / 4);
         // region 1
         while ((twoRh2 * x) < (twoRw2 * y)) {
-            Draw_Pixe(x0 + x, y0 + y, color.val);
-            Draw_Pixe(x0 - x, y0 + y, color.val);
-            Draw_Pixe(x0 + x, y0 - y, color.val);
-            Draw_Pixe(x0 - x, y0 - y, color.val);
+            Draw_Pixe(x0 + x, y0 + y, color);
+            Draw_Pixe(x0 - x, y0 + y, color);
+            Draw_Pixe(x0 + x, y0 - y, color);
+            Draw_Pixe(x0 - x, y0 - y, color);
             x++;
             if (decision < 0) {
             decision += rh2 + (twoRh2 * x);
@@ -653,10 +654,10 @@ class LCD_GUI
         decision = ((rh2 * (2 * x + 1) * (2 * x + 1)) >> 2) +
                     (rw2 * (y - 1) * (y - 1)) - (rw2 * rh2);
         while (y >= 0) {
-            Draw_Pixe(x0 + x, y0 + y, color.val);
-            Draw_Pixe(x0 - x, y0 + y, color.val);
-            Draw_Pixe(x0 + x, y0 - y, color.val);
-            Draw_Pixe(x0 - x, y0 - y, color.val);
+            Draw_Pixe(x0 + x, y0 + y, color);
+            Draw_Pixe(x0 - x, y0 + y, color);
+            Draw_Pixe(x0 + x, y0 - y, color);
+            Draw_Pixe(x0 - x, y0 - y, color);
             y--;
             if (decision > 0) {
             decision += rw2 - (twoRw2 * y);
