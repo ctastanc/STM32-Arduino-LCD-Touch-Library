@@ -44,14 +44,12 @@ void full_screen_test() {
     lcd.Fill_Screen(BLUE); 
     uint32_t elapsed_us = micros() - start;
     Serial.println(String(elapsed_us)+ " us"); 
-    //digitalWrite(PC13, HIGH);
     digital_write(GPIOC, LL_GPIO_PIN_13,1);
     lcd.Print((String)("MCU "+String(SystemCoreClock/1000000) + " MHz"),CENTER,55,3,YELLOW,BLUE,0);
     lcd.Print((String)(String(elapsed_us)+" us"),CENTER,130,4,YELLOW,BLUE,0);
     lcd.Print((String)("APB1 "+String(HAL_RCC_GetPCLK1Freq()/1000000) +" Mhz"),CENTER,205,3,YELLOW,BLACK,0);
     delay(1000);
     lcd.Fill_Screen(RED); 
-    //digitalWrite(PC13, LOW);
     digital_write(GPIOC, LL_GPIO_PIN_13,0);
     lcd.Print((String)("MCU "+String(SystemCoreClock/1000000) + " MHz"),CENTER,55,3,YELLOW,BLUE,0);
     lcd.Print((String)(String(elapsed_us)+" us"),CENTER,130,4,YELLOW,BLUE,0);
