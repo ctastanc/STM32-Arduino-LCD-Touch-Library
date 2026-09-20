@@ -1,5 +1,4 @@
-#ifndef _LCD_FONT_H_
-#define _LCD_FONT_H_
+#pragma once
 
 static const unsigned char font[] =
 {
@@ -260,4 +259,4 @@ static const unsigned char font[] =
 	0x00, 0x00, 0x00, 0x00, 0x00,
 
 };
-#endif // FONT5X7_H
+
