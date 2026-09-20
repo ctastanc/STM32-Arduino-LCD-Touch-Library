@@ -35,7 +35,6 @@
 #include <Scroll_Test.h>
 #include <bench1.h>
 #include <sys_oc.h>
-#include <sys_oc.h>
 
 const uint16_t cols[16] ={ BLUE, RED, GREEN, CYAN, MAGENTA,  YELLOW, WHITE, ORANGE,
                 DARKGREEN, DARKCYAN,MAROON,PURPLE,OLIVE,LIGHTGREY, GREENYELLOW,PINK};
@@ -107,6 +106,7 @@ void read_test() {
 }
 
 void setup(void) {
+<<<<<<< HEAD
     /**********************************************************************
        ATTENTION:
        This line applies to STM32F401 devices equipped with a 25MHz crystal and 
@@ -116,6 +116,8 @@ void setup(void) {
     //SystemClock_OC(OC_96MHz); // Overclock to 96MHz
     /**********************************************************************/
     analogReadResolution(12);
+=======
+>>>>>>> 583fb29666100be442a3445730294402c6958497
     Serial.begin(115200);
     delay(150);
     Serial.println("system running...");
