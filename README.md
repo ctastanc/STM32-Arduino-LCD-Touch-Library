@@ -166,11 +166,11 @@ void read_test() {
 
 void setup(void) {
     SystemClock_OC(OC_96MHz); // Overclock to 96MHz (optionel).
+    analogReadResolution(12);
     Serial.begin(115200);
     delay(150);
     Serial.println("system running...");
-    analogReadResolution(10); // STM32 ADC default 12-bit; touch 10-bit
-    pinMode(PC13,OUTPUT);
+    set_pin_output(GPIOC, LL_GPIO_PIN_13);
     lcd.Init_LCD();
     lcd.Fill_Screen(BLACK);
     lcd.Set_Rotation(LANDSCAPE);
