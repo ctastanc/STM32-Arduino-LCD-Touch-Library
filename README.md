@@ -96,7 +96,7 @@ Create or update your `src/main.cpp` file with the following setup to test the d
 
 ```cpp
 #include <LCD_KBV.h> 
-#include <sys_conf.h>
+#include <sys_oc.h>
 
 const uint16_t cols[16] ={ BLUE, RED, GREEN, CYAN, MAGENTA,  YELLOW, WHITE, ORANGE, DARKGREEN, DARKCYAN,
                             MAROON,PURPLE,OLIVE,LIGHTGREY, GREENYELLOW,PINK};
