@@ -61,14 +61,14 @@ void rotate_rect(void) {
     lcd.Set_Rotation(LANDSCAPE);
     while(1) {
         srand(time(0));
-        int rn = cols[(rand() % 16) ];
+        int rn = cols[(rand() % 16)];
         lcd.Rectangle_WH(0,0,lcd.Width,lcd.Height,YELLOW);
         lcd.Fast_HLine(35,120,245,BLUE);
         lcd.Fast_VLine(160,35,175,BLUE);
         lcd.Fill_Circle(160,120,40,BLACK);
         lcd.Circle(160,120,40,YELLOW);
-        for(int x=1;x<3;x++){ 
-            for(int x=1;x<91;x++){ 
+        for(int x=1;x<3;x++) { 
+            for(int x=1;x<91;x++) { 
                 lcd.Fill_Rotated_Rectangle(160,120,50,50,x,rn);
                 lcd.Fill_Rotated_Rectangle(80,60,50,50,90-x,rn);
                 lcd.Fill_Rotated_Rectangle(240,180,50,50,90-x,rn);
@@ -80,7 +80,7 @@ void rotate_rect(void) {
             }
         }
         int rn1 = cols[(rand() % 16) ];
-        for(int x=90;x>=0;x--){
+        for(int x=90;x>=0;x--) {
             lcd.Fill_Rotated_Rectangle(160,120,50,50,x,rn1);
             lcd.Fill_Rotated_Rectangle(240,60,50,50,90-x,rn1);
             lcd.Fill_Rotated_Rectangle(80,180,50,50,90-x,rn1);
