@@ -40,7 +40,6 @@ const uint16_t cols[16] ={ BLUE, RED, GREEN, CYAN, MAGENTA,  YELLOW, WHITE, ORAN
                 DARKGREEN, DARKCYAN,MAROON,PURPLE,OLIVE,LIGHTGREY, GREENYELLOW,PINK};
 
 void full_screen_test() {
-    
     uint32_t start = micros(); 
     lcd.Fill_Screen(BLUE); 
     uint32_t elapsed_us = micros() - start;
