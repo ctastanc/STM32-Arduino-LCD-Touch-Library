@@ -1,4 +1,4 @@
-#include <TouchScreen.h> 
+#include <touch_screen.h> 
 #include <LCD_KBV.h> 
 
 #define BTN_R 25 //the radius of button 

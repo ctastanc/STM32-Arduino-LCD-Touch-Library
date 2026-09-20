@@ -1,4 +1,4 @@
-#include <TouchScreen.h>
+#include <touch_screen.h>
 
 void touch_demo(void);
 
