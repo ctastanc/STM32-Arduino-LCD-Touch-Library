@@ -67,9 +67,11 @@ void phonecall() {
     uint16_t text_x_add = 6*button[0].name_size, text_y_add = 8*button[0].name_size;
     show_menu();
     while(true){
-        digitalWrite(PC13, HIGH);
+        //digitalWrite(PC13, HIGH);
+        digital_write(GPIOC, LL_GPIO_PIN_13,1);
         TSPoint p = ts.getPoint();
-        digitalWrite(PC13, LOW);
+        //digitalWrite(PC13, LOW);
+        digital_write(GPIOC, LL_GPIO_PIN_13,0);
         if (p.z) {
             /*Serial.print("\tPressure = "); Serial.println(p.z);
             Serial.print("   X = "); Serial.print(p.x); Serial.print("\tY = "); Serial.println(p.y);*/

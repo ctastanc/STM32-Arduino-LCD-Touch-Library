@@ -34,29 +34,27 @@
 #include <disp_scroll.h>
 #include <Scroll_Test.h>
 #include <bench1.h>
-#if defined(STM32F4xx)
-    // This file applies to STM32F401 devices equipped with a 25MHz crystal. 
-    // Do not use it if you lack sufficient knowledge about your hardware.
-    // Adverse results may occur. You bear full responsibility.
-    #include <sys_oc.h>
-#endif
-
+#include <sys_oc.h>
+#include <sys_oc.h>
 
 const uint16_t cols[16] ={ BLUE, RED, GREEN, CYAN, MAGENTA,  YELLOW, WHITE, ORANGE,
                 DARKGREEN, DARKCYAN,MAROON,PURPLE,OLIVE,LIGHTGREY, GREENYELLOW,PINK};
 
 void full_screen_test() {
+    
     uint32_t start = micros(); 
     lcd.Fill_Screen(BLUE); 
     uint32_t elapsed_us = micros() - start;
     Serial.println(String(elapsed_us)+ " us"); 
-    digitalWrite(PC13, HIGH);
+    //digitalWrite(PC13, HIGH);
+    digital_write(GPIOC, LL_GPIO_PIN_13,1);
     lcd.Print((String)("MCU "+String(SystemCoreClock/1000000) + " MHz"),CENTER,55,3,YELLOW,BLUE,0);
     lcd.Print((String)(String(elapsed_us)+" us"),CENTER,130,4,YELLOW,BLUE,0);
     lcd.Print((String)("APB1 "+String(HAL_RCC_GetPCLK1Freq()/1000000) +" Mhz"),CENTER,205,3,YELLOW,BLACK,0);
     delay(1000);
     lcd.Fill_Screen(RED); 
-    digitalWrite(PC13, LOW);
+    //digitalWrite(PC13, LOW);
+    digital_write(GPIOC, LL_GPIO_PIN_13,0);
     lcd.Print((String)("MCU "+String(SystemCoreClock/1000000) + " MHz"),CENTER,55,3,YELLOW,BLUE,0);
     lcd.Print((String)(String(elapsed_us)+" us"),CENTER,130,4,YELLOW,BLUE,0);
     lcd.Print((String)("APB1 "+String(HAL_RCC_GetPCLK1Freq()/1000000) +" Mhz"),CENTER,205,3,YELLOW,BLACK,0);
@@ -109,30 +107,33 @@ void read_test() {
 }
 
 void setup(void) {
-    #if defined(STM32F4xx)
-        // This line applies to STM32F401 devices equipped with a 25MHz crystal. 
-        // Do not use it if you lack sufficient knowledge about your hardware.
-        // Adverse results may occur. You bear full responsibility.
-        SystemClock_OC(OC_96MHz); // Overclock to 96MHz
-    #endif
+    /**********************************************************************
+       ATTENTION:
+       This line applies to STM32F401 devices equipped with a 25MHz crystal and 
+       STM32F103 devices equipped with 8MHz crystal. 
+       Do not use it if you lack sufficient knowledge about your hardware.
+       Adverse results may occur. You bear full responsibility. */
+    //SystemClock_OC(OC_96MHz); // Overclock to 96MHz
+    /**********************************************************************/
+    analogReadResolution(12);
     Serial.begin(115200);
     delay(150);
     Serial.println("system running...");
-    pinMode(PC13,OUTPUT);
+    set_pin_output(GPIOC, LL_GPIO_PIN_13);
     lcd.Init();
     lcd.Fill_Screen(BLACK);
     lcd.Set_Rotation(LANDSCAPE);
 }
 
 void loop(void) {
-    //rotate_rect();
+    rotate_rect();
     //lcd.Print_HScroll((uint8_t*)("What will happen in the future is also one of the mysteries of the universe."),1,1,lcd.Height-125,2,RED,BLACK,10);
     //lcd.Print(String(12345,BIN),CENTER,100,2,RED);
     //full_screen_test();
     //fast_sin_cos();
     //touch_demo();
     //phonecall();
-    b2.bench2();
+    //b2.bench2();
     //b1.bench1();
     //ml.Meter_Linear();
     //cl.clock_analog();

@@ -98,33 +98,37 @@ static constexpr uint32_t Data_Pins_16Bit[] = {D8, D9, D10, D11, D12, D13, D14, 
     #define RD_DELAY { __asm__ volatile(".rept 5 \n\t nop \n\t .endr"); }
     #define WRL_DELAY {WR_L;}//__asm__ volatile("nop");
     #define WRH_DELAY 
-#elif (TARGET_CPU_FREQ > 96000000 ) // 10ns
+#elif (TARGET_CPU_FREQ > 84000000 ) // 10ns
     #define RD_DELAY { __asm__ volatile(".rept 4 \n\t nop \n\t .endr"); }
-    #define WRL_DELAY //{WR_L;}//__asm__ volatile("nop");
+    #define WRL_DELAY {WR_L;}//__asm__ volatile("nop");
     #define WRH_DELAY 
-#elif (TARGET_CPU_FREQ <= 96000000L) // 11.9ns
+#elif (TARGET_CPU_FREQ <= 84000000L) // 11.9ns
     #define RD_DELAY { __asm__ volatile(".rept 3 \n\t nop \n\t .endr"); }
     #define WRL_DELAY 
     #define WRH_DELAY 
 #endif
 
-inline void enable_gpio_clock(GPIO_TypeDef* GPIOx) {
+static inline void enable_gpio_clock(GPIO_TypeDef* GPIOx) {
     // 1. APB2 Bus (F1, F3 series)
     #if defined(STM32F1xx) || defined(STM32F3xx)
         if      (GPIOx == GPIOA) LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA);
         else if (GPIOx == GPIOB) LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOB);
+        else if (GPIOx == GPIOC) LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOC);
     // 2. AHB1 Bus (F2, F4, F7 series)
     #elif defined(STM32F2xx) || defined(STM32F4xx) || defined(STM32F7xx)
         if      (GPIOx == GPIOA) LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
         else if (GPIOx == GPIOB) LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOB);
+        else if (GPIOx == GPIOC) LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOC);
     // 3. AHB2 Bus (L4, L5, G4, H7, WB, U5 series)
     #elif defined(STM32L4xx) || defined(STM32L5xx) || defined(STM32G4xx) || defined(STM32H7xx) || defined(STM32WBxx) || defined(STM32U5xx)
         if      (GPIOx == GPIOA) LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOA);
         else if (GPIOx == GPIOB) LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOB);
+        else if (GPIOx == GPIOC) LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOC);
     // 4. IOP (I/O Port) Direct Bus (L0, G0, C0, U0, F0 series)
     #elif defined(STM32L0xx) || defined(STM32G0xx) || defined(STM32C0xx) || defined(STM32U0xx) || defined(STM32F0xx)
         if      (GPIOx == GPIOA) LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOA);
         else if (GPIOx == GPIOB) LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOB);
+        else if (GPIOx == GPIOC) LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOC);
     #endif
 }
 
@@ -240,3 +244,35 @@ inline void enable_gpio_clock(GPIO_TypeDef* GPIOx) {
 #define SET_Y(y1,y2) {CMD8(YS); DATA16(y1); DATA16(y2);}
 #define BLOCK4(c) {DATA16(c); DATA16(c); DATA16(c); DATA16(c);}
 #define BLOCK8(c) {BLOCK4(c); BLOCK4(c);}
+
+static inline void set_pin_output(GPIO_TypeDef* port, uint32_t pin) {
+    if (!port) return;
+    enable_gpio_clock(port);
+#if defined(LL_GPIO_MODE_OUTPUT_50MHz) // STM32F1
+    LL_GPIO_SetPinMode(port, pin, LL_GPIO_MODE_OUTPUT_50MHz);
+    LL_GPIO_SetPinOutputType(port, pin, LL_GPIO_OUTPUT_PUSHPULL);
+#else // STM32F4, F7, G0, G4, H7, L4 vb.
+    LL_GPIO_SetPinMode(port, pin, LL_GPIO_MODE_OUTPUT);
+    LL_GPIO_SetPinOutputType(port, pin, LL_GPIO_OUTPUT_PUSHPULL);
+    LL_GPIO_SetPinSpeed(port, pin, LL_GPIO_SPEED_FREQ_HIGH);
+    LL_GPIO_SetPinPull(port, pin, LL_GPIO_PULL_NO);
+#endif
+}
+
+static inline void set_pin_analog(GPIO_TypeDef* port, uint32_t pin) {
+    if (!port) return;
+    enable_gpio_clock(port);
+    LL_GPIO_SetPinMode(port, pin, LL_GPIO_MODE_ANALOG);
+#if !defined(LL_GPIO_MODE_OUTPUT_50MHz)
+    LL_GPIO_SetPinPull(port, pin, LL_GPIO_PULL_NO);
+#endif
+}
+
+static inline void digital_write(GPIO_TypeDef* port, uint32_t pin, uint8_t val) {
+    if (!port) return;
+    if (val) {
+        LL_GPIO_SetOutputPin(port, pin);
+    } else {
+        LL_GPIO_ResetOutputPin(port, pin);
+    }
+}

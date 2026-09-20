@@ -112,9 +112,11 @@ class swi{
     {
         main_menu();
         while(1){
-            digitalWrite(13, HIGH);
+            //digitalWrite(13, HIGH);
+            digital_write(GPIOC, LL_GPIO_PIN_13,1);
             TSPoint p = ts.getPoint();
-            digitalWrite(13, LOW);
+            //digitalWrite(13, LOW);
+            digital_write(GPIOC, LL_GPIO_PIN_13,0);
 
             if (p.z )
             {
