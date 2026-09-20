@@ -36,20 +36,23 @@
 #include <bench1.h>
 #include <sys_oc.h>
 
-const uint16_t cols[16] ={ BLUE, RED, GREEN, CYAN, MAGENTA,  YELLOW, WHITE, ORANGE,
-                DARKGREEN, DARKCYAN,MAROON,PURPLE,OLIVE,LIGHTGREY, GREENYELLOW,PINK};
+const uint16_t colors[16] ={ BLUE, RED, GREEN, CYAN, MAGENTA,  YELLOW, WHITE, ORANGE,
+    DARKGREEN, DARKCYAN,MAROON,PURPLE,OLIVE,LIGHTGREY, GREENYELLOW,PINK};
 
 void full_screen_test() {
+    
     uint32_t start = micros(); 
     lcd.Fill_Screen(BLUE); 
     uint32_t elapsed_us = micros() - start;
     Serial.println(String(elapsed_us)+ " us"); 
+    //digitalWrite(PC13, HIGH);
     digital_write(GPIOC, LL_GPIO_PIN_13,1);
     lcd.Print((String)("MCU "+String(SystemCoreClock/1000000) + " MHz"),CENTER,55,3,YELLOW,BLUE,0);
     lcd.Print((String)(String(elapsed_us)+" us"),CENTER,130,4,YELLOW,BLUE,0);
     lcd.Print((String)("APB1 "+String(HAL_RCC_GetPCLK1Freq()/1000000) +" Mhz"),CENTER,205,3,YELLOW,BLACK,0);
     delay(1000);
     lcd.Fill_Screen(RED); 
+    //digitalWrite(PC13, LOW);
     digital_write(GPIOC, LL_GPIO_PIN_13,0);
     lcd.Print((String)("MCU "+String(SystemCoreClock/1000000) + " MHz"),CENTER,55,3,YELLOW,BLUE,0);
     lcd.Print((String)(String(elapsed_us)+" us"),CENTER,130,4,YELLOW,BLUE,0);
@@ -61,7 +64,7 @@ void rotate_rect(void) {
     lcd.Set_Rotation(LANDSCAPE);
     while(1) {
         srand(time(0));
-        int rn = cols[(rand() % 16)];
+        int rn = colors[(rand() % 16)];
         lcd.Rectangle_WH(0,0,lcd.Width,lcd.Height,YELLOW);
         lcd.Fast_HLine(35,120,245,BLUE);
         lcd.Fast_VLine(160,35,175,BLUE);
@@ -79,7 +82,7 @@ void rotate_rect(void) {
                 }
             }
         }
-        int rn1 = cols[(rand() % 16) ];
+        int rn1 = colors[(rand() % 16)];
         for(int x=90;x>=0;x--) {
             lcd.Fill_Rotated_Rectangle(160,120,50,50,x,rn1);
             lcd.Fill_Rotated_Rectangle(240,60,50,50,90-x,rn1);
@@ -94,8 +97,8 @@ void rotate_rect(void) {
 }
 
 void read_test() {
-    for(int i= 0; i<16;i++){
-        lcd.Pixel(50, i*15+10 ,cols[i]);
+    for(int i= 0; i<16;i++) {
+        lcd.Pixel(50, i*15+10 ,colors[i]);
         int p=lcd.Read_Pixel(50,i*15+10);
         lcd.Print(p,70,i*15+5,1,p);
         lcd.Print((String)("ILI"+String(lcd.Read_ID(),HEX)),160,110,2,GREEN);
@@ -109,7 +112,7 @@ void setup(void) {
        STM32F103 devices equipped with 8MHz crystal. 
        Do not use it if you lack sufficient knowledge about your hardware.
        Adverse results may occur. You bear full responsibility. */
-    //SystemClock_OC(OC_96MHz); // Overclock to 96MHz
+    SystemClock_OC(OC_96MHz); // Overclock to 96MHz
     /**********************************************************************/
     analogReadResolution(12);
     Serial.begin(115200);
@@ -122,14 +125,14 @@ void setup(void) {
 }
 
 void loop(void) {
-    rotate_rect();
+    //rotate_rect();
     //lcd.Print_HScroll((uint8_t*)("What will happen in the future is also one of the mysteries of the universe."),1,1,lcd.Height-125,2,RED,BLACK,10);
     //lcd.Print(String(12345,BIN),CENTER,100,2,RED);
     //full_screen_test();
     //fast_sin_cos();
     //touch_demo();
     //phonecall();
-    //b2.bench2();
+    b2.bench2();
     //b1.bench1();
     //ml.Meter_Linear();
     //cl.clock_analog();
