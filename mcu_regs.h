@@ -131,17 +131,20 @@ static inline void enable_gpio_clock(GPIO_TypeDef* GPIOx) {
 
 #ifndef STM32F1xx
     #define LL_GPIO_MODE_OUT LL_GPIO_MODE_OUTPUT
+    #define DISABLE_JTAG()
     #define LL_PULL8() {\
         LL_SET_PINS(LL_GPIO_SetPinPull, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_PULL_NO); \
         LL_SET_PINS(LL_GPIO_SetPinPull, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_PULL_NO); }
-    #if(LCD_SYS_INTERFACE==16)      
-    #define LL_PULL16() {\
+    #if(LCD_SYS_INTERFACE==16)
+        #define LL_PULL16() {\
         LL_SET_PINS(LL_GPIO_SetPinPull, DATA_PORT2, Data_Pins_16Bit, 8, LL_GPIO_PULL_NO); }
     #endif
 #else
     #define LL_GPIO_MODE_OUT LL_GPIO_MODE_OUTPUT_50MHz
     #define LL_PULL8()
     #define LL_PULL16()
+    // Disabling JTAG for F1 (PB3 PB4)
+    #define DISABLE_JTAG() { LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_AFIO); LL_GPIO_AF_Remap_SWJ_NOJTAG(); }
 #endif
 
 #if(LCD_SYS_INTERFACE==8)
@@ -176,6 +179,7 @@ static inline void enable_gpio_clock(GPIO_TypeDef* GPIOx) {
         enable_gpio_clock(DATA_PORT1); \
         enable_gpio_clock(DATA_PORT2); \
         enable_gpio_clock(CTRL_PORT); \
+        DISABLE_JTAG(); \
         LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_MODE_OUT); \
         LL_SET_PINS(LL_GPIO_SetPinOutputType, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_OUTPUT_PUSHPULL); \
         LL_SET_PINS(LL_GPIO_SetPinSpeed, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_SPEED_FREQ_HIGH); \
