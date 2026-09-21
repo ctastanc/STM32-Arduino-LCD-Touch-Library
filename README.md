@@ -2,7 +2,7 @@
 
 An ultra-fast, high-performance, and bare-metal optimized parallel 8/16-bit TFT LCD and 4-wire resistive touch screen library for STM32 microcontrollers under the Arduino framework. 
 
-This library is specifically designed to eliminate the hantal nature of generic Arduino display libraries. By utilizing **STM32 Low-Layer (LL) drivers**, direct register manipulation (BSRR), loop unrolling, and compile-time optimizations, it pushes the hardware parallel bus to its physical transmission limits. 
+This library is specifically designed to eliminate the bloated and sluggish nature of generic Arduino display libraries. By utilizing **STM32 Low-Layer (LL) drivers**, direct register manipulation (BSRR), loop unrolling, and compile-time optimizations, it pushes the hardware parallel bus to its physical transmission limits. 
 
 ---
 
