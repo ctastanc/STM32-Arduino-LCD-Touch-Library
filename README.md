@@ -102,7 +102,7 @@ For 16 Bit Parallel (Optional)
 | XP       | PA0       |
 | YM       | PA1       |
 
-⚠️ **Important for Touch(ILI9341):** For the resistive touch to function correctly, **XM (PB0)** and **YP (PB1)** must be analog-capable pins. **XP** maps to **PA0** and **YM** maps to **PA1**.*
+⚠️ **Important for Touch(ILI9341):** For the resistive touch to function correctly, **XM (PB0)** and **YP (PB1)** must be analog-capable pins. **XP** maps to **PA0** and **YM** maps to **PA1**.
 ---
 
 ## 💻 VS Code + PlatformIO Setup
