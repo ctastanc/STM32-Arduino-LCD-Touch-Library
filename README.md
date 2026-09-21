@@ -56,7 +56,7 @@ The "colligate_test()" function results:
 
 For maximum performance, **the 8-bit Data Bus (D0-D7) and the Write Pin (WR) must be kept sequentially on the same Port (e.g., PORTA)**. This allows the driver to dump 8 bits of data and toggle the clock pin in a single clock cycle using the BSRR register. 
 
-### Data Pins 8-Bit Parallel(PORTA)
+### 8-Bit Extension Data Bus(PORTA)
 
 | Display Pin | STM32 Pin | Port Pin |
 | ----------- | --------- | -------- |
@@ -104,7 +104,6 @@ For maximum performance, **the 8-bit Data Bus (D0-D7) and the Write Pin (WR) mus
 | YM       | PA1       |
 
 ⚠️ **Important for Touch(ILI9341):** For the resistive touch to function correctly, XM (PB0) and YP (PB1) must be analog-capable pins. XP maps to PA0 and YM maps to PA1.
-
 ---
 
 ## 💻 VS Code + PlatformIO Setup
