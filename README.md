@@ -15,6 +15,21 @@ This library is specifically designed to eliminate the bloated and sluggish natu
 
 ---
 
+### ⚡ Single-Cycle Hardware Parallel Bus Write (`WRITE8`)
+
+The absolute core of the library's speed relies on a tightly optimized hardware-software synergy inside the pixel-pumping macro:
+
+```cpp
+#define WRITE8(d) { DATA_PORT1->BSRR = DATA_MASK1 | (d); WRL_DELAY; WR_H; WRH_DELAY; }
+```
+
+#### Why is this so fast?
+1. **Direct Register Manipulation (`BSRR`):** Instead of using slow Arduino `digitalWrite()` functions, this macro directly modifies the **Bit Set/Reset Register (BSRR)** of the STM32 GPIO port. This allows the MCU to clear old data pins and set the new 8-bit pixel data (`d`) **in a single CPU clock cycle**.
+2. **Sequential Pin Alignment:** Because `D0-D7` are sequentially aligned on `PA0-PA7`, no expensive runtime bit-shifting or bitmasking calculations are needed. The raw data byte matches the lower port bits perfectly.
+3. **Hardware-Paced Clock Toggling:** The display's Write Clock (`WR`) pin is placed right next to the data pins on `PA8`. Toggling the clock (`WR_H`) is executed in the exact same port context, minimized by compile-time tuned `inline assembly NOP` delays (`WRL_DELAY` / `WRH_DELAY`) depending on the microcontroller's core clock frequency (e.g., 96MHz Overclock).
+
+---
+
 ## 🎨 Zero-Cost RGB565 Color Engine (Usage)
 
 The library features an optimized, packed `RGB` structure that handles standard 24-bit (R,G,B) to 16-bit (RGB565) color conversion **at compile-time** using `constexpr`. Thanks to the `uint16_t` operator overloading, you can use raw hex values and the `RGB` structure interchangeably with absolute zero runtime CPU cost.
