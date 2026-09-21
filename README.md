@@ -70,7 +70,7 @@ For maximum performance, **the 8-bit Data Bus (D0-D7) and the Write Pin (WR) mus
 | D7          | PA7       | 			|
 | WR          | PA8       | Write Clock (Critical Sequence)	|
 
-### Control Bus(PORTA-PORTB)
+### Control Bus(PORTB)
 
 | Display Pin | STM32 Pin | Description / Touch Mapping |
 | ----------- | --------- | --------------------------- |
