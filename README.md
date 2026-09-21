@@ -96,7 +96,7 @@ Create or update your `src/main.cpp` file with the following setup to test the d
 
 ```cpp
 #include <LCD_KBV.h> 
-#include <sys_conf.h>
+#include <sys_oc.h>
 
 const uint16_t cols[16] ={ BLUE, RED, GREEN, CYAN, MAGENTA,  YELLOW, WHITE, ORANGE, DARKGREEN, DARKCYAN,
                             MAROON,PURPLE,OLIVE,LIGHTGREY, GREENYELLOW,PINK};
@@ -165,12 +165,19 @@ void read_test() {
 }
 
 void setup(void) {
-    SystemClock_OC(OC_96MHz); // Overclock to 96MHz (optionel).
+     /**********************************************************************
+       ATTENTION:
+       This line applies to STM32F401 devices equipped with a 25MHz crystal and 
+       STM32F103 devices equipped with 8MHz crystal. 
+       Do not use it if you lack sufficient knowledge about your hardware.
+       Adverse results may occur. You bear full responsibility. */
+    //SystemClock_OC(OC_96MHz); // Overclock to 96MHz
+    /**********************************************************************/
+    analogReadResolution(12);
     Serial.begin(115200);
     delay(150);
     Serial.println("system running...");
-    analogReadResolution(10); // STM32 ADC default 12-bit; touch 10-bit
-    pinMode(PC13,OUTPUT);
+    set_pin_output(GPIOC, LL_GPIO_PIN_13);
     lcd.Init_LCD();
     lcd.Fill_Screen(BLACK);
     lcd.Set_Rotation(LANDSCAPE);
