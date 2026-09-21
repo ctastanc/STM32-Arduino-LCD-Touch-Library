@@ -58,39 +58,39 @@ For maximum performance, **the 8-bit Data Bus (D0-D7) and the Write Pin (WR) mus
 
 ### 8-Bit Extension Data Bus(PORTA)
 
-| Display Pin | STM32 Pin | Port Pin |
-| ----------- | --------- | -------- |
-| D0          | PA0       | Port A0  |
-| D1          | PA1       | Port A1  |
-| D2          | PA2       | Port A2  |
-| D3          | PA3       | Port A3  |
-| D4          | PA4       | Port A4  |
-| D5          | PA5       | Port A5  |
-| D6          | PA6       | Port A6  |
-| D7          | PA7       | Port A7  |
+| Display Pin | STM32 Pin | Description |
+| ----------- | --------- | ----------- |
+| D0          | PA0       | Touch XP	|
+| D1          | PA1       | Touch YM	|
+| D2          | PA2       | 		  	|
+| D3          | PA3       |   			|
+| D4          | PA4       |   			|
+| D5          | PA5       |  			|
+| D6          | PA6       |   			|
+| D7          | PA7       | 			|
+| WR          | PA8       | Write Clock (Critical Sequence)	|
 
-### Control Bus(PORTB)
+### Control Bus(PORTA-PORTB)
 
 | Display Pin | STM32 Pin | Description / Touch Mapping |
 | ----------- | --------- | --------------------------- |
-| WR          | PA8       | Write Clock Pin             |
 | RS / CD     | PB0       | Register Select (Touch XM)  |
 | CS          | PB1       | Chip Select (Touch YP)      |
-| RD          | PB14      | Read Clock Pin              |
-| RST         | PB15      | Reset Pin                   |
+| RD          | PB14      | Read Clock					|
+| RST         | PB15      | Reset						|
 
 ### Optionel 16-Bit Extension Data Bus(PORTB)
 
-| Display Pin | STM32 Pin | Port Pin |
-| ----------- | --------- | -------- |
-| D8          | PB3       | Port B3  |
-| D9          | PB4       | Port B4  |
-| D10         | PB5       | Port B5  |
-| D11         | PB6       | Port B6  |
-| D12         | PB7       | Port B7  |
-| D13         | PB8       | Port B8  |
-| D14         | PB9       | Port B9  |
-| D15         | PB10      | Port B10 |
+| Display Pin | STM32 Pin |
+| ----------- | --------- |
+| D8          | PB3       |
+| D9          | PB4       |
+| D10         | PB5       |
+| D11         | PB6       |
+| D12         | PB7       |
+| D13         | PB8       |
+| D14         | PB9       |
+| D15         | PB10      |
 
 ⚠️ **Note for STM32F103 (Bluepill):** PB3 and PB4 are assigned to JTAG by default. The driver automatically disables JTAG via LL_GPIO_AF_Remap_SWJ_NOJTAG() inside the initialization sequence to release these pins for the 16-bit LCD bus, while safely keeping SWD active for debugging.
 
