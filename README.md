@@ -47,7 +47,7 @@ void loop() {
     lcd.Print("xyz", 0, 0, 1, RGB(255, 255, 255));
     
     // You can also use it inline inside any drawing functions:
-    lcd.Fill_Rect(10, 10, 50, 50, RGB(240, 10, 150));
+    lcd.Fill_Rectangle_WH(10, 10, 50, 50, RGB(240, 10, 150));
 }
 ```
 
