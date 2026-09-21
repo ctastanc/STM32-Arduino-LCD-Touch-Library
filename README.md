@@ -43,13 +43,13 @@ The "colligate_test()" function results:
 
 | colligate_test();       | Standard Code (Arduino Mega)| This Code (STM32F401)	| Difference                |
 | ----------------------- | --------------------------- | ---------------------	| ------------------------- |
-| show text               | 163224 us					| 1194 µs				| 163224/1194   = 136 times |
-| show fill rectangle     | 95412 us           			| 827 µs				| 95412/827     = 115 times |
-| show fill round rect    | 139020 us          			| 1552 µs				| 139020/1552   = 89  times |
-| show fill circle        | 161296 us          			| 2013 µs				| 161296/2013   = 80 times  |
-| show fill triangle      | 141516 us          			| 1499 µs				| 141516/1499   = 94 times  |
-| show grid lines         | 4567916 us         			| 53603 µs				| 4567916/53603 = 85 times  |
-| show random pixels      | 6003092 us         			| 60081 µs				| 6003092/60081 = 99 times  |
+| show text               | 163,224 µs					| 1,194 µs				| 163224/1194   = 136 times |
+| show fill rectangle     | 95,412 µs          			| 827 µs				| 95412/827     = 115 times |
+| show fill round rect    | 139,020 µs         			| 1,552 µs				| 139020/1552   = 89  times |
+| show fill circle        | 161,296 µs         			| 2,013 µs				| 161296/2013   = 80 times  |
+| show fill triangle      | 141,516 µs         			| 1,499 µs				| 141516/1499   = 94 times  |
+| show grid lines         | 4,567,916 µs       			| 53,603 µs				| 4567916/53603 = 85 times  |
+| show random pixels      | 6,003,092 µs       			| 60,081 µs				| 6003092/60081 = 99 times  |
 ---
 
 ## 🔌 Pin Connection (Wiring)
