@@ -92,24 +92,31 @@ For maximum performance, **the 8-bit Data Bus (D0-D7) and the Write Pin (WR) mus
 | D14         | PB9       |
 | D15         | PB10      |
 
-⚠️ **Note for STM32F103 (Bluepill):** PB3 and PB4 are assigned to JTAG by default. The driver automatically disables JTAG via LL_GPIO_AF_Remap_SWJ_NOJTAG() inside the initialization sequence to release these pins for the 16-bit LCD bus, while safely keeping SWD active for debugging.
+⚠️ **Note for STM32F103 (Bluepill):**
+PB3 and PB4 are assigned to JTAG by default. The driver automatically disables JTAG via LL_GPIO_AF_Remap_SWJ_NOJTAG() inside the initialization sequence to release these pins for the 16-bit LCD bus, while safely keeping SWD active for debugging.
 
 ### Touch Pins
 
 | Touch Pin| STM32 Pin |
 | -------- | --------- |
-| XM       | PB0       |        
+| XM       | PB0       |
 | YP       | PB1       |
 | XP       | PA0       |
 | YM       | PA1       |
 
-⚠️ **Important for Touch(ILI9341):** For the resistive touch to function correctly, XM (PB0) and YP (PB1) must be analog-capable pins. XP maps to PA0 and YM maps to PA1.
+⚠️ **Important for Touch(ILI9341):**
+For the resistive touch to function correctly, XM (PB0) and YP (PB1) must be analog-capable pins. XP maps to PA0 and YM maps to PA1.
 ---
 
 ## 💻 VS Code + PlatformIO Setup
 
 ### Project Configuration
-To use this library in your PlatformIO project, make sure your `platformio.ini` file is configured correctly. Here is a production-ready example for the WeAct BlackPill STM32F401 84Mhz.:
+To use this library in your PlatformIO project, make sure your `platformio.ini` file is configured correctly. Here is a production-ready example for the WeAct BlackPill STM32F401 84Mhz. STLINK-V3 was used; 'COM7' should be replaced with the virtual COM port found in your device list. 
+
+| STLINK V3 COM Port	| STM32 Pin |
+| ---------------------	| --------- |
+| RX       				| PA9(TX)	|
+| TX       				| PA10(RX)	|
 
 ```ini
 [env:blackpill_f401ce]
