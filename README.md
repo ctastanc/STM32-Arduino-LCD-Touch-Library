@@ -104,6 +104,7 @@ For maximum performance, **the 8-bit Data Bus (D0-D7) and the Write Pin (WR) mus
 | YM       | PA1       |
 
 ⚠️ **Important for Touch(ILI9341):** For the resistive touch to function correctly, XM (PB0) and YP (PB1) must be analog-capable pins. XP maps to PA0 and YM maps to PA1.
+
 ---
 
 ## 💻 VS Code + PlatformIO Setup
