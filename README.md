@@ -127,11 +127,6 @@ build_flags =
 ```
 
 
-Mega <img width="640" height="435" alt="mega-640" src="https://github.com/user-attachments/assets/e2a9142d-84ca-463a-ab4c-ebc2c97e61dd" />
-
-STM <img width="640" height="472" alt="stm-640" src="https://github.com/user-attachments/assets/ca761a8e-09ce-470b-85e1-a07d9c2e4cdf" />
-
-
 ## 🤝 Contributing
 Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com).
 
