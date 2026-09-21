@@ -1,8 +1,6 @@
 # STM32 Arduino LCD Touch Library 🚀
 
-A highly optimized C++ library for interfacing **ILI9341 LCD displays** with **analog touch screens** using **STM32 microcontrollers** (e.g., STM32F103  (Blue Pill), STM32F401/F411 (Black Pill) and others). 
-
-Specifically designed and structured for development within **VS Code + PlatformIO** using the **Arduino framework**. It utilizes Low-Layer (LL) GPIO registers to achieve maximum speed on 8-bit parallel communication.
+An ultra-fast, high-performance, and bare-metal optimized parallel 8/16-bit TFT LCD and 4-wire resistive touch screen library for STM32 microcontrollers under the Arduino framework.This library is specifically designed to eliminate the bloated and sluggish nature of generic Arduino display libraries. By utilizing STM32 Low-Layer (LL) drivers, direct register manipulation (BSRR), loop unrolling, and compile-time optimizations, it pushes the hardware parallel bus to its physical transmission limits.
 
 ---
 
