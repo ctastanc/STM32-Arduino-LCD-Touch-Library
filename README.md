@@ -95,14 +95,14 @@ For 16 Bit Parallel (Optional)
 
 ### Touch Pins
 
-*⚠️ **Important for Touch(ILI9341):** For the resistive touch to function correctly, **XM (PB0)** and **YP (PB1)** must be analog-capable pins. **XP** maps to **PA0** and **YM** maps to **PA1**.*
-
 | Touch Pin| STM32 Pin |
 | -------- | --------- |
 | XM       | PB0       |        
 | YP       | PB1       |
 | XP       | PA0       |
 | YM       | PA1       |
+
+*⚠️ **Important for Touch(ILI9341):** For the resistive touch to function correctly, **XM (PB0)** and **YP (PB1)** must be analog-capable pins. **XP** maps to **PA0** and **YM** maps to **PA1**.*
 ---
 
 ## 💻 VS Code + PlatformIO Setup
@@ -126,6 +126,7 @@ build_flags =
     -flto
 ```
 
+---
 
 ## 🤝 Contributing
 Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com).
