@@ -1,5 +1,5 @@
 #include <touch_screen.h> 
-#include <LCD_KBV.h> 
+#include <LCD_SRW.h> 
 
 #define BTN_R 25 //the radius of button 
 #define BTN_SPC_X 25 //the horizontal distance between button

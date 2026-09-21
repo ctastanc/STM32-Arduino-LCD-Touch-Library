@@ -8,6 +8,7 @@ void touch_demo(void);
 //TouchScreen ts1 = TouchScreen(295);
 
 void touch_demo(void) {
+    lcd.Set_Rotation(3);
     // a point object holds x y and z coordinates
     lcd.Fill_Screen(BLACK);
     lcd.Rectangle_XY(0,0,lcd.Width-1,lcd.Height-1,YELLOW);

@@ -10,18 +10,18 @@
 #define PORTRAIT_REV 2
 #define LANDSCAPE_REV 3
 
-class LCD_KBV:public LCD_GUI
+class LCD_SRW:public LCD_GUI
 {
 	public:
     //uint8_t char_spc = 2;
 	int16_t Width, Height, rotation, rot_val;
 
-    static LCD_KBV& getInstance() {
-        static LCD_KBV instance; 
+    static LCD_SRW& getInstance() {
+        static LCD_SRW instance; 
         return instance;
     }
 
-    LCD_KBV() {
+    LCD_SRW() {
         SET_PORTS();
         RS_DATA; CS_H; WR_H; RD_H; RST_L; RST_H;
         rotation  = 0;
@@ -276,7 +276,7 @@ class LCD_KBV:public LCD_GUI
         }
     }
 
-    void Set_Addr_Window(int16_t x1, int16_t y1, int16_t x2, int16_t y2) {
+    __attribute__((always_inline)) inline void Set_Addr_Window(int16_t x1, int16_t y1, int16_t x2, int16_t y2) {
         #if(LCD_DRIVER == ID_932X)
             int x, y, t;
             switch(rotation) {
@@ -350,7 +350,7 @@ class LCD_KBV:public LCD_GUI
         @param    size   text size
         @param    f      Fore color for 16 bit or RGB(r,g,b) color     
         @param    b      Back color for 16 bit or RGB(r,g,b) color
-        @param    speed  Scroll speed
+        @param    speed  Scroll delay
     */
     void Print_HScroll(const uint8_t *st,int16_t x1,int16_t x2,int16_t y,int16_t size,const RGB& f,const RGB& b, uint16_t speed){
         text_size=size;
@@ -374,7 +374,7 @@ class LCD_KBV:public LCD_GUI
 
     __attribute__((optimize("O3")))
     void Print_fr() {
-        uint _x=text_x-1;
+        uint _x = text_x-1;
         for(uint i=0; i<text_len; i++){
             uint ch = text[i]; _x++;
             for(uint c=0; c<((ch==' ')?2:5); c++, _x+=text_size) {
@@ -389,14 +389,26 @@ class LCD_KBV:public LCD_GUI
                             case 1: DATA16(text_fc); break;
                             case 2: BLOCK4(text_fc); break;
                             default: BLOCK8(text_fc); uint p = (text_size*text_size)-8; do {DATA16(text_fc); } while (--p); break;
-                        }
-                    }
-                }
-            }
-        }
+        }   }   }   }   }
     }
 
-    #if(LCD_DRIVER == ID_932X || LCD_DRIVER == ID_7575)
+    #if (LCD_DRIVER != ID_932X && LCD_DRIVER != ID_7575)
+    __attribute__((optimize("O3")))
+    void Print_bg(uint total_w) {
+        uint32_t fc = text_fc; uint32_t bc = text_bc; uint32_t ts = text_size;
+        CMDDATA8(MD, rot_val ^ 0x20);
+        Set_Addr_Window(text_y, text_x, text_y+ts*8-1, text_x+total_w-1); CMD8(MW);        
+        for(uint i=0; i<text_len; i++){
+            uint ch = text[i];
+            for(uint c=0; c<((ch==' ')?2:5); c++) {
+                uint l = font[ch*5+c];
+                if(ts==1) {for(uint r=0;r<8;r++) DATA16(((l>>r&1)?fc:bc));}
+                else{ for(uint r=0; r<ts*8; r++) 
+                    for(uint p=0; p<ts; p++) DATA16(((l>>(r&7)&1)?fc:bc));}
+            }  uint r = ts; do BLOCK8(bc) while(--r);
+        } CMDDATA8(MD, rot_val);
+    }
+    #elif(LCD_DRIVER == ID_932X || LCD_DRIVER == ID_7575)
     __attribute__((optimize("Ofast")))
     void Print_bg(uint total_w) {
         Set_Addr_Window(text_x, text_y, text_x+total_w-1, text_y+(text_size*8)-1); CMD8(MW);
@@ -412,25 +424,6 @@ class LCD_KBV:public LCD_GUI
                 }
             }
         }
-    }
-    #else
-    __attribute__((optimize("O3")))
-    void Print_bg(uint total_w) {
-        uint32_t fc = text_fc;
-        uint32_t bc = text_bc;
-        uint32_t ts = text_size;
-        uint32_t len = text_len;
-        CMDDATA8(MD, rot_val ^ 0x20);
-        Set_Addr_Window(text_y, text_x, text_y+ts*8-1, text_x+total_w-1); CMD8(MW);        
-        for(uint i=0; i<len; i++){
-            uint ch = text[i];
-            for(uint c=0; c<((ch==' ')?2:5); c++) {
-                uint l = font[ch*5+c];
-                if(ts==1) {for(uint r=0;r<8;r++) DATA16(((l>>r&1)?fc:bc));}
-                else{ for(uint r=0; r<ts*8; r++) 
-                    for(uint p=0; p<ts; p++) DATA16(((l>>(r&7)&1)?fc:bc));}
-            }  uint r = ts; do BLOCK8(bc) while(--r);
-        } CMDDATA8(MD, rot_val);
     }
     #endif
     
@@ -452,15 +445,15 @@ class LCD_KBV:public LCD_GUI
         CS_H;
     }
 
-    void Draw_Pixe(int16_t x, int16_t y, uint16_t color)  {
-        if((uint32_t)x > Width || (uint32_t)y > Height) return;
+    __attribute__((always_inline)) inline void Draw_Pixe(int16_t x, int16_t y, uint16_t color)  {
+        if((uint32_t)x >= Width || (uint32_t)y >= Height) return;
         CS_L; Set_Addr_Window(x, y, x, y); CMD8(MW); DATA16(color); CS_H;
     }
 
     void Fill_Scree(uint16_t c) {
         uint8_t rt=PORTRAIT;
         if (rotation != PORTRAIT) {rt = rotation; Set_Rotation(PORTRAIT);} // Rotation 0 to reduce tearing
-        CS_L; Set_Addr_Window(0, 0, Width, Height);	CMD8(MW);
+        CS_L; Set_Addr_Window(0, 0, Width-1, Height-1);	CMD8(MW);
         uint32_t n = (240UL * 320UL) / 48;
         while (n--) { BLOCK8(c); BLOCK8(c); BLOCK8(c); BLOCK8(c); BLOCK8(c); BLOCK8(c);}
         if constexpr(LCD_DRIVER == ID_932X) {Set_Addr_Window(0, 0, Width-1, Height-1);}
@@ -492,4 +485,4 @@ class LCD_KBV:public LCD_GUI
 	protected: 
 	private:
 };
-#define lcd LCD_KBV::getInstance()
+#define lcd LCD_SRW::getInstance()

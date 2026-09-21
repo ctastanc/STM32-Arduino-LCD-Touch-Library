@@ -1,4 +1,4 @@
-#include <LCD_KBV.h> 
+#include <LCD_SRW.h> 
 
 unsigned long show_triangle_function(void);
 //display main surface

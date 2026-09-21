@@ -1,16 +1,15 @@
 /***********************************************************************************
 *
-* This demo was made for LCD modules with 8bit data port.
-* STM32 - LCD 8-bit parallel LCD + TouchScreen
-* Hardware Environment: STM32 Arduino STM32F401
-* Build Environment   : STM32Arduino
+*  This demo was made for LCD modules with 8bit data port.
+*  STM32 - LCD 8-bit parallel LCD + TouchScreen
+*  Hardware Environment: STM32 Arduino STM32F401
 *
-*=========================== pin usage as follow: ================================
-*                  LCD_CS  LCD_RS  LCD_WR  LCD_RD  LCD_RST  SD_SS  SD_DI  SD_DO  SD_SCK
+*===========================/pin usage as follow:/================================
+*     ILI9341      LCD_CS  LCD_RS  LCD_WR  LCD_RD  LCD_RST  SD_SS  SD_DI  SD_DO  SD_SCK
 *     STM32          B1      B0      PA8    PB14     PB15
 *     Touch          YP      XM
 *
-*                  LCD_D0  LCD_D1  LCD_D2  LCD_D3  LCD_D4  LCD_D5  LCD_D6  LCD_D7
+*     ILI9341      LCD_D0  LCD_D1  LCD_D2  LCD_D3  LCD_D4  LCD_D5  LCD_D6  LCD_D7
 *     STM32          PA0     PA1     PA2     PA3     PA4     PA5     PA6     PA7
 *     Touch           XP     YM
 *=================================================================================
@@ -19,7 +18,7 @@
 *
 **********************************************************************************/
 
-#include <LCD_KBV.h> 
+#include <LCD_SRW.h> 
 #include <sin_cos.h>
 #include <phonecall.h>
 #include <touchdemo.h>
@@ -59,6 +58,7 @@ void full_screen_test() {
 
 void rotate_rect(void) { 
     lcd.Set_Rotation(LANDSCAPE);
+    lcd.Fill_Screen(BLACK);
     while(1) {
         srand(time(0));
         int rn = colors[(rand() % 16)];
@@ -129,7 +129,7 @@ void loop(void) {
     //fast_sin_cos();
     //touch_demo();
     //phonecall();
-    b2.bench2();
+    //b2.bench2();
     //b1.bench1();
     //ml.Meter_Linear();
     //cl.clock_analog();
@@ -138,7 +138,7 @@ void loop(void) {
     //cb.cube_demo();
     //rp.read_pixel();
     //sw.switch_test();
-    //colligate_test(); 
+    colligate_test(); 
     //Scroll_Test();
     //read_test();
 }

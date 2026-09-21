@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <LCD_KBV.h>
+#include <LCD_SRW.h>
 
 #define BACK_COLOR WHITE  // You can change
 

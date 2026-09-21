@@ -32,8 +32,8 @@
 // Color 16 bit or RGB(r,g,b)
 struct RGB {
     uint16_t val;
-    RGB(uint16_t c) : val(c) {}
-    RGB(uint8_t r, uint8_t g, uint8_t b) : val(((uint16_t)(r&0xF8)<<8) | ((uint16_t)(g&0xFC)<<3) | (b>>3)) {} 
+    constexpr RGB(uint16_t c) : val(c) {}
+    constexpr RGB(uint8_t r, uint8_t g, uint8_t b) : val(((uint16_t)(r&0xF8)<<8) | ((uint16_t)(g&0xFC)<<3) | (b>>3)) {} 
     constexpr operator uint16_t() const { return val; }
 }__attribute__((packed));
 
@@ -75,21 +75,18 @@ class LCD_GUI
         text_bc = bc;  
         text_x = x;
         text_y = y;
-        // Sabit metinler, diziler ve işaretçiler için kontrol
+        // Control for static texts, arrays, and pointers
         if constexpr (std::is_convertible_v<T, std::string_view> || std::is_same_v<std::decay_t<T>, uint8_t*> || 
                     std::is_same_v<std::decay_t<T>, const uint8_t*>) { 
-            
             std::string_view sv;
             if constexpr (std::is_pointer_v<std::decay_t<T>> && sizeof(std::remove_pointer_t<std::decay_t<T>>) == 1) {
                 sv = std::string_view(reinterpret_cast<const char*>(val));
-            } else {
-                sv = std::string_view(val);
-            }
+            } else { sv = std::string_view(val); }
             text_len = sv.length();
             text = (const uint8_t*)sv.data();
             Print_Str();
         } 
-        // Arduino tarzı dinamik String nesnesi gelirse
+        // If an Arduino-style dynamic String object is received
         else if constexpr (std::is_same_v<T, String>) {	
             text_len = val.length();
             text = (const uint8_t *)(val.c_str());

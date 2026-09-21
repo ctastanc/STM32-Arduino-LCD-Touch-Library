@@ -7,7 +7,7 @@
 
 ************************************************************************************/
 
-#include <LCD_KBV.h>
+#include <LCD_SRW.h>
 
 #define TS_MINX 500 //touch sensitivity for x
 #define TS_MAXX 3500
@@ -17,7 +17,7 @@
 #define MAXPRESSURE 4000
 #define RES_VALUE 4095
 
-#define MAP(x,in_min,in_max,out_min,out_max) {(x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min}
+#define MAP(x,in_min,in_max,out_min,out_max) ((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
 
 // Oversampling :
 //   1 = no oversample 

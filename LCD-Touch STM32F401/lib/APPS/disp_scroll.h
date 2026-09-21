@@ -1,4 +1,4 @@
-#include <LCD_KBV.h> //Hardware-specific library
+#include <LCD_SRW.h> //Hardware-specific library
 #include <icons.h>
 
     const char *aspect_name[] = {"PORTRAIT", "LANDSCAPE", "PORTRAIT_REV", "LANDSCAPE_REV"};

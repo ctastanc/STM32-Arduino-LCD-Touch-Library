@@ -10,7 +10,7 @@
 // Define meter size as 1 for lcd.rotation(0) or 1.3333 for lcd.rotation(1)
 #define M_SIZE 1.3333
 
-#include <LCD_KBV.h>
+#include <LCD_SRW.h>
 
 // If you want to change the default serial instance pin, set it to 1.
 class metlin{

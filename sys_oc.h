@@ -90,7 +90,7 @@ void SystemClock_OC(int OC) {
         //case 120: SystemClock_Cfg(240, RCC_PLLP_DIV2, 5, RCC_SYSCLK_DIV1, RCC_HCLK_DIV2, RCC_HCLK_DIV1); break;
         //case 130: SystemClock_Cfg(260, RCC_PLLP_DIV2, 5, RCC_SYSCLK_DIV1, RCC_HCLK_DIV2, RCC_HCLK_DIV1); break;
         //case 144: SystemClock_Cfg(288, RCC_PLLP_DIV2, 6, RCC_SYSCLK_DIV1, RCC_HCLK_DIV4, RCC_HCLK_DIV2); break;
-        //default: Serial.println("Overclock could not be applied !"); break;
+        default: Serial.println("Overclock could not be applied !"); break;
     }
     #elif defined(STM32F1xx)
     switch(OC) {

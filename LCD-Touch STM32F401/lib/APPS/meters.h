@@ -8,7 +8,7 @@
  */
 
 
-#include <LCD_KBV.h>
+#include <LCD_SRW.h>
 
 // If you want to change the default serial instance pin, set it to 1.
 

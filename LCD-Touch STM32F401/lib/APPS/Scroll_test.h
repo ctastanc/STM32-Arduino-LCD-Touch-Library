@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <LCD_KBV.h> 
+#include <LCD_SRW.h> 
 #include <icons.h>
 
 void testText1() {
