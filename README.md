@@ -56,7 +56,7 @@ The "colligate_test()" function results:
 
 For maximum performance, **the 8-bit Data Bus (D0-D7) and the Write Pin (WR) must be kept sequentially on the same Port (e.g., PORTA)**. This allows the driver to dump 8 bits of data and toggle the clock pin in a single clock cycle using the BSRR register. 
 
-### Data Pins (8-Bit Parallel)
+### Data Pins 8-Bit Parallel(PORTA)
 
 | Display Pin | STM32 Pin | Port Pin |
 | ----------- | --------- | -------- |
@@ -69,7 +69,7 @@ For maximum performance, **the 8-bit Data Bus (D0-D7) and the Write Pin (WR) mus
 | D6          | PA6       | Port A6  |
 | D7          | PA7       | Port A7  |
 
-### Control
+### Control Bus(PORTB)
 
 | Display Pin | STM32 Pin | Description / Touch Mapping |
 | ----------- | --------- | --------------------------- |
@@ -79,7 +79,8 @@ For maximum performance, **the 8-bit Data Bus (D0-D7) and the Write Pin (WR) mus
 | RD          | PB14      | Read Clock Pin              |
 | RST         | PB15      | Reset Pin                   |
 
-For 16 Bit Parallel (Optional)
+### Optionel 16-Bit Extension Data Bus(PORTB)
+
 | Display Pin | STM32 Pin | Port Pin |
 | ----------- | --------- | -------- |
 | D8          | PB3       | Port B3  |
