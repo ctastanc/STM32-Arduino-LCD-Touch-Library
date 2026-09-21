@@ -17,7 +17,8 @@ This library is specifically designed to eliminate the bloated and sluggish natu
 
 ## 🛠️ Supported Hardware
 * **Microcontroller:** Fully compatible with STM32F1, STM32F4, and other popular STM32 boards.
-* **Display Driver:**  ILI9341, ILI9325, ILI9328, HX8357D, HX8347G, HX8347I, ILI9486, ST7735S, ILI9488, and ILI9481.
+* **Display Driver:**  ILI9341, ILI9325, ILI9328, ILI9481, ILI9486, ILI9488, ST7735S, HX8357D, HX8347G, HX8347I.
+	The library includes a unified multi-driver template (lcd_regs.h) that automatically handles different command architectures based on compile-time selections:
 * **Touch Mechanism:** 4-Wire Resistive Touch (Connected directly to control and data pins).
 
 ---
