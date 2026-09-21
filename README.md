@@ -15,6 +15,31 @@ This library is specifically designed to eliminate the bloated and sluggish natu
 
 ---
 
+## 🎨 Zero-Cost RGB565 Color Engine (Usage)
+
+The library features an optimized, packed `RGB` structure that handles standard 24-bit (R,G,B) to 16-bit (RGB565) color conversion **at compile-time** using `constexpr`. Thanks to the `uint16_t` operator overloading, you can use raw hex values and the `RGB` structure interchangeably with absolute zero runtime CPU cost.
+
+### Dynamic & Static Usage Examples:
+
+```cpp
+// 1. Define pre-processor macros for legacy support
+#define WHITE 0xFFFF
+#define BLACK 0x0000
+
+void loop() {
+    // Both styles compile to the exact same high-speed assembly code!
+    
+    // Style A: Traditional raw HEX macros
+    lcd.Print("xyz", 0, 0, 1, WHITE);
+    
+    // Style B: Clean, human-readable RGB constructor (Computed at compile-time!)
+    lcd.Print("xyz", 0, 0, 1, RGB(255, 255, 255));
+    
+    // You can also use it inline inside any drawing functions:
+    lcd.Fill_Rect(10, 10, 50, 50, RGB(240, 10, 150));
+}
+```
+
 ## 🛠️ Supported Hardware
 * **Microcontroller:** Fully compatible with STM32F1, STM32F4, and other popular STM32 boards.
 * **Display Driver:**  ILI9341, ILI9325, ILI9328, ILI9481, ILI9486, ILI9488, ST7735S, HX8357D, HX8347G, HX8347I.
