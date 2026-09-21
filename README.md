@@ -38,6 +38,19 @@ The following metrics prove the massive performance jump compared to standard di
 | Rectangles (Filled)		| 		38,502 µs 			| High Bandwidth Pixel Pump		|
 | Rounded Rects (Outline)	| 		 4,815 µs 			| Inlined Math					|
 
+The "colligate_test()" function results:
+
+| 					      | Standard Code      | This Code  |                			|
+| colligate_test();       | Arduino Mega       | STM32F401  | Difference                |
+| ----------------------- | ------------------ | ---------- | ------------------------- |
+| show text               | 163224 us          | 1194 µs    | 163224/1194   = 136 times |
+| show fill rectangle     | 95412 us           | 827 µs     | 95412/827     = 115 times |
+| show fill round rect    | 139020 us          | 1552 µs    | 139020/1552   = 89  times |
+| show fill circle        | 161296 us          | 2013 µs    | 161296/2013   = 80 times  |
+| show fill triangle      | 141516 us          | 1499 µs    | 141516/1499   = 94 times  |
+| show grid lines         | 4567916 us         | 53603 µs   | 4567916/53603 = 85 times  |
+| show random pixels      | 6003092 us         | 60081 µs   | 6003092/60081 = 99 times  |
+---
 
 ## 🔌 Pin Connection (Wiring)
 
@@ -113,18 +126,6 @@ build_flags =
     -flto
 ```
 
-The colligate_test(); results:
-
-| colligate_test();       | Arduino Mega       | STM32F401  | Difference                |
-| ----------------------- | ------------------ | ---------- | ------------------------- |
-| show text               | 163224 us          | 1194 us    | 163224/1194   = 136 times |
-| show fill rectangle     | 95412 us           | 827 us     | 95412/827     = 115 times |
-| show fill round rect    | 139020 us          | 1552 us    | 139020/1552   = 89  times |
-| show fill circle        | 161296 us          | 2013 us    | 161296/2013   = 80 times  |
-| show fill triangle      | 141516 us          | 1499 us    | 141516/1499   = 94 times  |
-| show grid lines         | 4567916 us         | 53603 us   | 4567916/53603 = 85 times  |
-| show random pixels      | 6003092 us         | 60081 us   | 6003092/60081 = 99 times  |
----
 
 Mega <img width="640" height="435" alt="mega-640" src="https://github.com/user-attachments/assets/e2a9142d-84ca-463a-ab4c-ebc2c97e61dd" />
 
