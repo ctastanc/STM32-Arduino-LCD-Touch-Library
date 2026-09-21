@@ -18,6 +18,17 @@ This library is specifically designed to eliminate the bloated and sluggish natu
 ## 🎨 Zero-Cost RGB565 Color Engine (Usage)
 
 The library features an optimized, packed `RGB` structure that handles standard 24-bit (R,G,B) to 16-bit (RGB565) color conversion **at compile-time** using `constexpr`. Thanks to the `uint16_t` operator overloading, you can use raw hex values and the `RGB` structure interchangeably with absolute zero runtime CPU cost.
+```h
+struct RGB {
+    uint16_t val;
+    constexpr RGB(uint16_t c) : val(c) {}
+    constexpr RGB(uint8_t r, uint8_t g, uint8_t b) : val(((uint16_t)(r&0xF8)<<8) | ((uint16_t)(g&0xFC)<<3) | (b>>3)) {} 
+    constexpr operator uint16_t() const { return val; }
+}__attribute__((packed));
+
+template <typename T> 	
+    void Print(T val, int16_t x, int16_t y, uint8_t size, const RGB& fc, const RGB& bc=0, bool mode=0, int16_t system = 10, uint8_t dec = 2)
+```
 
 ### Dynamic & Static Usage Examples:
 
