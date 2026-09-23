@@ -92,15 +92,15 @@ The following metrics prove the massive performance jump compared to standard di
 
 The "colligate_test()" function results:
 
-| colligate_test();       | Standard Code (Arduino Mega)| This Code (STM32F401)	| Difference                |
-| ----------------------- | --------------------------- | ---------------------	| ------------------------- |
-| show text               | 163,224 µs					| 1,058 µs				| 163224/1058   = 154 times |
-| show fill rectangle     | 95,412 µs          			| 724 µs				| 95412/724     = 131 times |
-| show fill round rect    | 139,020 µs         			| 1,088 µs				| 139020/1088   = 127 times |
-| show fill circle        | 161,296 µs         			| 1,303 µs				| 161296/1303   = 123 times |
-| show fill triangle      | 141,516 µs         			| 1,220 µs				| 141516/1220   = 115 times |
-| show grid lines         | 4,567,916 µs       			| 22,452 µs				| 4567916/22452 = 203 times |
-| show random pixels      | 6,003,092 µs       			| 36,826 µs				| 6003092/36826 = 163 times |
+| colligate_test();     | Standard Code(Arduino Mega)	| This Code(STM32F401)	| Difference                |
+| --------------------- | ---------------------------	| ---------------------	| ------------------------- |
+| show text             | 163,224 µs					| 1,058 µs				| 163224/1058   = 154 times |
+| show fill rectangle   | 95,412 µs          			| 724 µs				| 95412/724     = 131 times |
+| show fill round rect	| 139,020 µs         			| 1,088 µs				| 139020/1088   = 127 times |
+| show fill circle      | 161,296 µs         			| 1,303 µs				| 161296/1303   = 123 times |
+| show fill triangle    | 141,516 µs         			| 1,220 µs				| 141516/1220   = 115 times |
+| show grid lines       | 4,567,916 µs       			| 22,452 µs				| 4567916/22452 = 203 times |
+| show random pixels    | 6,003,092 µs       			| 36,826 µs				| 6003092/36826 = 163 times |
 ---
 
 ## 🔌 Pin Connection (Wiring)
