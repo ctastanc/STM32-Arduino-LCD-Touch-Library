@@ -110,7 +110,7 @@ void setup(void) {
        STM32F103 devices equipped with 8MHz crystal. 
        Do not use it if you lack sufficient knowledge about your hardware.
        Adverse results may occur. You bear full responsibility. */
-    SystemClock_OC(OC_108MHz); // Overclock to 96MHz
+    SystemClock_OC(OC_108MHz); // Overclock to 108MHz
     /**********************************************************************/
     analogReadResolution(12);
     Serial.begin(115200);
