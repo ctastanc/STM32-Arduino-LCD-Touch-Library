@@ -10,9 +10,18 @@
 #define PORTRAIT_REV 2
 #define LANDSCAPE_REV 3
 
-class LCD_SRW:public LCD_GUI
+class LCD_SRW:public LCD_GUI<LCD_SRW>
 {
 	public:
+    using LCD_GUI<LCD_SRW>::text_x;
+    using LCD_GUI<LCD_SRW>::text_y;
+    using LCD_GUI<LCD_SRW>::text_fc;
+    using LCD_GUI<LCD_SRW>::text_bc;
+    using LCD_GUI<LCD_SRW>::text_size;
+    using LCD_GUI<LCD_SRW>::text_len;
+    using LCD_GUI<LCD_SRW>::text;
+    using LCD_GUI<LCD_SRW>::text_mode;
+    using LCD_GUI<LCD_SRW>::draw_color;
     //uint8_t char_spc = 2;
 	int16_t Width, Height, rotation, rot_val;
 
@@ -370,41 +379,44 @@ class LCD_SRW:public LCD_GUI
         free(line); 
     }
     
-    __attribute__((optimize("O3")))
+    __attribute__((optimize("O3"), noinline))
     void Print_Str() {
+        const uint32_t ts = text_size;
+        const int32_t ty = text_y;
+        const uint16_t tfc = text_fc;
         uint total_w=0, tw=0;
         uint x1=(text_x==CENTER||text_x==RIGHT) ? 0:text_x;
         for(uint i=0; i < text_len; i++) {
-            tw = 1+((text[i]==' ' ? 2:5)*text_size);
+            tw = 1+((text[i]==' ' ? 2:5)*ts);
             if(x1+total_w+tw > Width) { text_len=i; break; }
             total_w +=tw;
         }
         if (text_x == CENTER) text_x = (Width-total_w)/2;
         else if (text_x == RIGHT) text_x = Width-total_w-1;
-        if(text_x>=Width||text_y>=Height||text_x+5*text_size<0||text_y+text_size*8-1<0) return;
+        if(text_x>=Width||ty>=Height||text_x+5*ts<0||ty+ts*8-1<0) return;
         CS_L;
         if (text_mode == 0) { 
             uint _x = text_x-1;
             for(uint i=0; i<text_len; i++){
             uint ch = text[i]; _x++;
-            for(uint c=0; c<((ch==' ')?2:5); c++, _x+=text_size) {
+            for(uint c=0; c<((ch==' ')?2:5); c++, _x+=ts) {
                 uint l=font[ch*5+c];
-                if constexpr(LCD_DRIVER != ID_932X && LCD_DRIVER != ID_7575) SET_X(_x, _x+text_size-1);
+                if constexpr(LCD_DRIVER != ID_932X && LCD_DRIVER != ID_7575) SET_X(_x, _x+ts-1);
                 for(uint r=0; r<8; r++, l>>=1) {
                     if (l&1) {
                         if constexpr(LCD_DRIVER == ID_932X || LCD_DRIVER == ID_7575) {
-                            Set_Addr_Window(_x, text_y+r*text_size, _x+text_size-1, text_y+r*text_size+text_size-1);}
-                        else { SET_Y( text_y+r*text_size, text_y+r*text_size+text_size-1); } CMD8(MW);
-                        switch (text_size) {
-                            case 1: DATA16(text_fc); break;
-                            case 2: BLOCK4(text_fc); break;
-                            default: BLOCK8(text_fc); uint p = (text_size*text_size)-8; do {DATA16(text_fc); } while (--p); break;
+                            Set_Addr_Window(_x, ty+r*ts, _x+ts-1, ty+r*ts+ts-1);}
+                        else { SET_Y( ty+r*ts, ty+r*ts+ts-1); } CMD8(MW);
+                        switch (ts) {
+                            case 1: DATA16(tfc); break;
+                            case 2: BLOCK4(tfc); break;
+                            default: BLOCK8(tfc); uint p = (ts*ts)-8; do {DATA16(tfc); } while (--p); break;
         }   }   }   }   } 
         } else { 
         #if (LCD_DRIVER != ID_932X && LCD_DRIVER != ID_7575)    
-            uint32_t fc = text_fc; uint32_t bc = text_bc; uint32_t ts = text_size;
+            uint32_t fc = tfc; uint32_t bc = text_bc;
             CMDDATA8(MD, rot_val ^ 0x20);
-            Set_Addr_Window(text_y, text_x, text_y+ts*8-1, text_x+total_w-1); CMD8(MW);        
+            Set_Addr_Window(ty, text_x, ty+ts*8-1, text_x+total_w-1); CMD8(MW);        
             for(uint i=0; i<text_len; i++){
                 uint ch = text[i];
                 for(uint c=0; c<((ch==' ')?2:5); c++) {
@@ -450,7 +462,7 @@ class LCD_SRW:public LCD_GUI
     }
 
     __attribute__((optimize("unroll-loops")))
-    void Fill_Rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t c) {
+    __attribute__((always_inline)) inline void Fill_Rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t c) {
         int16_t end;
         if (w < 0) { w = -w; x -= w; } end = x + w;
         if (x < 0) { x = 0; }
@@ -473,4 +485,5 @@ class LCD_SRW:public LCD_GUI
 	protected: 
 	private:
 };
-#define lcd LCD_SRW::getInstance()
+
+inline LCD_SRW lcd;

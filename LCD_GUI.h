@@ -37,8 +37,11 @@ struct RGB {
     constexpr operator uint16_t() const { return val; }
 }__attribute__((packed));
 
+template <typename Derived>
 class LCD_GUI
 {
+    Derived& impl() { return static_cast<Derived&>(*this); }
+    const Derived& impl() const { return static_cast<const Derived&>(*this); }
 	public:
     /**************************************************************************/
     /*!
@@ -95,14 +98,14 @@ class LCD_GUI
         else if constexpr (std::is_floating_point_v<T>) { Print_Number_Float((double)val, dec, '.', 0, ' '); } 
         else if constexpr (std::is_integral_v<T>) {	Print_Number_Int((long long)val, 0, ' ', system); }
     }
-    //These are defined by the subclass:
-	virtual void Draw_Pixe(int16_t x, int16_t y, uint16_t color)=0;
-	virtual void Fill_Rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t c)=0;
-	virtual void Draw_Bit_Map(int16_t x, int16_t y, int16_t sx, int16_t sy, const uint16_t *data, int16_t scale)=0;
-	virtual void Push_Any_Color(uint16_t * block, int16_t n, bool first, uint8_t flags)=0;
-	virtual int16_t Read_GRAM(int16_t x, int16_t y, uint16_t *block, int16_t w, int16_t h)=0;
-    virtual void Fill_Scree( uint16_t color)=0;
-	virtual void Print_Str()=0;
+    // CRTP forwarding methods (non-virtual, 100% inlineable, zero-cost)
+    void Draw_Pixe(int16_t x, int16_t y, uint16_t color) { impl().Draw_Pixe(x, y, color); }
+    void Fill_Rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t c) { impl().Fill_Rect(x, y, w, h, c); }
+    void Draw_Bit_Map(int16_t x, int16_t y, int16_t sx, int16_t sy, const uint16_t *data, int16_t scale) { impl().Draw_Bit_Map(x, y, sx, sy, data, scale); }
+    void Push_Any_Color(uint16_t * block, int16_t n, bool first, uint8_t flags) { impl().Push_Any_Color(block, n, first, flags); }
+    int16_t Read_GRAM(int16_t x, int16_t y, uint16_t *block, int16_t w, int16_t h) { return impl().Read_GRAM(x, y, block, w, h); }
+    void Fill_Scree(uint16_t color) { impl().Fill_Scree(color); }
+    void Print_Str() { impl().Print_Str(); }
     
     //Constructor to set text color
     LCD_GUI(void) {
@@ -185,8 +188,9 @@ class LCD_GUI
         Fill_Rect(x, y, w, 1, color);
     }
 
+
     /*!
-    @brief    Draw a line
+    @brief    Draw a line using high-speed Run-Length Slice algorithm
         @param    x1  Start point x coordinate
         @param    y1  Start point y coordinate
         @param    x2  End point x coordinate
@@ -195,23 +199,54 @@ class LCD_GUI
     */
     void Line(int16_t x1, int16_t y1, int16_t x2, int16_t y2, const RGB& color) {
         if (x1 == x2) {
-            if (y1 > y2)
-            swap(y1, y2);
+            if (y1 > y2) swap(y1, y2);
             Fast_VLine(x1, y1, y2 - y1 + 1, color);
         } else if (y1 == y2) {
-            if (x1 > x2)
-            swap(x1, x2);
+            if (x1 > x2) swap(x1, x2);
             Fast_HLine(x1, y1, x2 - x1 + 1, color);
         } else {
-            int16_t steep = abs(y2 - y1) > abs(x2 - x1);
-            if (steep) { swap(x1, y1); swap(x2, y2); }
-            if (x1 > x2) { swap(x1, x2); swap(y1, y2); }
-            int16_t dx, dy;	 dx = x2 - x1;  dy = abs(y2 - y1); int16_t err = dx / 2; int16_t ystep;
-            if (y1 < y2) { ystep = 1; }	else { ystep = -1; }
-            for (; x1<=x2; x1++) {
-                if (steep) { Draw_Pixe(y1, x1,color); } else { Draw_Pixe(x1, y1, color); }
-                err -= dy;
-                if (err < 0) { y1 += ystep;	err += dx; }
+            int16_t dx = abs(x2 - x1);
+            int16_t dy = abs(y2 - y1);
+            if (dx >= dy) {
+                // X-major: horizontal run slices
+                if (x1 > x2) { swap(x1, x2); swap(y1, y2); }
+                int16_t ystep = (y1 < y2) ? 1 : -1;
+                int16_t err = dx / 2;
+                int16_t run_start = x1;
+                for (int16_t x = x1; x < x2; x++) {
+                    err -= dy;
+                    if (err < 0) {
+                        int16_t len = x - run_start + 1;
+                        if (len == 1) Draw_Pixe(run_start, y1, color);
+                        else Fast_HLine(run_start, y1, len, color);
+                        run_start = x + 1;
+                        y1 += ystep;
+                        err += dx;
+                    }
+                }
+                int16_t len = x2 - run_start + 1;
+                if (len == 1) Draw_Pixe(run_start, y1, color);
+                else Fast_HLine(run_start, y1, len, color);
+            } else {
+                // Y-major: vertical run slices
+                if (y1 > y2) { swap(x1, x2); swap(y1, y2); }
+                int16_t xstep = (x1 < x2) ? 1 : -1;
+                int16_t err = dy / 2;
+                int16_t run_start = y1;
+                for (int16_t y = y1; y < y2; y++) {
+                    err -= dx;
+                    if (err < 0) {
+                        int16_t len = y - run_start + 1;
+                        if (len == 1) Draw_Pixe(x1, run_start, color);
+                        else Fast_VLine(x1, run_start, len, color);
+                        run_start = y + 1;
+                        x1 += xstep;
+                        err += dy;
+                    }
+                }
+                int16_t len = y2 - run_start + 1;
+                if (len == 1) Draw_Pixe(x1, run_start, color);
+                else Fast_VLine(x1, run_start, len, color);
             }
         }
     }
