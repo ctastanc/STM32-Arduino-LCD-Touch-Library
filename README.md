@@ -11,7 +11,7 @@ This library is specifically designed to eliminate the bloated and sluggish natu
 * **STM32F103 Bug Protection:** Implements an advanced preprocessor architecture to completely avoid the notorious STM32F1xx LL library bug where using output pull configurations could silently drop the pin speed to 10MHz. Pins are locked at **50MHz** for F103 and maximum frequency for F401.
 * **Loop Unrolling & Batching:** Uses __attribute__((optimize("unroll-loops"))) combined with a Duff's Device style 8-pixel batching (BLOCK8) method, reducing loop branching overhead to absolute zero during screen/rectangle filling.
 * **Smart Noise Filtering for Touch:** Features an oversampling engine with NUMSAMPLES == 2 tolerance matching (±2 ADC counts verification) and median insertion sort filtering to eliminate analog signal noise without lagging the CPU.
-* **Overclock Ready:** Includes dynamically adjusted inline assembly NOP delays to safely handle aggressive MCU overclocking (e.g., STM32F401 running at 96MHz).
+* **Overclock Ready:** Safely handle aggressive MCU overclocking (e.g., STM32F401 running at 108MHz).
 
 ---
 
@@ -20,13 +20,13 @@ This library is specifically designed to eliminate the bloated and sluggish natu
 The absolute core of the library's speed relies on a tightly optimized hardware-software synergy inside the pixel-pumping macro:
 
 ```cpp
-#define WRITE8(d) { DATA_PORT1->BSRR = DATA_MASK1 | (d); WRL_DELAY; WR_H; WRH_DELAY; }
+#define WRITE8(d) { DATA_PORT1->BSRR = DATA_MASK1 | (d); WR_H; }
 ```
 
 #### Why is this so fast?
 1. **Direct Register Manipulation (`BSRR`):** Instead of using slow Arduino `digitalWrite()` functions, this macro directly modifies the **Bit Set/Reset Register (BSRR)** of the STM32 GPIO port. This allows the MCU to clear old data pins, reset WR pin and set the new 8-bit pixel data (`d`) **in a single CPU clock cycle**.
 2. **Sequential Pin Alignment:** Because `D0-D7` are sequentially aligned on `PA0-PA7`, no expensive runtime bit-shifting or bitmasking calculations are needed. The raw data byte matches the lower port bits perfectly.
-3. **Hardware-Paced Clock Toggling:** The display's Write Clock (`WR`) pin is placed right next to the data pins on `PA8`. Toggling the clock (`WR_H`) is executed in the exact same port context, minimized by compile-time tuned `inline assembly NOP` delays (`WRL_DELAY` / `WRH_DELAY`) depending on the microcontroller's core clock frequency (e.g., 96MHz Overclock).
+3. **Hardware-Paced Clock Toggling:** The display's Write Clock (`WR`) pin is placed right next to the data pins on `PA8`. Toggling the clock (`WR_H`) is executed in the exact same port context.
 
 ---
 
@@ -74,33 +74,33 @@ void loop() {
 
 ---
 
-## 📊 Benchmarks (STM32F401 Blackpill @ 96MHz Overclock)
+## 📊 Benchmarks (STM32F401 Blackpill @ 108MHz Overclock)
 
 The following metrics prove the massive performance jump compared to standard display engines. A full **240x320 screen fill takes only 3.2 milliseconds**, yielding a theoretical limit of **312 FPS** over the parallel bus. 
 
 | Benchmark					| TestTime (Microseconds)	| Execution Style 				| 
 | -------------------------	| ------------------------- | ----------------------------- | 
-| Screen Fill (240x320)		| 		 3,253 µs 			| Ultra-Fast Batching (312 FPS)	|
-| Horiz/Vert Lines			| 		 1,705 µs 			| Direct Port Write				|
-| Lines (Outline)			| 		32,076 µs 			| Fully Inlined Address Window	|
-| Circles (Outline)			| 		12,876 µs 			| Zero Function Call Overhead	|
-| Circles (Filled)			| 		15,462 µs 			| Unrolled Loops				|
-| Triangles (Outline)		| 		 7,014 µs 			| Zero Branching				|
-| Rectangles (Outline)		| 		 1,244 µs 			| Fast Box Drawing				|
-| Rectangles (Filled)		| 		38,502 µs 			| High Bandwidth Pixel Pump		|
-| Rounded Rects (Outline)	| 		 4,815 µs 			| Inlined Math					|
+| Screen Fill (240x320)		| 		 2,891 µs 			| Ultra-Fast Batching (357 FPS)	|
+| Horiz/Vert Lines			| 		 1,515 µs 			| Direct Port Write				|
+| Lines (Outline)			| 		28,511 µs 			| Fully Inlined Address Window	|
+| Circles (Outline)			| 		11,447 µs 			| Zero Function Call Overhead	|
+| Circles (Filled)			| 		10,686 µs 			| Unrolled Loops				|
+| Triangles (Outline)		| 		 6,231 µs 			| Zero Branching				|
+| Rectangles (Outline)		| 		 1,105 µs 			| Fast Box Drawing				|
+| Rectangles (Filled)		| 		34,225 µs 			| High Bandwidth Pixel Pump		|
+| Rounded Rects (Outline)	| 		 4,278 µs 			| Inlined Math					|
 
 The "colligate_test()" function results:
 
 | colligate_test();       | Standard Code (Arduino Mega)| This Code (STM32F401)	| Difference                |
 | ----------------------- | --------------------------- | ---------------------	| ------------------------- |
-| show text               | 163,224 µs					| 1,194 µs				| 163224/1194   = 136 times |
-| show fill rectangle     | 95,412 µs          			| 827 µs				| 95412/827     = 115 times |
-| show fill round rect    | 139,020 µs         			| 1,552 µs				| 139020/1552   = 89  times |
-| show fill circle        | 161,296 µs         			| 2,013 µs				| 161296/2013   = 80 times  |
-| show fill triangle      | 141,516 µs         			| 1,499 µs				| 141516/1499   = 94 times  |
-| show grid lines         | 4,567,916 µs       			| 53,603 µs				| 4567916/53603 = 85 times  |
-| show random pixels      | 6,003,092 µs       			| 60,081 µs				| 6003092/60081 = 99 times  |
+| show text               | 163,224 µs					| 1,062 µs				| 163224/1062   = 153 times |
+| show fill rectangle     | 95,412 µs          			| 734 µs				| 95412/734     = 129 times |
+| show fill round rect    | 139,020 µs         			| 1,117 µs				| 139020/1117   = 124 times |
+| show fill circle        | 161,296 µs         			| 1,346 µs				| 161296/1346   = 119 times |
+| show fill triangle      | 141,516 µs         			| 1,272 µs				| 141516/1272   = 111 times |
+| show grid lines         | 4,567,916 µs       			| 35,911 µs				| 4567916/35911 = 127 times |
+| show random pixels      | 6,003,092 µs       			| 47,120 µs				| 6003092/47120 = 127 times |
 ---
 
 ## 🔌 Pin Connection (Wiring)
