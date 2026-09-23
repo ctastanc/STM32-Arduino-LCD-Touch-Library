@@ -229,7 +229,7 @@ class ben1{
             Serial.println(testTextBG());
         
             delay(d);
-            /*Serial.print(F("Lines                    "));
+            Serial.print(F("Lines                    "));
             Serial.println(testLines(CYAN));
             delay(d);
 
@@ -267,7 +267,7 @@ class ben1{
 
             Serial.print(F("Rounded rects (filled)   "));
             Serial.println(testFilledRoundRects());
-            delay(d);*/
+            delay(d);
 
             Serial.println(F("Done!"));
     }
