@@ -81,26 +81,26 @@ The following metrics prove the massive performance jump compared to standard di
 | Benchmark					| TestTime (Microseconds)	| Execution Style 				| 
 | -------------------------	| ------------------------- | ----------------------------- | 
 | Screen Fill (240x320)		| 		 2,891 µs 			| Ultra-Fast Batching (357 FPS)	|
-| Horiz/Vert Lines			| 		 1,515 µs 			| Direct Port Write				|
-| Lines (Outline)			| 		28,511 µs 			| Fully Inlined Address Window	|
-| Circles (Outline)			| 		11,447 µs 			| Zero Function Call Overhead	|
+| Horiz/Vert Lines			| 		 1,477 µs 			| Direct Port Write				|
+| Lines (Outline)			| 		22,004 µs 			| Fully Inlined Address Window	|
+| Circles (Outline)			| 		10,747 µs 			| Zero Function Call Overhead	|
 | Circles (Filled)			| 		10,686 µs 			| Unrolled Loops				|
-| Triangles (Outline)		| 		 6,231 µs 			| Zero Branching				|
-| Rectangles (Outline)		| 		 1,105 µs 			| Fast Box Drawing				|
-| Rectangles (Filled)		| 		34,225 µs 			| High Bandwidth Pixel Pump		|
-| Rounded Rects (Outline)	| 		 4,278 µs 			| Inlined Math					|
+| Triangles (Outline)		| 		 5,825 µs 			| Zero Branching				|
+| Rectangles (Outline)		| 		 1,080 µs 			| Fast Box Drawing				|
+| Rectangles (Filled)		| 		34,212 µs 			| High Bandwidth Pixel Pump		|
+| Rounded Rects (Outline)	| 		 4,090 µs 			| Inlined Math					|
 
 The "colligate_test()" function results:
 
 | colligate_test();       | Standard Code (Arduino Mega)| This Code (STM32F401)	| Difference                |
 | ----------------------- | --------------------------- | ---------------------	| ------------------------- |
-| show text               | 163,224 µs					| 1,062 µs				| 163224/1062   = 153 times |
-| show fill rectangle     | 95,412 µs          			| 734 µs				| 95412/734     = 129 times |
-| show fill round rect    | 139,020 µs         			| 1,117 µs				| 139020/1117   = 124 times |
-| show fill circle        | 161,296 µs         			| 1,346 µs				| 161296/1346   = 119 times |
-| show fill triangle      | 141,516 µs         			| 1,272 µs				| 141516/1272   = 111 times |
-| show grid lines         | 4,567,916 µs       			| 35,911 µs				| 4567916/35911 = 127 times |
-| show random pixels      | 6,003,092 µs       			| 47,120 µs				| 6003092/47120 = 127 times |
+| show text               | 163,224 µs					| 1,058 µs				| 163224/1058   = 154 times |
+| show fill rectangle     | 95,412 µs          			| 724 µs				| 95412/724     = 131 times |
+| show fill round rect    | 139,020 µs         			| 1,088 µs				| 139020/1088   = 127 times |
+| show fill circle        | 161,296 µs         			| 1,303 µs				| 161296/1303   = 123 times |
+| show fill triangle      | 141,516 µs         			| 1,220 µs				| 141516/1220   = 115 times |
+| show grid lines         | 4,567,916 µs       			| 22,452 µs				| 4567916/22452 = 203 times |
+| show random pixels      | 6,003,092 µs       			| 36,826 µs				| 6003092/36826 = 163 times |
 ---
 
 ## 🔌 Pin Connection (Wiring)
