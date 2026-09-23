@@ -14,14 +14,6 @@
 
 // Set LCD System Interface 8 or 16 bit
 #define LCD_SYS_INTERFACE  8
-//#define LCD_SYS_INTERFACE  16
-
-// Set CPU Frequency
-// If you overclock, remove the comment below and enter the overclock value.
-//#define TARGET_CPU_FREQ 96000000
-#ifndef TARGET_CPU_FREQ 
-#define TARGET_CPU_FREQ F_CPU
-#endif
 
 // Set LCD Pin definitions
 // For maximum speed, the WR pin must be on the sequential DATAPORT.

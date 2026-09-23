@@ -103,7 +103,7 @@ class LCD_GUI
 	virtual int16_t Read_GRAM(int16_t x, int16_t y, uint16_t *block, int16_t w, int16_t h)=0;
     virtual void Fill_Scree( uint16_t color)=0;
 	virtual void Print_Str()=0;
-
+    
     //Constructor to set text color
     LCD_GUI(void) {
         text_bc = 0xF800; //default red
@@ -546,7 +546,7 @@ class LCD_GUI
         @param  delta    Offset from center-point, used for round-rects
         @param  color    16-bit or RGB(r,g,b) Color to fill with
     */
-    void Fill_Circle_Helper(int16_t x0, int16_t y0, int16_t r, uint8_t corners, int16_t delta, uint16_t color) {
+    /*void Fill_Circle_Helper(int16_t x0, int16_t y0, int16_t r, uint8_t corners, int16_t delta, uint16_t color) {
         int16_t f = 1 - r, ddF_x = 1, ddF_y = -2 * r, x = 0, y = r;
         while (x<y)	{
             if (f >= 0)	{ y--; ddF_y += 2; f += ddF_y; }
@@ -560,7 +560,48 @@ class LCD_GUI
                 Fill_Rect(x0-y, y0-x, 1, 2*x+1+delta, color);
             }
         }
+    }*/
+
+    void Fill_Circle_Helper(int16_t x0, int16_t y0, int16_t r, uint8_t corners, int16_t delta, uint16_t color) {
+    int16_t f = 1 - r, ddF_x = 1, ddF_y = -2 * r, x = 0, y = r;
+    int16_t last_y = r;
+
+    while (x < y) {
+        x++;
+        if (f >= 0) {
+            y--;
+            ddF_y += 2;
+            f += ddF_y;
+        }
+        ddF_x += 2;
+        f += ddF_x;
+
+        // 1. KISIM: corners & 0x1 -> Çemberin SAĞ çeyrekleri (Eksiksiz çizim)
+        if (corners & 0x1) {
+            Fill_Rect(x0 + x, y0 - y, 1, 2 * y + 1 + delta, color);
+            // y değiştiğinde (yeni bir basamağa geçildiğinde) aradaki dikey boşluğu tek seferde doldurur
+            if (y != last_y) {
+                Fill_Rect(x0 + last_y, y0 - x + 1, 1, 2 * x - 1 + delta, color);
+            }
+        }
+        
+        // 2. KISIM: corners & 0x2 -> Çemberin SOL çeyrekleri (Önceki hatanın düzeltildiği, eksiksiz çizim)
+        if (corners & 0x2) {
+            Fill_Rect(x0 - x, y0 - y, 1, 2 * y + 1 + delta, color);
+            // Sol taraftaki simetrik dikey çizgiyi, sağ tarafla aynı basamak mantığında hatasız çizer
+            if (y != last_y) {
+                Fill_Rect(x0 - last_y, y0 - x + 1, 1, 2 * x - 1 + delta, color);
+            }
+        }
+
+        // Döngünün sonunda bir sonraki adım için last_y güncellenir
+        if (y != last_y) {
+            last_y = y;
+        }
     }
+}
+
+
 
     /*!
     @brief   Draw a triangle with no fill color
@@ -588,36 +629,44 @@ class LCD_GUI
         @param    y2  Vertex #2 y coordinate
         @param    color 16-bit or RGB(r,g,b) Color to fill/draw with
     */
-    void Fill_Triangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1,int16_t x2, int16_t y2, const RGB& color) {
+    void Fill_Triangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, const RGB& color) {
         int16_t a, b, y, last;
         if (y0 > y1) { swap(y0, y1); swap(x0, x1); }
         if (y1 > y2) { swap(y2, y1); swap(x2, x1); }
         if (y0 > y1) { swap(y0, y1); swap(x0, x1); }
-        if(y0 == y2) {
-            a = b = x0;
-            if(x1 < a)	{ a = x1; }	else if(x1 > b)	{ b = x1; }
-            if(x2 < a)	{ a = x2; }	else if(x2 > b)	{ b = x2; }
-            Fill_Rect(a, y0, b-a+1, 1, color);
-            return;
-        }
-        int16_t dx01 = x1 - x0, dy01 = y1 - y0, dx02 = x2 - x0, dy02 = y2 - y0, dx12 = x2 - x1, dy12 = y2 - y1;
+
+        if (y0 == y2) return; // Nokta veya yatay çizgi durumu
+
+        int16_t dx01 = x1 - x0, dy01 = y1 - y0;
+        int16_t dx02 = x2 - x0, dy02 = y2 - y0;
+        int16_t dx12 = x2 - x1, dy12 = y2 - y1;
         int32_t sa = 0, sb = 0;
-        if(y1 == y2) { last = y1; } else { last = y1-1; }
-        for(y=y0; y<=last; y++)	{
-            a = x0 + sa / dy01;	b = x0 + sb / dy02;
-            sa += dx01;	sb += dx02;
-            if(a > b) { swap(a,b); }
-            Fill_Rect(a, y, b-a+1, 1, color);
+
+        if (y1 == y2) last = y1;   
+        else          last = y1 - 1; 
+
+        for (y = y0; y <= last; y++) {
+            a = x0 + sa / dy01;
+            b = x0 + sb / dy02;
+            sa += dx01;
+            sb += dx02;
+            if (a > b) swap(a, b);
+            Fill_Rect(a, y, b - a + 1, 1, color);
         }
+
         sa = (int32_t)dx12 * (y - y1);
         sb = (int32_t)dx02 * (y - y0);
-        for(; y<=y2; y++) {
-            a = x1 + sa / dy12; b = x0 + sb / dy02;
-            sa += dx12; sb += dx02;
-            if(a > b) { swap(a,b); }
-            Fill_Rect(a, y, b-a+1, 1, color);
+        for (; y <= y2; y++) {
+            a = x1 + sa / dy12;
+            b = x0 + sb / dy02;
+            sa += dx12;
+            sb += dx02;
+            if (a > b) swap(a, b);
+            Fill_Rect(a, y, b - a + 1, 1, color);
         }
     }
+
+    
 
     /*!
     @brief    Draw an ellipse outline

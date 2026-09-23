@@ -338,7 +338,7 @@ class LCD_SRW:public LCD_GUI
                 uint32_t c = (line[i] >> row++ & 1) ? text_fc:text_bc;
                 uint32_t p = text_size; do{DATA16(c);} while(--p);
             }
-        } //delay(5);
+        } 
     }
 
     /*!
@@ -366,16 +366,26 @@ class LCD_SRW:public LCD_GUI
         free(new_arr);
         CS_L; CMDDATA8(MD, rot_val ^ 0x20); 
         for(int step = 0; step < line_len; step++) {sc(line,line_len,x1,x2,y,step); delay(speed);}
-        //delay(500); 
-        //for(int step = line_len - 1; step >= 0; step--) {sc(line, line_len, x1, x2, y, step); delay(speed);}
         CMDDATA8(MD, rot_val); CS_H;
         free(line); 
     }
-
+    
     __attribute__((optimize("O3")))
-    void Print_fr() {
-        uint _x = text_x-1;
-        for(uint i=0; i<text_len; i++){
+    void Print_Str() {
+        uint total_w=0, tw=0;
+        uint x1=(text_x==CENTER||text_x==RIGHT) ? 0:text_x;
+        for(uint i=0; i < text_len; i++) {
+            tw = 1+((text[i]==' ' ? 2:5)*text_size);
+            if(x1+total_w+tw > Width) { text_len=i; break; }
+            total_w +=tw;
+        }
+        if (text_x == CENTER) text_x = (Width-total_w)/2;
+        else if (text_x == RIGHT) text_x = Width-total_w-1;
+        if(text_x>=Width||text_y>=Height||text_x+5*text_size<0||text_y+text_size*8-1<0) return;
+        CS_L;
+        if (text_mode == 0) { 
+            uint _x = text_x-1;
+            for(uint i=0; i<text_len; i++){
             uint ch = text[i]; _x++;
             for(uint c=0; c<((ch==' ')?2:5); c++, _x+=text_size) {
                 uint l=font[ch*5+c];
@@ -389,60 +399,37 @@ class LCD_SRW:public LCD_GUI
                             case 1: DATA16(text_fc); break;
                             case 2: BLOCK4(text_fc); break;
                             default: BLOCK8(text_fc); uint p = (text_size*text_size)-8; do {DATA16(text_fc); } while (--p); break;
-        }   }   }   }   }
-    }
-
-    #if (LCD_DRIVER != ID_932X && LCD_DRIVER != ID_7575)
-    __attribute__((optimize("O3")))
-    void Print_bg(uint total_w) {
-        uint32_t fc = text_fc; uint32_t bc = text_bc; uint32_t ts = text_size;
-        CMDDATA8(MD, rot_val ^ 0x20);
-        Set_Addr_Window(text_y, text_x, text_y+ts*8-1, text_x+total_w-1); CMD8(MW);        
-        for(uint i=0; i<text_len; i++){
-            uint ch = text[i];
-            for(uint c=0; c<((ch==' ')?2:5); c++) {
-                uint l = font[ch*5+c];
-                if(ts==1) {for(uint r=0;r<8;r++) DATA16(((l>>r&1)?fc:bc));}
-                else{ for(uint r=0; r<ts*8; r++) 
-                    for(uint p=0; p<ts; p++) DATA16(((l>>(r&7)&1)?fc:bc));}
-            }  uint r = ts; do BLOCK8(bc) while(--r);
-        } CMDDATA8(MD, rot_val);
-    }
-    #elif(LCD_DRIVER == ID_932X || LCD_DRIVER == ID_7575)
-    __attribute__((optimize("Ofast")))
-    void Print_bg(uint total_w) {
-        Set_Addr_Window(text_x, text_y, text_x+total_w-1, text_y+(text_size*8)-1); CMD8(MW);
-        for (uint32_t r=0; r<8; r++) {
-            for (uint32_t y=0; y<text_size; y++) {
-                for (uint32_t i=0; i<text_len; i++) {
-                    uint32_t ch = text[i];
-                    for (uint32_t c=0; c<((ch==' ')?2:5); c++) {
-                        uint32_t cl = (font[ch*5+c]>>r & 1) ? text_fc:text_bc;
-                        if(text_size == 1) { DATA16(cl); }
-                        else for (uint32_t x = 0; x < text_size; x++) DATA16(cl);
-                    } DATA16(text_bc); // space 1
+        }   }   }   }   } 
+        } else { 
+        #if (LCD_DRIVER != ID_932X && LCD_DRIVER != ID_7575)    
+            uint32_t fc = text_fc; uint32_t bc = text_bc; uint32_t ts = text_size;
+            CMDDATA8(MD, rot_val ^ 0x20);
+            Set_Addr_Window(text_y, text_x, text_y+ts*8-1, text_x+total_w-1); CMD8(MW);        
+            for(uint i=0; i<text_len; i++){
+                uint ch = text[i];
+                for(uint c=0; c<((ch==' ')?2:5); c++) {
+                    uint l = font[ch*5+c];
+                    if(ts==1) {for(uint r=0;r<8;r++) DATA16(((l>>r&1)?fc:bc));}
+                    else{ for(uint r=0; r<ts*8; r++) 
+                        for(uint p=0; p<ts; p++) DATA16(((l>>(r&7)&1)?fc:bc));}
+                }  uint r = ts; do BLOCK8(bc) while(--r);
+            } CMDDATA8(MD, rot_val);
+        #elif(LCD_DRIVER == ID_932X || LCD_DRIVER == ID_7575)
+            Set_Addr_Window(text_x, text_y, text_x+total_w-1, text_y+(text_size*8)-1); CMD8(MW);
+            for (uint32_t r=0; r<8; r++) {
+                for (uint32_t y=0; y<text_size; y++) {
+                    for (uint32_t i=0; i<text_len; i++) {
+                        uint32_t ch = text[i];
+                        for (uint32_t c=0; c<((ch==' ')?2:5); c++) {
+                            uint32_t cl = (font[ch*5+c]>>r & 1) ? text_fc:text_bc;
+                            if(text_size == 1) { DATA16(cl); }
+                            else for (uint32_t x = 0; x < text_size; x++) DATA16(cl);
+                        } DATA16(text_bc); // space 1
+                    }
                 }
             }
-        }
-    }
-    #endif
-    
-    __attribute__((optimize("O3")))
-    void Print_Str() {
-        //Serial.print((char*)text);Serial.println(text_len);
-        uint total_w=0, tw=0;
-        uint x1=(text_x==CENTER||text_x==RIGHT) ? 0:text_x;
-        for(uint i=0; i < text_len; i++) {
-            tw = 1+((text[i]==' ' ? 2:5)*text_size);
-            if(x1+total_w+tw > Width) { text_len=i; break; }
-            total_w +=tw;
-        }
-        if (text_x == CENTER) text_x = (Width-total_w)/2;
-        else if (text_x == RIGHT) text_x = Width-total_w-1;
-        if(text_x>=Width||text_y>=Height||text_x+5*text_size<0||text_y+text_size*8-1<0) return;
-        CS_L;
-        if (text_mode == 0) { Print_fr(); } else { Print_bg(total_w); } 
-        CS_H;
+        #endif   
+        } CS_H;
     }
 
     __attribute__((always_inline)) inline void Draw_Pixe(int16_t x, int16_t y, uint16_t color)  {
@@ -482,6 +469,7 @@ class LCD_SRW:public LCD_GUI
         else if constexpr(LCD_DRIVER == ID_7575) Set_LR(); 
         CS_H; 
     }
+
 	protected: 
 	private:
 };

@@ -201,8 +201,7 @@ class ben2{
         start = micros();
         for(i=min(cx,cy); i>10; i-=5) {
             start = micros();
-            lcd.Fill_Triangle(cx, cy - i, cx - i, cy + i, cx + i, cy + i,
-            RGB(250, i*10, i*10));
+            lcd.Fill_Triangle(cx, cy - i, cx - i, cy + i, cx + i, cy + i, RGB(250, i*10, i*10));
             t += micros() - start;
             lcd.Triangle(cx, cy - i, cx - i, cy + i, cx + i, cy + i,
             RGB(i*10, i*10, 250));

@@ -81,31 +81,7 @@ static constexpr uint32_t Data_Pins_16Bit[] = {D8, D9, D10, D11, D12, D13, D14, 
 #define RST_L   { LL_GPIO_ResetOutputPin(CTRL_PORT, Ctrl_Pins[3]); }
 #define RST_H   { LL_GPIO_SetOutputPin(CTRL_PORT, Ctrl_Pins[3]); }
 
-#if (TARGET_CPU_FREQ > 168000000 ) // 5.5ns
-    #define RD_DELAY { __asm__ volatile(".rept 8 \n\t nop \n\t .endr"); }
-    #define WRL_DELAY {WR_L;WR_L;}//__asm__ volatile("nop");
-    #define WRH_DELAY WR_H;
-#elif (TARGET_CPU_FREQ > 144000000 ) // 5.9ns
-    #define RD_DELAY { __asm__ volatile(".rept 7 \n\t nop \n\t .endr"); }
-    #define WRL_DELAY {WR_L;WR_L;}//__asm__ volatile("nop");
-    #define WRH_DELAY
-#elif (TARGET_CPU_FREQ > 120000000 )  // 6.9ns
-    #define RD_DELAY { __asm__ volatile(".rept 6 \n\t nop \n\t .endr"); }
-    #define WRL_DELAY {WR_L;}//__asm__ volatile("nop");
-    #define WRH_DELAY 
-#elif (TARGET_CPU_FREQ > 100000000 )  // 7.6ns
-    #define RD_DELAY { __asm__ volatile(".rept 5 \n\t nop \n\t .endr"); }
-    #define WRL_DELAY {WR_L;}//__asm__ volatile("nop");
-    #define WRH_DELAY 
-#elif (TARGET_CPU_FREQ > 84000000 ) // 10ns
-    #define RD_DELAY { __asm__ volatile(".rept 4 \n\t nop \n\t .endr"); }
-    #define WRL_DELAY {WR_L;}//__asm__ volatile("nop");
-    #define WRH_DELAY 
-#elif (TARGET_CPU_FREQ <= 84000000L) // 11.9ns
-    #define RD_DELAY { __asm__ volatile(".rept 3 \n\t nop \n\t .endr"); }
-    #define WRL_DELAY 
-    #define WRH_DELAY 
-#endif
+#define RD_DELAY  __asm__ volatile(".rept 4 \n\t nop \n\t .endr")
 
 static inline void enable_gpio_clock(GPIO_TypeDef* GPIOx) {
     #if defined(STM32F1xx) || defined(STM32F3xx)
@@ -129,22 +105,19 @@ static inline void enable_gpio_clock(GPIO_TypeDef* GPIOx) {
 
 #define LL_SET_PINS(SET, PORT, PINS, NUM, MODE) { for(int i=0; i<NUM;i++) { SET(PORT, PINS[i], MODE); } }
 
-#ifndef STM32F1xx
-    #define LL_GPIO_MODE_OUT LL_GPIO_MODE_OUTPUT
-    #define DISABLE_JTAG()
-    #define LL_PULL8() {\
-        LL_SET_PINS(LL_GPIO_SetPinPull, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_PULL_NO); \
-        LL_SET_PINS(LL_GPIO_SetPinPull, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_PULL_NO); }
-    #if(LCD_SYS_INTERFACE==16)
-        #define LL_PULL16() {\
-        LL_SET_PINS(LL_GPIO_SetPinPull, DATA_PORT2, Data_Pins_16Bit, 8, LL_GPIO_PULL_NO); }
-    #endif
-#else
+#if defined STM32F1xx
     #define LL_GPIO_MODE_OUT LL_GPIO_MODE_OUTPUT_50MHz
     #define LL_PULL8()
     #define LL_PULL16()
-    // Disabling JTAG for F1 (PB3 PB4)
-    #define DISABLE_JTAG() { LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_AFIO); LL_GPIO_AF_Remap_SWJ_NOJTAG(); }
+    #define DISABLE_JTAG() { LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_AFIO); LL_GPIO_AF_Remap_SWJ_NOJTAG(); } // Disabling JTAG for F1xx (PB3 PB4)
+#else
+    #define LL_GPIO_MODE_OUT LL_GPIO_MODE_OUTPUT
+    #define DISABLE_JTAG()
+    #define LL_PULL8() { LL_SET_PINS(LL_GPIO_SetPinPull, DATA_PORT1, Data_Pins_8Bit, 9, LL_GPIO_PULL_NO); \
+                         LL_SET_PINS(LL_GPIO_SetPinPull, CTRL_PORT, Ctrl_Pins, 4, LL_GPIO_PULL_NO); }
+    #if(LCD_SYS_INTERFACE==16)
+        #define LL_PULL16() ( LL_SET_PINS(LL_GPIO_SetPinPull, DATA_PORT2, Data_Pins_16Bit, 8, LL_GPIO_PULL_NO) )
+    #endif
 #endif
 
 #if(LCD_SYS_INTERFACE==8)
@@ -163,7 +136,7 @@ static inline void enable_gpio_clock(GPIO_TypeDef* GPIOx) {
     #define SET_WRITE_DIR() LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 8, LL_GPIO_MODE_OUT)
     #define SET_READ_DIR()  LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 8, LL_GPIO_MODE_INPUT)
   
-    #define WRITE8(d) { DATA_PORT1->BSRR = DATA_MASK1 | (d); WRL_DELAY; WR_H; WRH_DELAY; }
+    #define WRITE8(d) { DATA_PORT1->BSRR = DATA_MASK1 | (d); WR_H;  }
     #define READ8(dst) { RD_L; RD_DELAY; dst = (uint8_t)(DATA_PORT1->IDR & (0x00FFU)); RD_H; }
     #define READ16(dst) { uint8_t hi; READ8(hi); READ8(dst); dst |= (hi << 8); }
     #define CMD8(x) { RS_CMD; WRITE8(x); RS_DATA; }
@@ -198,8 +171,8 @@ static inline void enable_gpio_clock(GPIO_TypeDef* GPIOx) {
                                 LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT2, Data_Pins_16Bit, 8, LL_GPIO_MODE_INPUT); }
         
     #define WRITE16(d) {DATA_PORT1->BSRR = DATA_MASK1 | (d&0xFF);\
-                       DATA_PORT2->BSRR = DATA_MASK2 | ((d&0xFF00)>>5); WRL_DELAY; WR_H; WRH_DELAY;}
-    #define WRITE8(d) { DATA_PORT1->BSRR = DATA_MASK1 | (d); WRL_DELAY; WR_H; WRH_DELAY;} 
+                       DATA_PORT2->BSRR = DATA_MASK2 | ((d&0xFF00)>>5); WR_H; }
+    #define WRITE8(d) { DATA_PORT1->BSRR = DATA_MASK1 | (d); WR_H; } 
     #define READ8(dst) { RD_L; RD_DELAY; dst = (uint8_t)(DATA_PORT1->IDR & (0x00FFU)); RD_H; }
     #define READ16(dst) { uint16_t hi; RD_L; RD_DELAY; dst = (uint8_t)(DATA_PORT1->IDR & (0x00FFU)); \
                         hi = (uint16_t)(DATA_PORT2->IDR & (0x07F8U)); dst |= ((hi << 5)&0xFF00); RD_H;}
@@ -241,9 +214,5 @@ static inline void set_pin_analog(GPIO_TypeDef* port, uint32_t pin) {
 
 static inline void digital_write(GPIO_TypeDef* port, uint32_t pin, uint8_t val) {
     if (!port) return;
-    if (val) {
-        LL_GPIO_SetOutputPin(port, pin);
-    } else {
-        LL_GPIO_ResetOutputPin(port, pin);
-    }
+    if (val) LL_GPIO_SetOutputPin(port, pin); else LL_GPIO_ResetOutputPin(port, pin);
 }

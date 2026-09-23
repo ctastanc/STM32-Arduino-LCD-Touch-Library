@@ -57,3 +57,4 @@ void fast_sin_cos(void) {
         delay(5); //speed up/down
     }
 }
+// fast_sin_cos.h dosyası

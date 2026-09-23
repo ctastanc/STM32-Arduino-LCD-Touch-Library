@@ -34,6 +34,7 @@
 #include <Scroll_Test.h>
 #include <bench1.h>
 #include <sys_oc.h>
+#include <pong.h>
 
 const uint16_t colors[16] ={ BLUE, RED, GREEN, CYAN, MAGENTA,  YELLOW, WHITE, ORANGE,
     DARKGREEN, DARKCYAN,MAROON,PURPLE,OLIVE,LIGHTGREY, GREENYELLOW,PINK};
@@ -67,7 +68,7 @@ void rotate_rect(void) {
         lcd.Fast_VLine(160,35,175,BLUE);
         lcd.Fill_Circle(160,120,40,BLACK);
         lcd.Circle(160,120,40,YELLOW);
-        for(int x=1;x<3;x++) { 
+        for(int z=1;z<3;z++) { 
             for(int x=1;x<91;x++) { 
                 lcd.Fill_Rotated_Rectangle(160,120,50,50,x,rn);
                 lcd.Fill_Rotated_Rectangle(80,60,50,50,90-x,rn);
@@ -109,7 +110,7 @@ void setup(void) {
        STM32F103 devices equipped with 8MHz crystal. 
        Do not use it if you lack sufficient knowledge about your hardware.
        Adverse results may occur. You bear full responsibility. */
-    SystemClock_OC(OC_96MHz); // Overclock to 96MHz
+    SystemClock_OC(OC_108MHz); // Overclock to 96MHz
     /**********************************************************************/
     analogReadResolution(12);
     Serial.begin(115200);
@@ -141,4 +142,7 @@ void loop(void) {
     colligate_test(); 
     //Scroll_Test();
     //read_test();
+    //pn.pong();
+    //lcd.Fill_Screen(BLUE);
+    
 }

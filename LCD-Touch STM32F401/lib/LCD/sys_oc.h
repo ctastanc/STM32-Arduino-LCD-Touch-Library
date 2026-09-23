@@ -10,9 +10,13 @@ extern "C" {
 #endif
 
 #define OC_96MHz 96
+#define OC_108MHz 108
+#define OC_120MHz 120
+//#define OC_130MHz 130
+//#define OC_144MHz 144
 
 #if defined(STM32F4xx)
-void SystemClock_Cfg(int PLLN, uint32_t PLLP, int PLLQ, uint32_t AHB, uint32_t APB1, uint32_t APB2)  {
+void SystemClock_Cfg(int PLLN, uint32_t PLLP, int PLLQ, uint32_t AHB, uint32_t APB1, uint32_t APB2, uint32_t FL)  {
 	RCC_OscInitTypeDef RCC_OscInitStruct = {};
 	RCC_ClkInitTypeDef RCC_ClkInitStruct = {};
 	RCC->CFGR &= ~RCC_CFGR_SW; // SYSCLK = HSI
@@ -35,7 +39,7 @@ void SystemClock_Cfg(int PLLN, uint32_t PLLP, int PLLQ, uint32_t AHB, uint32_t A
 	RCC_ClkInitStruct.AHBCLKDivider = AHB;
 	RCC_ClkInitStruct.APB1CLKDivider = APB1;
 	RCC_ClkInitStruct.APB2CLKDivider = APB2;
-	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)	{ Error_Handler(); }
+	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FL) != HAL_OK)	{ Error_Handler(); }
 	RCC->CR |= RCC_CR_PLLON;
 	while (!(RCC->CR & RCC_CR_PLLRDY));
 	// SYSCLK = PLL
@@ -84,12 +88,11 @@ void SystemClock_OC(int OC) {
     #if defined(STM32F4xx)
     switch(OC) {
         //case 90:  SystemClock_Cfg(180, RCC_PLLP_DIV2, 4, RCC_SYSCLK_DIV1, RCC_HCLK_DIV2, RCC_HCLK_DIV1); break;
-        case 96:  SystemClock_Cfg(192, RCC_PLLP_DIV2, 4, RCC_SYSCLK_DIV1, RCC_HCLK_DIV2, RCC_HCLK_DIV1); break;
-        //case 100: SystemClock_Cfg(200, RCC_PLLP_DIV2, 4, RCC_SYSCLK_DIV1, RCC_HCLK_DIV2, RCC_HCLK_DIV1); break;
-        //case 108: SystemClock_Cfg(432, RCC_PLLP_DIV4, 9, RCC_SYSCLK_DIV1, RCC_HCLK_DIV2, RCC_HCLK_DIV1); break;
-        //case 120: SystemClock_Cfg(240, RCC_PLLP_DIV2, 5, RCC_SYSCLK_DIV1, RCC_HCLK_DIV2, RCC_HCLK_DIV1); break;
-        //case 130: SystemClock_Cfg(260, RCC_PLLP_DIV2, 5, RCC_SYSCLK_DIV1, RCC_HCLK_DIV2, RCC_HCLK_DIV1); break;
-        //case 144: SystemClock_Cfg(288, RCC_PLLP_DIV2, 6, RCC_SYSCLK_DIV1, RCC_HCLK_DIV4, RCC_HCLK_DIV2); break;
+        case 96:  SystemClock_Cfg(192, RCC_PLLP_DIV2, 4, RCC_SYSCLK_DIV1, RCC_HCLK_DIV2, RCC_HCLK_DIV1, FLASH_LATENCY_3); break;
+        case 108: SystemClock_Cfg(432, RCC_PLLP_DIV4, 9, RCC_SYSCLK_DIV1, RCC_HCLK_DIV2, RCC_HCLK_DIV1, FLASH_LATENCY_4); break;
+        case 120: SystemClock_Cfg(240, RCC_PLLP_DIV2, 5, RCC_SYSCLK_DIV1, RCC_HCLK_DIV2, RCC_HCLK_DIV1, FLASH_LATENCY_4); break;
+        //case 130: SystemClock_Cfg(260, RCC_PLLP_DIV2, 5, RCC_SYSCLK_DIV1, RCC_HCLK_DIV2, RCC_HCLK_DIV1, FLASH_LATENCY_5); break;
+        //case 144: SystemClock_Cfg(288, RCC_PLLP_DIV2, 6, RCC_SYSCLK_DIV1, RCC_HCLK_DIV4, RCC_HCLK_DIV2, FLASH_LATENCY_5); break;
         default: Serial.println("Overclock could not be applied !"); break;
     }
     #elif defined(STM32F1xx)
