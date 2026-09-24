@@ -95,7 +95,7 @@ The following metrics prove the massive performance jump compared to standard di
 
 The "colligate_test()" function results:
 
-| colligate_test();     | Standard Code(Arduino Mega)	| This Code(STM32F401)	| Difference                |
+| colligate_test();     | Standard Code(Arduino Mega)	| This Code(STM32F401)	|         Difference        |
 | --------------------- | ---------------------------:	| --------------------:	| ------------------------: |
 | show text             | 	163,224 µs					|  1,058 µs				|   163224/1058 = 154 times |
 | show fill rectangle   | 	 95,412 µs         			|    724 µs				| 	  95412/724 = 131 times |
