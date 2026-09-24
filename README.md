@@ -76,7 +76,7 @@ void loop() {
 
 ## 📊 Benchmarks (STM32F401 Blackpill @ 108MHz Overclock)
 
-The following metrics prove the massive performance jump compared to standard display engines. A full **240x320 screen fill takes only 3.2 milliseconds**, yielding a theoretical limit of **312 FPS** over the parallel bus. 
+The following metrics prove the massive performance jump compared to standard display engines. A full **240x320 screen fill takes only 2.8 milliseconds**, yielding a theoretical limit of **357 FPS** over the parallel bus. 
 
 | Benchmark					| TestTime (Microseconds)	| Execution Style 				| 
 | -------------------------	| ----------------------:	| ----------------------------- | 
