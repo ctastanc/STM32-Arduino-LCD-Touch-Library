@@ -79,7 +79,7 @@ void loop() {
 The following metrics prove the massive performance jump compared to standard display engines. A full **240x320 screen fill takes only 3.2 milliseconds**, yielding a theoretical limit of **312 FPS** over the parallel bus. 
 
 | Benchmark					| TestTime (Microseconds)	| Execution Style 				| 
-| -------------------------	| ------------------------- | ----------------------------- | 
+| -------------------------	| ----------------------:	| ----------------------------- | 
 | Screen Fill (240x320)		|		 2,891 µs 			| Ultra-Fast Batching (357 FPS)	|
 | Cross Line(400 pixel)		|		   310 µs 			| Direct Port Write				|
 | Line(320 pixel)			| 			16 µs 			| Fully Inlined Address Window	|
