@@ -43,7 +43,7 @@ class LCD_GUI
     Derived& impl() { return static_cast<Derived&>(*this); }
     const Derived& impl() const { return static_cast<const Derived&>(*this); }
 	public:
-    /**************************************************************************/
+
     /*!
         @brief    Display char, string, number and float
         @param    val    Char, string, number or float number
@@ -56,20 +56,6 @@ class LCD_GUI
         @param    system Number system (default 10)
         @param    dec    Decimal point (default 2)
     */
-    /**************************************************************************/
-	/*template <typename T> 	
-    void Print(T val, int16_t x, int16_t y, uint8_t size, const RGB& fc, const RGB& bc=0, bool mode=0, int16_t system = 10, uint8_t dec = 2) {
-        text_mode = mode;
-		text_size = size;
-		text_fc = fc;
-		text_bc = bc;  
-		if constexpr (std::is_same_v<T, uint8_t*> || std::is_same_v<T, const uint8_t*> || std::is_same_v<T, char*> 
-			|| std::is_same_v<T, const char*>) { Print_Str((uint8_t*)val, x, y);} 
-		else if constexpr (std::is_same_v<T, String>) {	Print_Str((uint8_t *)(val.c_str()), x, y); } 
-		else if constexpr (std::is_floating_point_v<T>) { Print_Number_Float((double)val, dec, x, y, '.', 0, ' '); } 
-		else if constexpr (std::is_integral_v<T>) {	Print_Number_Int((long long)val, x, y, 0, ' ', system); }
-	}*/
-
     template <typename T> 	
     void Print(T val, int16_t x, int16_t y, uint8_t size, const RGB& fc, const RGB& bc=0, bool mode=0, int16_t system = 10, uint8_t dec = 2) {
         text_mode = mode;
@@ -107,11 +93,10 @@ class LCD_GUI
     void Fill_Scree(uint16_t color) { impl().Fill_Scree(color); }
     void Print_Str() { impl().Print_Str(); }
     
-    //Constructor to set text color
     LCD_GUI(void) {
-        text_bc = 0xF800; //default red
-        text_fc = 0x07E0;   //default green
-        draw_color= RGB(0xF800);// = 0xF800;   //default red
+        text_bc = 0xF800;
+        text_fc = 0x07E0;
+        draw_color= RGB(0xF800);
         text_size = 1;
         text_mode = 0;
     }
@@ -211,62 +196,38 @@ class LCD_GUI
                 // X-major: horizontal run slices
                 if (x1 > x2) { swap(x1, x2); swap(y1, y2); }
                 int16_t ystep = (y1 < y2) ? 1 : -1;
-                int16_t err = dx / 2;
-                int16_t run_start = x1;
+                int16_t err = dx / 2, run_start = x1;
                 for (int16_t x = x1; x < x2; x++) {
                     err -= dy;
                     if (err < 0) {
                         int16_t len = x - run_start + 1;
-                        if (len == 1) Draw_Pixe(run_start, y1, color);
-                        else Fast_HLine(run_start, y1, len, color);
+                        if (len == 1) Draw_Pixe(run_start, y1, color); else Fast_HLine(run_start, y1, len, color);
                         run_start = x + 1;
                         y1 += ystep;
                         err += dx;
                     }
                 }
                 int16_t len = x2 - run_start + 1;
-                if (len == 1) Draw_Pixe(run_start, y1, color);
-                else Fast_HLine(run_start, y1, len, color);
+                if (len == 1) Draw_Pixe(run_start, y1, color); else Fast_HLine(run_start, y1, len, color);
             } else {
                 // Y-major: vertical run slices
                 if (y1 > y2) { swap(x1, x2); swap(y1, y2); }
                 int16_t xstep = (x1 < x2) ? 1 : -1;
-                int16_t err = dy / 2;
-                int16_t run_start = y1;
+                int16_t err = dy / 2, run_start = y1;
                 for (int16_t y = y1; y < y2; y++) {
                     err -= dx;
                     if (err < 0) {
                         int16_t len = y - run_start + 1;
-                        if (len == 1) Draw_Pixe(x1, run_start, color);
-                        else Fast_VLine(x1, run_start, len, color);
+                        if (len == 1) Draw_Pixe(x1, run_start, color); else Fast_VLine(x1, run_start, len, color);
                         run_start = y + 1;
                         x1 += xstep;
                         err += dy;
                     }
                 }
                 int16_t len = y2 - run_start + 1;
-                if (len == 1) Draw_Pixe(x1, run_start, color);
-                else Fast_VLine(x1, run_start, len, color);
+                if (len == 1) Draw_Pixe(x1, run_start, color); else Fast_VLine(x1, run_start, len, color);
             }
         }
-    }
-
-    /*!
-    @brief   Draw a rectangle with no fill color
-        @param    x1   Top left corner x coordinate
-        @param    y1   Top left corner y coordinate
-        @param    x2   Bottom right corner x coordinate
-        @param    y2   Bottom right corner y coordinate
-        @param    color 16-bit or RGB(r,g,b) Color to draw with
-    */
-    void Rectangle_XY(int16_t x1, int16_t y1, int16_t x2, int16_t y2,const RGB& color) {
-        int16_t w = x2 - x1 + 1, h = y2 - y1 + 1;
-        if (w < 0) { x1 = x2; w = -w; }
-        if (h < 0) { y1 = y2; h = -h; }
-        Fill_Rect(x1, y1, w, 1, color);
-        Fill_Rect(x1, y2, w, 1, color);
-        Fill_Rect(x1, y1, 1, h, color);
-        Fill_Rect(x2, y1, 1, h, color);
     }
 
     /*!
@@ -277,27 +238,11 @@ class LCD_GUI
         @param    h     Height in pixels
         @param    color 16-bit or RGB(r,g,b) Color to draw with
     */
-    void Rectangle_WH(int16_t x, int16_t y, int16_t w, int16_t h, const RGB& color) {
+    void Rectangle(int16_t x, int16_t y, int16_t w, int16_t h, const RGB& color) {
         Fill_Rect(x, y, w, 1, color);
         Fill_Rect(x, y+h-1, w, 1, color);
         Fill_Rect(x, y, 1, h, color);
         Fill_Rect(x+w-1, y, 1, h, color);
-    }
-
-    /*!
-    @brief    Fill a rectangle completely with one color. Update in subclasses if
-    desired!
-        @param    x1   Top left corner x coordinate
-        @param    y1   Top left corner y coordinate
-        @param    x2   Bottom right corner x coordinate
-        @param    y2   Bottom right corner y coordinate
-        @param    color 16-bit or RGB(r,g,b) Color to fill with
-    */
-      void Fill_Rectangle_XY(int16_t x1, int16_t y1, int16_t x2, int16_t y2, const RGB& color) {
-        int w = x2 - x1 + 1, h = y2 - y1 + 1;
-        if (w < 0) { x1 = x2; w = -w; }
-        if (h < 0) { y1 = y2; h = -h; }
-        Fill_Rect(x1, y1, w, h, color);
     }
 
     /*!
@@ -308,31 +253,8 @@ class LCD_GUI
         @param    h     Height in pixels
         @param    color 16-bit or RGB(r,g,b) Color to fill with
     */
-      void Fill_Rectangle_WH(int16_t x, int16_t y, int16_t w, int16_t h, const RGB& color) {
+      void Fill_Rectangle(int16_t x, int16_t y, int16_t w, int16_t h, const RGB& color) {
         Fill_Rect(x, y, w, h, color);
-    }
-
-    /*!
-    @brief   Draw a rounded rectangle with no fill color
-        @param    x1   Top left corner x coordinate
-        @param    y1   Top left corner y coordinate
-        @param    x2   Bottom right corner x coordinate
-        @param    y2   Bottom right corner y coordinate
-        @param    r    Radius of corner rounding
-        @param    color 16-bit or RGB(r,g,b) Color to draw with
-    */
-    void Round_Rectangle_XY(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint8_t r,const RGB& color) {
-        int w = x2 - x1 + 1, h = y2 - y1 + 1;
-        if (w < 0) { x1 = x2; w = -w; }
-        if (h < 0) { y1 = y2; h = -h; }
-        Fill_Rect(x1+r, y1, w-2*r, 1, color);
-        Fill_Rect(x1+r, y1+h-1, w-2*r, 1, color);
-        Fill_Rect(x1, y1+r, 1, h-2*r, color);
-        Fill_Rect(x1+w-1, y1+r, 1, h-2*r, color);
-        Circle_Helper(x1+r, y1+r, r, 1, color);
-        Circle_Helper(x1+w-r-1, y1+r, r, 2, color);
-        Circle_Helper(x1+w-r-1, y1+h-r-1, r, 4, color);
-        Circle_Helper(x1+r, y1+h-r-1, r, 8, color);
     }
 
     /*!
@@ -344,7 +266,7 @@ class LCD_GUI
         @param    r     Radius of corner rounding
         @param    color 16-bit or RGB(r,g,b) Color to draw with
     */
-    void Round_Rectangle_WH(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r,const RGB& color) {
+    void Round_Rectangle(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r,const RGB& color) {
         Fill_Rect(x+r, y, w-2*r, 1, color);
         Fill_Rect(x+r, y+h-1, w-2*r, 1, color);
         Fill_Rect(x, y+r, 1, h-2*r, color);
@@ -357,24 +279,6 @@ class LCD_GUI
 
     /*!
     @brief   Draw a rounded rectangle with fill color
-        @param    x1   Top left corner x coordinate
-        @param    y1   Top left corner y coordinate
-        @param    x2   Bottom right corner x coordinate
-        @param    y2   Bottom right corner y coordinate
-        @param    r    Radius of corner rounding
-        @param    color 16-bit or RGB(r,g,b) Color to draw/fill with
-    */
-    void Fill_Round_Rectangle_XY(int16_t x1, int16_t y1, int16_t x2,int16_t y2, int16_t r,const RGB& color) {
-        int w = x2 - x1 + 1, h = y2 - y1 + 1;
-        if (w < 0) { x1 = x2; w = -w; }
-        if (h < 0) { y1 = y2; h = -h; }
-        Fill_Rect(x1+r, y1, w-2*r, h, color);
-        Fill_Circle_Helper(x1+w-r-1, y1+r, r, 1, h-2*r-1, color);
-        Fill_Circle_Helper(x1+r, y1+r, r, 2, h-2*r-1, color);
-    }
-
-    /*!
-    @brief   Draw a rounded rectangle with fill color
         @param    x     Top left corner x coordinate
         @param    y     Top left corner y coordinate
         @param    w     Width in pixels
@@ -382,7 +286,7 @@ class LCD_GUI
         @param    r     Radius of corner rounding
         @param    color 16-bit or RGB(r,g,b) Color to draw/fill with
     */
-    void Fill_Round_Rectangle_WH(int16_t x, int16_t y, int16_t w,int16_t h, int16_t r,const RGB& color) {
+    void Fill_Round_Rectangle(int16_t x, int16_t y, int16_t w,int16_t h, int16_t r,const RGB& color) {
         Fill_Rect(x+r, y, w-2*r, h, color);
         Fill_Circle_Helper(x+w-r-1, y+r, r, 1, h-2*r-1, color);
         Fill_Circle_Helper(x+r, y+r, r, 2, h-2*r-1, color);
@@ -581,64 +485,30 @@ class LCD_GUI
         @param  delta    Offset from center-point, used for round-rects
         @param  color    16-bit or RGB(r,g,b) Color to fill with
     */
-    /*void Fill_Circle_Helper(int16_t x0, int16_t y0, int16_t r, uint8_t corners, int16_t delta, uint16_t color) {
-        int16_t f = 1 - r, ddF_x = 1, ddF_y = -2 * r, x = 0, y = r;
-        while (x<y)	{
-            if (f >= 0)	{ y--; ddF_y += 2; f += ddF_y; }
-            x++; ddF_x += 2; f += ddF_x;
+    void Fill_Circle_Helper(int16_t x0, int16_t y0, int16_t r, uint8_t corners, int16_t delta, uint16_t color) {
+        int16_t f = 1 - r, ddF_x = 1, ddF_y = -2 * r, x = 0, y = r, last_y = r;
+        while (x < y) {
+            x++;
+            if (f >= 0) {
+                y--;
+                ddF_y += 2;
+                f += ddF_y;
+            }
+            ddF_x += 2;
+            f += ddF_x;
             if (corners & 0x1) {
-                Fill_Rect(x0+x, y0-y, 1, 2*y+1+delta, color);
-                Fill_Rect(x0+y, y0-x, 1, 2*x+1+delta, color);
+                Fill_Rect(x0 + x, y0 - y, 1, 2 * y + 1 + delta, color);
+                if (y != last_y) Fill_Rect(x0 + last_y, y0 - x + 1, 1, 2 * x - 1 + delta, color);
             }
             if (corners & 0x2) {
-                Fill_Rect(x0-x, y0-y, 1, 2*y+1+delta, color);
-                Fill_Rect(x0-y, y0-x, 1, 2*x+1+delta, color);
+                Fill_Rect(x0 - x, y0 - y, 1, 2 * y + 1 + delta, color);
+                if (y != last_y) Fill_Rect(x0 - last_y, y0 - x + 1, 1, 2 * x - 1 + delta, color);
             }
-        }
-    }*/
-
-    void Fill_Circle_Helper(int16_t x0, int16_t y0, int16_t r, uint8_t corners, int16_t delta, uint16_t color) {
-    int16_t f = 1 - r, ddF_x = 1, ddF_y = -2 * r, x = 0, y = r;
-    int16_t last_y = r;
-
-    while (x < y) {
-        x++;
-        if (f >= 0) {
-            y--;
-            ddF_y += 2;
-            f += ddF_y;
-        }
-        ddF_x += 2;
-        f += ddF_x;
-
-        // 1. KISIM: corners & 0x1 -> Çemberin SAĞ çeyrekleri (Eksiksiz çizim)
-        if (corners & 0x1) {
-            Fill_Rect(x0 + x, y0 - y, 1, 2 * y + 1 + delta, color);
-            // y değiştiğinde (yeni bir basamağa geçildiğinde) aradaki dikey boşluğu tek seferde doldurur
-            if (y != last_y) {
-                Fill_Rect(x0 + last_y, y0 - x + 1, 1, 2 * x - 1 + delta, color);
-            }
-        }
-        
-        // 2. KISIM: corners & 0x2 -> Çemberin SOL çeyrekleri (Önceki hatanın düzeltildiği, eksiksiz çizim)
-        if (corners & 0x2) {
-            Fill_Rect(x0 - x, y0 - y, 1, 2 * y + 1 + delta, color);
-            // Sol taraftaki simetrik dikey çizgiyi, sağ tarafla aynı basamak mantığında hatasız çizer
-            if (y != last_y) {
-                Fill_Rect(x0 - last_y, y0 - x + 1, 1, 2 * x - 1 + delta, color);
-            }
-        }
-
-        // Döngünün sonunda bir sonraki adım için last_y güncellenir
-        if (y != last_y) {
-            last_y = y;
+            if (y != last_y) last_y = y;
         }
     }
-}
 
-
-
-    /*!
+     /*!
     @brief   Draw a triangle with no fill color
         @param    x0  Vertex #0 x coordinate
         @param    y0  Vertex #0 y coordinate
@@ -670,15 +540,14 @@ class LCD_GUI
         if (y1 > y2) { swap(y2, y1); swap(x2, x1); }
         if (y0 > y1) { swap(y0, y1); swap(x0, x1); }
 
-        if (y0 == y2) return; // Nokta veya yatay çizgi durumu
+        if (y0 == y2) return; 
 
         int16_t dx01 = x1 - x0, dy01 = y1 - y0;
         int16_t dx02 = x2 - x0, dy02 = y2 - y0;
         int16_t dx12 = x2 - x1, dy12 = y2 - y1;
         int32_t sa = 0, sb = 0;
 
-        if (y1 == y2) last = y1;   
-        else          last = y1 - 1; 
+        if (y1 == y2) last = y1; else last = y1 - 1; 
 
         for (y = y0; y <= last; y++) {
             a = x0 + sa / dy01;
@@ -700,8 +569,6 @@ class LCD_GUI
             Fill_Rect(a, y, b - a + 1, 1, color);
         }
     }
-
-    
 
     /*!
     @brief    Draw an ellipse outline
@@ -886,6 +753,6 @@ class LCD_GUI
 	uint8_t text_size;
     size_t text_len;
     const uint8_t *text;
-	bool text_mode; //if set,text_bc
+	bool text_mode; 
 };
 

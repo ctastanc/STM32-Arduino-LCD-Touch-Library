@@ -88,16 +88,16 @@ void phonecall() {
                         n++;}
                     }
                     else if(12 == i) {
-                        lcd.Fill_Rectangle_XY(0, 33, lcd.Width-1, 42,BLACK);
+                        lcd.Fill_Rectangle(0, 33, lcd.Width, 10,BLACK);
                         lcd.Print("Calling ended",CENTER,33,1,RED);} 
                     else if(13 == i) {
-                        lcd.Fill_Rectangle_XY(0, 33, lcd.Width-1, 42,BLACK);
+                        lcd.Fill_Rectangle(0, 33, lcd.Width, 10,BLACK);
                         lcd.Print("Calling...",CENTER,33,1,GREEN);}
                     else if(14 == i) {
-                        lcd.Fill_Rectangle_XY(0, 33, lcd.Width-1, 42,BLACK);
+                        lcd.Fill_Rectangle(0, 33, lcd.Width, 10,BLACK);
                         if(n > 0) {
                             text_x -= (text_x_add-1);  
-                            lcd.Fill_Rectangle_XY(text_x, text_y, text_x+text_x_add-1, text_y+text_y_add-2,BLACK);
+                            lcd.Fill_Rectangle(text_x, text_y, text_x_add, text_y_add-1,BLACK);
                             n--;}
     }   }   }   }   }   
 }

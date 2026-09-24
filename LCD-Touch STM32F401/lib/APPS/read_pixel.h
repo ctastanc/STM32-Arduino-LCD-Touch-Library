@@ -2,11 +2,7 @@
 
 class readp{
     public:
-    static readp& getInstance() {
-        static readp instance(1); 
-        return instance;
-    }
-    readp(uint16_t m) {};
+    readp() {};
     void color_dump(uint16_t x,uint16_t y)
     {
         char buf[30] = {0},pbuf[10] = {0};
@@ -58,6 +54,6 @@ class readp{
 
 };
 
-#define rp readp::getInstance()
+readp rp;
 
 

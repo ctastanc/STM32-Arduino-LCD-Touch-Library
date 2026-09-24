@@ -39,7 +39,7 @@ class meter{
     {
     //lcd.setTextColor(TFT_BLACK, TFT_WHITE);
     char buf[8]; dtostrf(value, 3, 0, buf);
-    lcd.Fill_Rectangle_WH(10,99,33,20,WHITE);
+    lcd.Fill_Rectangle(10,99,33,20,WHITE);
     lcd.Print(buf, 10, 119 - 20, 2, BLACK, WHITE);
     //lcd.drawRightString(buf, 40, 119 - 20, 2);
 
@@ -98,8 +98,8 @@ class meter{
     void analogMeter()
     {
     // Meter outline
-    lcd.Fill_Rectangle_WH(0, 0, 239, 126, LIGHTGREY);
-    lcd.Fill_Rectangle_WH(5, 3, 230, 119, WHITE);
+    lcd.Fill_Rectangle(0, 0, 239, 126, LIGHTGREY);
+    lcd.Fill_Rectangle(5, 3, 230, 119, WHITE);
 
     //lcd.setTextColor(BLACK);  // Text colour
 
@@ -187,7 +187,7 @@ class meter{
     lcd.Print("%RH", 5 + 230 - 40, 119 - 20, 2, BLACK); // Units at bottom right
     //lcd.drawString("%RH", 5 + 230 - 40, 119 - 20, 2); // Units at bottom right
     //lcd.drawCentreString("%RH", 120, 70, 4); // Comment out to avoid font 4
-    lcd.Rectangle_WH(5, 3, 230, 119, BLACK); // Draw bezel line
+    lcd.Rectangle(5, 3, 230, 119, BLACK); // Draw bezel line
 
     plotNeedle(0, 0); // Put meter needle at 0
     }
@@ -199,8 +199,8 @@ class meter{
     void plotLinear(const char *label, int x, int y)
     {
     int w = 36;
-    lcd.Rectangle_WH(x, y, w, 155, LIGHTGREY);
-    lcd.Rectangle_WH(x + 2, y + 19, w - 3, 155 - 38, WHITE);
+    lcd.Rectangle(x, y, w, 155, LIGHTGREY);
+    lcd.Rectangle(x + 2, y + 19, w - 3, 155 - 38, WHITE);
     //lcd.setTextColor(CYAN, BLACK);
     lcd.Print(label, (x + w / 2) - 10, y + 2, 2, CYAN, BLACK);
     //lcd.drawCentreString(label, x + w / 2, y + 2, 2);

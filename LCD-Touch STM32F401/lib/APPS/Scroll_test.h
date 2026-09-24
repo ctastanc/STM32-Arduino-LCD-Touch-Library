@@ -77,7 +77,7 @@ void Scroll_Test(void) {
                 for (n = 0; n < 32; n++) {
                     rgb = n * 8;
                     rgb = RGB(rgb, rgb, rgb).val;
-                    lcd.Fill_Rectangle_WH(n * dx, 48, dx, 63, rgb & colormask[aspect]);
+                    lcd.Fill_Rectangle(n * dx, 48, dx, 63, rgb & colormask[aspect]);
                 }
                 lcd.Print(colorname[aspect],5,72,2,colormask[aspect],BLACK);
 

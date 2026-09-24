@@ -74,10 +74,10 @@ class pongs {
     void lpaddle() {
         
         if (lpaddle_d == 1) {
-            lcd.Fill_Rectangle_WH(lpaddle_x, lpaddle_y, paddle_w, 1, BLACK);
+            lcd.Fill_Rectangle(lpaddle_x, lpaddle_y, paddle_w, 1, BLACK);
         } 
         else if (lpaddle_d == -1) {
-            lcd.Fill_Rectangle_WH(lpaddle_x, lpaddle_y + paddle_h - 1, paddle_w, 1, BLACK);
+            lcd.Fill_Rectangle(lpaddle_x, lpaddle_y + paddle_h - 1, paddle_w, 1, BLACK);
         }
 
         lpaddle_y = lpaddle_y + lpaddle_d;
@@ -92,16 +92,16 @@ class pongs {
         if (lpaddle_y + paddle_h >= h && lpaddle_d == 1) lpaddle_d = 0;
         else if (lpaddle_y <= 0 && lpaddle_d == -1) lpaddle_d = 0;
 
-        lcd.Fill_Rectangle_WH(lpaddle_x, lpaddle_y, paddle_w, paddle_h, CYAN);
+        lcd.Fill_Rectangle(lpaddle_x, lpaddle_y, paddle_w, paddle_h, CYAN);
     }
 
     void rpaddle() {
     
         if (rpaddle_d == 1) {
-            lcd.Fill_Rectangle_WH(rpaddle_x, rpaddle_y, paddle_w, 1, BLACK);
+            lcd.Fill_Rectangle(rpaddle_x, rpaddle_y, paddle_w, 1, BLACK);
         } 
         else if (rpaddle_d == -1) {
-            lcd.Fill_Rectangle_WH(rpaddle_x, rpaddle_y + paddle_h - 1, paddle_w, 1, BLACK);
+            lcd.Fill_Rectangle(rpaddle_x, rpaddle_y + paddle_h - 1, paddle_w, 1, BLACK);
         }
 
         rpaddle_y = rpaddle_y + rpaddle_d;
@@ -116,7 +116,7 @@ class pongs {
         if (rpaddle_y + paddle_h >= h && rpaddle_d == 1) rpaddle_d = 0;
         else if (rpaddle_y <= 0 && rpaddle_d == -1) rpaddle_d = 0;
 
-        lcd.Fill_Rectangle_WH(rpaddle_x, rpaddle_y, paddle_w, paddle_h, YELLOW);
+        lcd.Fill_Rectangle(rpaddle_x, rpaddle_y, paddle_w, paddle_h, YELLOW);
     }
 
     void calc_target_y() {
@@ -165,7 +165,7 @@ class pongs {
         }
 
         //lcd.Rectangle_WH(oldball_x, oldball_y, ball_w, ball_h, BLACK); // Less TFT refresh aliasing than line above for large balls
-        //lcd.Fill_Rectangle_WH(   ball_x,    ball_y, ball_w, ball_h, RED);
+        //lcd.Fill_Rectangle(   ball_x,    ball_y, ball_w, ball_h, RED);
 
         lcd.Fill_Circle(oldball_x, oldball_y, ball_w/2, BLACK); // Less TFT refresh aliasing than line above for large balls
         lcd.Fill_Circle(ball_x, ball_y, ball_w/2, RED);

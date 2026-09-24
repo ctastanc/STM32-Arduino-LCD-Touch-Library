@@ -4,11 +4,7 @@
 
 class swi{
     public:
-     static swi& getInstance() {
-        static swi instance(1); 
-        return instance;
-    }
-    swi(uint16_t m) {};
+    swi() {};
     bool switch_flag_1 = true,switch_flag_2 = true,switch_flag_3 = true,switch_flag_4 = true,switch_flag_5 = true,switch_flag_6 = true;  
     int16_t menu_flag = 1,old_menu_flag;     
 
@@ -38,31 +34,31 @@ class swi{
         {
             case 1:
             {
-                lcd.Fill_Rectangle_XY(0, 147, lcd.Width-1, 166,BLUE);
+                lcd.Fill_Rectangle(0, 147, lcd.Width, 20,BLUE);
                 lcd.Print("time setting",10,150,2,WHITE, BLACK,0);
                 break;
             }
             case 2:
             {
-                lcd.Fill_Rectangle_XY(0, 167, lcd.Width-1, 186,BLUE);
+                lcd.Fill_Rectangle(0, 167, lcd.Width, 20,BLUE);
                 lcd.Print("date setting",10,170,2,WHITE, BLACK,0);
                 break;
             }
             case 3:
             {
-                lcd.Fill_Rectangle_XY(0, 187, lcd.Width-1, 206,BLUE);
+                lcd.Fill_Rectangle(0, 187, lcd.Width, 20,BLUE);
                 lcd.Print("alarm setting",10,190,2,WHITE, BLACK,0);
                 break;
             }
             case 4:
             {
-                lcd.Fill_Rectangle_XY(0, 207, lcd.Width-1, 226,BLUE);
+                lcd.Fill_Rectangle(0, 207, lcd.Width, 20,BLUE);
                 lcd.Print("talk setting",10,210,2,WHITE, BLACK,0);
                 break;
             }
             case 5:
             {
-                lcd.Fill_Rectangle_XY(0, 227, lcd.Width-1, 246,BLUE);
+                lcd.Fill_Rectangle(0, 227, lcd.Width, 20,BLUE);
                 lcd.Print("sound setting",10,230,2,WHITE, BLACK,0);
                 break;
             }
@@ -125,14 +121,14 @@ class swi{
                     if(switch_flag_1)
                     {   //display off 
                         show_picture((uint8_t*)switch_off_2,sizeof(switch_off_2)/2,5,5,34,34);
-                        lcd.Fill_Rectangle_XY(60, 11,  216, 27,WHITE);
+                        lcd.Fill_Rectangle(60, 11,  157, 17,WHITE);
                         lcd.Print("switch is off ",60,11,2,RED, BLACK,0); 
                         switch_flag_1 = false;
                     }
                     else
                     {  //display on
                     show_picture((uint8_t*)switch_on_2,sizeof(switch_on_2)/2,5,5,34,34);
-                    lcd.Fill_Rectangle_XY(60, 11,  216, 27,WHITE);
+                    lcd.Fill_Rectangle(60, 11,  157, 17,WHITE);
                     lcd.Print("switch is on ",60,11,2,GREEN, BLACK,0);
                     switch_flag_1 = true;
                     }
@@ -196,9 +192,9 @@ class swi{
                 }
                 if(is_pressed(5,119,lcd.Width-1,137,p.x,p.y))
                 {     
-                    lcd.Fill_Rectangle_XY(0, 117, lcd.Width-1, 137,MAGENTA);
+                    lcd.Fill_Rectangle(0, 117, lcd.Width, 21,MAGENTA);
                     delay(100);
-                    lcd.Fill_Rectangle_XY(0, 117, lcd.Width-1, 137,WHITE);
+                    lcd.Fill_Rectangle(0, 117, lcd.Width, 21,WHITE);
                     if(switch_flag_6)
                     {
                         lcd.Print("system setting   <",5,119,2,BLUE, BLACK,0);
@@ -208,7 +204,7 @@ class swi{
                     else
                     {
                         lcd.Print("system setting   >",5,119,2,BLUE, BLACK,0);
-                        lcd.Fill_Rectangle_XY(0, 147, lcd.Width-1, 250,WHITE);
+                        lcd.Fill_Rectangle(0, 147, lcd.Width, 104,WHITE);
                         switch_flag_6 = true;
                     }
                 }
@@ -217,31 +213,31 @@ class swi{
                     old_menu_flag = menu_flag;     
                     if(is_pressed(0,147,lcd.Width-1,166,p.x,p.y))
                     {
-                        lcd.Fill_Rectangle_XY(0, 147, lcd.Width-1, 166,BLUE);
+                        lcd.Fill_Rectangle(0, 147, lcd.Width, 20,BLUE);
                         lcd.Print("time setting",10,150,2,WHITE, BLACK,0);
                         menu_flag = 1;
                     }
                     if(is_pressed(0,167,lcd.Width-1,186,p.x,p.y))
                     {
-                        lcd.Fill_Rectangle_XY(0, 167, lcd.Width-1, 186,BLUE);
+                        lcd.Fill_Rectangle(0, 167, lcd.Width, 20,BLUE);
                         lcd.Print("date setting",10,170,2,WHITE, BLACK,0);
                         menu_flag = 2;
                     }
                     if(is_pressed(0,187,lcd.Width-1,206,p.x,p.y))
                     {
-                        lcd.Fill_Rectangle_XY(0, 187, lcd.Width-1, 206,BLUE);
+                        lcd.Fill_Rectangle(0, 187, lcd.Width, 20,BLUE);
                         lcd.Print("alarm setting",10,190,2,WHITE, BLACK,0);
                         menu_flag = 3;
                     }
                     if(is_pressed(0,207,lcd.Width-1,226,p.x,p.y))
                     {
-                        lcd.Fill_Rectangle_XY(0, 207, lcd.Width-1, 226,BLUE);
+                        lcd.Fill_Rectangle(0, 207, lcd.Width, 20,BLUE);
                         lcd.Print("talk setting",10,210,2,WHITE, BLACK,0);
                         menu_flag = 4;
                     }
                     if(is_pressed(0,227,lcd.Width-1,246,p.x,p.y))
                     {
-                        lcd.Fill_Rectangle_XY(0, 227, lcd.Width-1, 246,BLUE);
+                        lcd.Fill_Rectangle(0, 227, lcd.Width, 20,BLUE);
                         lcd.Print("sound setting",10,230,2,WHITE, BLACK,0);
                         menu_flag = 5;
                     }  
@@ -251,31 +247,31 @@ class swi{
                         {
                             case 1:
                             {
-                                lcd.Fill_Rectangle_XY(0, 147, lcd.Width-1, 166,WHITE);
+                                lcd.Fill_Rectangle(0, 147, lcd.Width, 20,WHITE);
                                 lcd.Print("time setting",10,150,2,BLACK, BLACK,0);
                                 break;
                             }
                             case 2:
                             {
-                                lcd.Fill_Rectangle_XY(0, 167, lcd.Width-1, 186,WHITE);
+                                lcd.Fill_Rectangle(0, 167, lcd.Width, 20,WHITE);
                                 lcd.Print("date setting",10,170,2,BLACK, BLACK,0);
                                 break;
                             }
                             case 3:
                             {
-                                lcd.Fill_Rectangle_XY(0, 187, lcd.Width-1, 206,WHITE);
+                                lcd.Fill_Rectangle(0, 187, lcd.Width, 20,WHITE);
                                 lcd.Print("alarm setting",10,190,2,BLACK, BLACK,0);
                                 break;
                             }
                             case 4:
                             {
-                                lcd.Fill_Rectangle_XY(0, 207, lcd.Width-1, 226,WHITE);
+                                lcd.Fill_Rectangle(0, 207, lcd.Width, 20,WHITE);
                                 lcd.Print("talk setting",10,210,2,BLACK, BLACK,0);
                                 break;
                             }
                             case 5:
                             {
-                                lcd.Fill_Rectangle_XY(0, 227, lcd.Width-1, 246,WHITE);
+                                lcd.Fill_Rectangle(0, 227, lcd.Width, 20,WHITE);
                                 lcd.Print("sound setting",10,230,2,BLACK, BLACK,0);
                                 break;
                             }
@@ -290,5 +286,4 @@ class swi{
     }
 };
 
-
-#define sw swi::getInstance()
+swi sw;

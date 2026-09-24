@@ -42,8 +42,8 @@ class disp_s {
         for(i=0;i<cnum;i++)
         {
             for(n=0;n<32;n++) {
-            lcd.Fill_Rectangle_XY(n*lcd.Width/32,(lcd.Height/cnum)*i,(n+1)*lcd.Width/32,(lcd.Height/cnum)*(i+1),
-                                    RGB(n*8, n*8, n*8).val&color_mask[i]);
+            lcd.Fill_Rectangle(n*lcd.Width/32,(lcd.Height/cnum)*i, lcd.Width/32+1, lcd.Height/cnum +1 ,
+                                    RGB(n*8, n*8, n*8)&color_mask[i]);
             }
             lcd.Print(color_name[i],0,((lcd.Height/cnum)-16)/2+(lcd.Height/cnum)*i,2,color_mask[i], BLACK,0);
         }
@@ -81,8 +81,7 @@ class disp_s {
                 text_test();    
                 delay(1000);
                 for(n=0;n<32;n++) {
-                    lcd.Fill_Rectangle_XY(n*lcd.Width/32,48,(n+1)*lcd.Width/32,112,
-                                        RGB(n*8, n*8, n*8).val&color_mask[rotation]);
+                    lcd.Fill_Rectangle(n*lcd.Width/32, 48, lcd.Width/32+1, 65, RGB(n*8, n*8, n*8)&color_mask[rotation]);
                 }
                 lcd.Print("COLOR TESTING",50,72,2,color_mask[rotation+1], BLACK,0);
                 lcd.Print(aspect_name[rotation],0,184,2,WHITE, BLACK,1);       

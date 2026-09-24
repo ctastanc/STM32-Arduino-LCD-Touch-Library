@@ -38,7 +38,7 @@ class metlin{
     char buf[8]; dtostrf(value, 4, 0, buf);
     lcd.Print("%RH", M_SIZE*(5 + 230 - 40), M_SIZE*(119 - 20), 2,BLACK,WHITE); // Units at bottom right
     //lcd.drawString("%RH", M_SIZE*(5 + 230 - 40), M_SIZE*(119 - 20), 2,BLACK,WHITE); // Units at bottom right
-    lcd.Fill_Rectangle_WH(M_SIZE*40-40, M_SIZE*(119 - 20),33,16,WHITE);
+    lcd.Fill_Rectangle(M_SIZE*40-40, M_SIZE*(119 - 20),33,16,WHITE);
     lcd.Print(buf, M_SIZE*40-40, M_SIZE*(119 - 20), 2,BLACK,WHITE,1);
     //lcd.drawRightString(buf, M_SIZE*40, M_SIZE*(119 - 20), 2);
 
@@ -98,8 +98,8 @@ class metlin{
     {
 
     // Meter outline
-    lcd.Fill_Rectangle_WH(0, 0, M_SIZE*239, M_SIZE*126, LIGHTGREY);
-    lcd.Fill_Rectangle_WH(5, 3, M_SIZE*230, M_SIZE*119, WHITE);
+    lcd.Fill_Rectangle(0, 0, M_SIZE*239, M_SIZE*126, LIGHTGREY);
+    lcd.Fill_Rectangle(5, 3, M_SIZE*230, M_SIZE*119, WHITE);
 
     //lcd.setTextColor(TFT_BLACK);  // Text colour
 
@@ -189,7 +189,7 @@ class metlin{
 
     //lcd.drawCentreString("%RH", M_SIZE*120, M_SIZE*70, 4); // Comment out to avoid font 4
 
-    lcd.Rectangle_WH(5, 3, M_SIZE*230, M_SIZE*119, BLACK); // Draw bezel line
+    lcd.Rectangle(5, 3, M_SIZE*230, M_SIZE*119, BLACK); // Draw bezel line
     plotNeedle(0, 0); // Put meter needle at 0
     }
 

@@ -130,23 +130,23 @@ class ben2{
         start = micros();
         for(i=2; i<n; i+=6) {
             i2 = i / 2;
-            lcd.Rectangle_WH(cx-i2, cy-i2, i, i, color);
+            lcd.Rectangle(cx-i2, cy-i2, i, i, color);
         }
         return micros() - start;
     }
 
     unsigned long testFilledRects(uint16_t color1, uint16_t color2) {
         unsigned long start, t = 0;
-        int n, i, i2, cx = lcd.Width  / 2 - 1, cy = lcd.Height / 2 - 1;
+        int n, i, i2, cx = lcd.Width  / 2 , cy = lcd.Height / 2 ;
         lcd.Fill_Screen(BLACK);
         n = min(lcd.Width, lcd.Height);
         for(i=n; i>0; i-=6) {
             i2 = i / 2;
             start = micros();
-            lcd.Fill_Rectangle_WH(cx-i2, cy-i2, i, i, color1);
+            lcd.Fill_Rectangle(cx-i2, cy-i2, i, i, color1);
             t += micros() - start;
             // Outlines are not included in timing results
-            lcd.Rectangle_WH(cx-i2, cy-i2, i, i, color2);
+            lcd.Rectangle(cx-i2, cy-i2, i, i, color2);
         }
         return t;
     }
@@ -217,7 +217,7 @@ class ben2{
         start = micros();
         for(i=0; i<w; i+=6) {
             i2 = i / 2;
-            lcd.Round_Rectangle_WH(cx-i2, cy-i2, i, i, i/8, RGB(i, 0, 0));
+            lcd.Round_Rectangle(cx-i2, cy-i2, i, i, i/8, RGB(i, 0, 0));
         }
         return micros() - start;
     }
@@ -229,14 +229,14 @@ class ben2{
         start = micros();
         for(i=min(lcd.Width, lcd.Height); i>20; i-=6) {
             i2 = i / 2;
-            lcd.Fill_Round_Rectangle_WH(cx-i2, cy-i2, i, i, i/8, RGB(0, i, 0));
+            lcd.Fill_Round_Rectangle(cx-i2, cy-i2, i, i, i/8, RGB(0, i, 0));
         }
         return micros() - start;
     }
 
     void bench2() {
         lcd.Set_Rotation(PORTRAIT);
-        Serial.println("ILI9341 Test!"); 
+        /*Serial.println("ILI9341 Test!"); 
         // read diagnostics (optional but can help debug problems)
         uint8_t x = lcd.Read_Reg(ILI9341_RDMODE,1);
         Serial.print("Display Power Mode: 0x"); Serial.println(x, HEX);
@@ -247,7 +247,7 @@ class ben2{
         x = lcd.Read_Reg(ILI9341_RDIMGFMT,1);
         Serial.print("Image Format: 0x"); Serial.println(x, HEX);
         x = lcd.Read_Reg(ILI9341_RDSELFDIAG,1);
-        Serial.print("Self Diagnostic: 0x"); Serial.println(x, HEX);
+        Serial.print("Self Diagnostic: 0x"); Serial.println(x, HEX);*/
         int d =1000;    
         Serial.println(F("Benchmark                Time (microseconds)"));
         delay(10);
@@ -304,14 +304,14 @@ class ben2{
         delay(d);
 
         Serial.println(F("Done!"));
-            for(uint8_t rotation=0; rotation<4; rotation++) {
+        /*for(uint8_t rotation=0; rotation<4; rotation++) {
             lcd.Set_Rotation(rotation);
             testText_fr();
             delay(1000);
             lcd.Fill_Screen(BLACK);
             testText_bg();
             delay(1000);
-        }
+        }*/
     }
 };
 

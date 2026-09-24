@@ -25,11 +25,6 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
     //uint8_t char_spc = 2;
 	int16_t Width, Height, rotation, rot_val;
 
-    static LCD_SRW& getInstance() {
-        static LCD_SRW instance; 
-        return instance;
-    }
-
     LCD_SRW() {
         SET_PORTS();
         RS_DATA; CS_H; WR_H; RD_H; RST_L; RST_H;
@@ -77,8 +72,7 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
     }
 
     void reset(void) {
-        CS_H; RD_H; WR_H;
-        RST_L; delay(2); RST_H;
+        CS_H; RD_H; WR_H; RST_L; delay(2); RST_H;
         CS_L;
         CMD8(0x00);
         for(uint8_t i=0; i<3; i++) { WR_L; WR_H; }
@@ -450,26 +444,21 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
     }
 
     void Fill_Scree(uint16_t c) {
-        uint8_t rt=PORTRAIT;
-        if (rotation != PORTRAIT) {rt = rotation; Set_Rotation(PORTRAIT);} // Rotation 0 to reduce tearing
+        //uint8_t rt=PORTRAIT;
+        //if (rotation != PORTRAIT) {rt = rotation; Set_Rotation(PORTRAIT);} // Rotation 0 to reduce tearing
         CS_L; Set_Addr_Window(0, 0, Width-1, Height-1);	CMD8(MW);
         uint32_t n = (240UL * 320UL) / 48;
         while (n--) { BLOCK8(c); BLOCK8(c); BLOCK8(c); BLOCK8(c); BLOCK8(c); BLOCK8(c);}
         if constexpr(LCD_DRIVER == ID_932X) {Set_Addr_Window(0, 0, Width-1, Height-1);}
         else if constexpr(LCD_DRIVER == ID_7575) Set_LR(); 
         CS_H;
-        if (rotation != rt) Set_Rotation(rt);
+        //if (rotation != rt) Set_Rotation(rt);
     }
 
     __attribute__((optimize("unroll-loops")))
     __attribute__((always_inline)) inline void Fill_Rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t c) {
+        if (w <= 0 || h <= 0) return; 
         int16_t end;
-        if (w < 0) { w = -w; x -= w; } end = x + w;
-        if (x < 0) { x = 0; }
-        if (end > Width) { end = Width; } w = end - x;
-        if (h < 0) { h = -h; y -= h; } end = y + h;
-        if (y < 0) { y = 0; }
-        if (end > Height) { end = Height; } h = end - y;
         uint32_t n = h * w;
         CS_L; Set_Addr_Window(x, y, x+w-1, y+h-1); CMD8(MW);
         //while(n--){DATA16(c);}

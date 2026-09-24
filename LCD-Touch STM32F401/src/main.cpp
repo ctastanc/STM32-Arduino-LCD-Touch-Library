@@ -14,7 +14,7 @@
 *     Touch           XP     YM
 *=================================================================================
 *
-* LCD_SYS_INTERFACE, MCU_SPEED, LCD_MODEL and PIN DEFNITIONS are defined in setting.h
+* LCD_MODEL, LCD_SYS_INTERFACE and PIN DEFNITIONS are defined in setting.h
 *
 **********************************************************************************/
 
@@ -32,7 +32,7 @@
 #include <clock_analog.h>
 #include <disp_scroll.h>
 #include <Scroll_Test.h>
-#include <bench1.h>
+#include <test_lcd.h>
 #include <sys_oc.h>
 #include <pong.h>
 
@@ -63,7 +63,7 @@ void rotate_rect(void) {
     while(1) {
         srand(time(0));
         int rn = colors[(rand() % 16)];
-        lcd.Rectangle_WH(0,0,lcd.Width,lcd.Height,YELLOW);
+        lcd.Rectangle(0,0,lcd.Width,lcd.Height,YELLOW);
         lcd.Fast_HLine(35,120,245,BLUE);
         lcd.Fast_VLine(160,35,175,BLUE);
         lcd.Fill_Circle(160,120,40,BLACK);
@@ -131,7 +131,6 @@ void loop(void) {
     //touch_demo();
     //phonecall();
     //b2.bench2();
-    //b1.bench1();
     //ml.Meter_Linear();
     //cl.clock_analog();
     //mt.meters();
@@ -139,10 +138,9 @@ void loop(void) {
     //cb.cube_demo();
     //rp.read_pixel();
     //sw.switch_test();
-    colligate_test(); 
+    //colligate_test(); 
     //Scroll_Test();
     //read_test();
     //pn.pong();
-    //lcd.Fill_Screen(BLUE);
-    
+    test_lcd();
 }

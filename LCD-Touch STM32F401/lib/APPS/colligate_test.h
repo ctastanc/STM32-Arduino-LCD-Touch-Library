@@ -4,11 +4,11 @@ unsigned long show_triangle_function(void);
 //display main surface
 unsigned long show_text(void){
     unsigned long time_start = micros();
-    lcd.Fill_Rectangle_XY(0, 0, lcd.Width-1, 14,RGB(32, 0,255));
+    lcd.Fill_Rectangle(0, 0, lcd.Width, 15,RGB(32, 0,255));
     lcd.Print("* Universal Color TFT Display Library *",CENTER,3,1,0x07E0);
-    lcd.Fill_Rectangle_XY(0, lcd.Height-15, lcd.Width-1, lcd.Height-1,RGB(128, 128, 128));
-    lcd.Print("---> http://www.........com <---",CENTER,lcd.Height-11,1,0xFFFF);
-    lcd.Rectangle_XY(0, 15, lcd.Width-1, lcd.Height-16,RGB(32, 0, 255));   
+    lcd.Fill_Rectangle(0, lcd.Height-15, lcd.Width, 15,RGB(128, 128, 128));
+    lcd.Print("---> http://www.lcdwiki.com <---",CENTER,lcd.Height-11,1,0xFFFF);
+    lcd.Rectangle(0, 15, lcd.Width, lcd.Height-30,RGB(32, 0, 255));   
     return micros() - time_start;
 }
 
@@ -114,8 +114,8 @@ unsigned long show_fill_rectangle(void){
         default:
             break;
         }   
-        lcd.Fill_Rectangle_XY(x_spec+i*side_len-1, y_spec+i*side_len-1, x_spec+(i+1)*side_len-1, y_spec+(i+1)*side_len-1,lcd.Get_Draw_Color());
-        lcd.Fill_Rectangle_XY(x_spec+i*side_len-1, y_spec+(5-i)*side_len-1, x_spec+(i+1)*side_len-1, y_spec+(4-i)*side_len-1,lcd.Get_Draw_Color()); 
+        lcd.Fill_Rectangle(x_spec+i*side_len-1, y_spec+i*side_len-1, side_len+1, side_len+1,lcd.Get_Draw_Color());
+        lcd.Fill_Rectangle(x_spec+i*side_len-1, y_spec+(4-i)*side_len-1, side_len+1, side_len+1,lcd.Get_Draw_Color()); 
     }
     return micros()- time_start;   
 }
@@ -147,8 +147,8 @@ unsigned long show_fill_round_rectangle(void){
         default:
             break;
         }   
-        lcd.Fill_Round_Rectangle_XY(x_spec+i*side_len-1, y_spec+i*side_len-1, x_spec+(i+1)*side_len-1, y_spec+(i+1)*side_len-1,10,lcd.Get_Draw_Color());
-        lcd.Fill_Round_Rectangle_XY(x_spec+i*side_len-1, y_spec+(5-i)*side_len-1, x_spec+(i+1)*side_len-1, y_spec+(4-i)*side_len-1,10,lcd.Get_Draw_Color()); 
+        lcd.Fill_Round_Rectangle(x_spec+i*side_len-1, y_spec+i*side_len-1, side_len+1, side_len+1,10,lcd.Get_Draw_Color());
+        lcd.Fill_Round_Rectangle(x_spec+i*side_len-1, y_spec+(4-i)*side_len-1, side_len+1, side_len+1,10,lcd.Get_Draw_Color()); 
     }
     return micros()- time_start;   
 }
@@ -272,7 +272,11 @@ unsigned long show_random_rectangles(void){
     uint16_t i;
     unsigned long time_start = micros();
     for(i = 0;i< 150;i++) {
-       lcd.Rectangle_XY(2+random(lcd.Width-4),17+random(lcd.Height-34),2+random(lcd.Width-4),17+random(lcd.Height-34),RGB(random(255),random(255),random(255)));
+        int x= 2+random(lcd.Width-4);
+        int y= 17+random(lcd.Height-34);
+        int x2= 2+random(lcd.Width-4);
+        int y2= 17+random(lcd.Height-34);
+        lcd.Rectangle(x,y, x2-x+1, y2-y+1, RGB(random(255),random(255),random(255)));    
     }
     return micros()- time_start; 
 }
@@ -282,7 +286,11 @@ unsigned long show_random_round_rectangles(void){
     uint16_t i;
     unsigned long time_start = micros();
     for(i = 0;i< 150;i++) {
-       lcd.Round_Rectangle_XY(2+random(lcd.Width-4),17+random(lcd.Height-34),2+random(lcd.Width-4),17+random(lcd.Height-34),5,RGB(random(255),random(255),random(255)));
+        int x= 2+random(lcd.Width-4);
+        int y= 17+random(lcd.Height-34);
+        int x2= 2+random(lcd.Width-4);
+        int y2= 17+random(lcd.Height-34);
+       lcd.Round_Rectangle(x,y, x2-x+1, y2-y+1, 5, RGB(random(255),random(255),random(255)));
     }
     return micros()- time_start; 
 }
@@ -318,15 +326,15 @@ unsigned long show_random_bit_map(void){
     }
     for(i = 1;i<=6;i++) {
         lcd.Draw_Bit_Map(lcd.Width/2-1-((len/2)*4/3)*i, lcd.Height/2-1-(len/2)*i, 8, 6, buf, i*(len/6));
-        delay(20);
+        //delay(10);
     }
     return micros()- time_start; 
 }
 
 //Clear the screen
 void clear_screen(void){
-    delay(2000);  
-    lcd.Fill_Rectangle_XY(1, 16, lcd.Width-2, lcd.Height-17,RGB(0, 0, 0));
+    delay(1000);  
+    lcd.Fill_Rectangle(1, 16, lcd.Width-2, lcd.Height-32,RGB(0, 0, 0));
 }
 
 unsigned long (*show_function[])(void) =  {
@@ -370,21 +378,21 @@ unsigned long show_total_time(void){
     unsigned long buf[15];
     unsigned long time_start = micros();
     for(i = 0;i< 15;i++) {
-    buf[i] = show_function[i](); 
-    clear_screen();  
+        buf[i] = show_function[i](); 
+        if(i>0) clear_screen();  
     }
     for(i = 0;i<15; i++) {
         lcd.Print(show_str[i],(lcd.Width-260)/2-1,(lcd.Height-150)/2+i*10-1,1,0xFD20, 0,0);
         lcd.Print(buf[i], (lcd.Width-260)/2-1+200, (lcd.Height-150)/2+i*10-1,1,RGB(0, 255, 0));
     }
-    delay(25000);
+    //delay(25000);
     return micros()- time_start; 
 }
 
 //display ending and total running time
 void show_end(unsigned long run_time){
     lcd.Fill_Screen(RGB(0, 255, 255));
-    lcd.Fill_Round_Rectangle_XY(lcd.Width/2-1-120+1, lcd.Height/2-1-60+1, lcd.Width/2-1+120-1, lcd.Height/2-1+60-1,5,RGB(255, 0, 0));
+    lcd.Fill_Round_Rectangle(lcd.Width/2-120, lcd.Height/2-60, 239, 119,5,RGB(255, 0, 0));
     lcd.Print("Running over!", CENTER, lcd.Height/2-1-40,1,RGB(0,255,255));
     lcd.Print("That's ok!", CENTER, lcd.Height/2-1-30,1,RGB(0,255,255));
     lcd.Print("After a few seconds,", CENTER, lcd.Height/2-1-20,1,RGB(0,255,255));
@@ -392,7 +400,7 @@ void show_end(unsigned long run_time){
     lcd.Print("Please wait ...", CENTER, lcd.Height/2-1,1,RGB(0,255,255));
     lcd.Print("Total runtime(us):  ", lcd.Width/2-1-90, lcd.Height/2-1+40,1,RGB(255,255,0));
     lcd.Print(run_time, lcd.Width/2-1+30, lcd.Height/2-1+40,1, RGB(0, 255, 0),1);  
-    delay(10000);   
+   // delay(2000);   
 }
 
 void colligate_test() {
