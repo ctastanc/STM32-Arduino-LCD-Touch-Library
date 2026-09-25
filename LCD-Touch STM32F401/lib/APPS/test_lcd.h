@@ -1,13 +1,13 @@
 #include <LCD_SRW.h> 
 
-unsigned long testFillScreen() {
-    unsigned long start = micros();
-    lcd.Fill_Screen(GREEN);
+uint32_t testFillScreen() {
+    uint32_t start = micros();
+    lcd.Fill_Screen(BLUE);
     return micros() - start;
 }
 
-unsigned long testTextFR() {
-    unsigned long start = micros();
+uint32_t testTextFR() {
+    uint32_t start = micros();
     lcd.Print("Hello World!", CENTER, 24, 1, WHITE,BLUE,0);
     lcd.Print(1234.56, CENTER, 35, 2, YELLOW,BLUE,0);
     lcd.Print("lcd ILI9341", CENTER, 55, 2, RED,BLUE,0);
@@ -24,8 +24,8 @@ unsigned long testTextFR() {
     return micros() - start;
 }
 
-unsigned long testTextBG() {
-    unsigned long start = micros();
+uint32_t testTextBG() {
+    uint32_t start = micros();
     lcd.Print("Hello World!", CENTER, 24, 1, WHITE,BLUE,1);
     lcd.Print(1234.56, CENTER, 35, 2, YELLOW,BLUE,1);
     lcd.Print("lcd ILI9341", CENTER, 55, 2, RED,BLUE,1);
@@ -42,82 +42,79 @@ unsigned long testTextBG() {
     return micros() - start;
 }
 
-unsigned long testCrossLine() {
-    unsigned long start = micros();
+uint32_t testCrossLine() {
+    uint32_t start = micros();
     lcd.Line(0, 0, lcd.Width-1, lcd.Height-1, CYAN);
     return micros() - start;
 }
 
-unsigned long testLine() {
+uint32_t testLine() {
     uint16_t x1=0, y1=lcd.Height/2, x2=lcd.Width-1, y2=lcd.Height/2; 
     if(lcd.rotation==PORTRAIT) { x1=lcd.Width/2; y1=0; x2=lcd.Width/2, y2=lcd.Height-1; }
-    unsigned long start = micros();
+    uint32_t start = micros();
     lcd.Line(x1, y1, x2, y2,YELLOW);
     return micros() - start;
 }
 
-unsigned long testFastLine() {
+uint32_t testFastLine() {
     int x,y,w;
-    unsigned long start = micros();
+    uint32_t start = micros();
     if(lcd.rotation==PORTRAIT) lcd.Fast_VLine(lcd.Width/2, 0, lcd.Height-1, RED);
-    else lcd.Fast_HLine(0, lcd.Height/2, lcd.Width-1, RED);
+        else lcd.Fast_HLine(0, lcd.Height/2, lcd.Width-1, RED);
     return micros() - start;
 }
 
-unsigned long testRect() {
-    unsigned long start = micros();
+uint32_t testRect() {
+    uint32_t start = micros();
     lcd.Rectangle(0, 0, lcd.Width, lcd.Height, YELLOW);
     return micros() - start;
 }
 
-unsigned long testFillRect() {
-    unsigned long start = micros();
+uint32_t testFillRect() {
+    uint32_t start = micros();
     lcd.Fill_Rectangle(0, 0, lcd.Width, lcd.Height, RED);
     return micros() - start;
 }
 
-unsigned long testCircle() {
-    unsigned long start = micros();
+uint32_t testCircle() {
+    uint32_t start = micros();
     lcd.Circle(lcd.Width/2, lcd.Height/2, 119, GREEN);
     return micros() - start;
 }
 
-unsigned long testFillCircle() {
-    unsigned long start = micros();
+uint32_t testFillCircle() {
+    uint32_t start = micros();
     lcd.Fill_Circle(lcd.Width/2, lcd.Height/2, 119, RED);
     return micros() - start;
 }
 
-unsigned long testTriangle() {
-    unsigned long start = micros();
+uint32_t testTriangle() {
+    uint32_t start = micros();
     lcd.Triangle(lcd.Width/2, 0, 0, lcd.Height-1, lcd.Width-1, lcd.Height-1, YELLOW);
     return micros() - start;
 }
 
-unsigned long testFillTriangle() {
-    unsigned long start = micros();
+uint32_t testFillTriangle() {
+    uint32_t start = micros();
     lcd.Fill_Triangle(lcd.Width/2, 0, 0, lcd.Height-1, lcd.Width-1, lcd.Height-1, YELLOW);
     return micros() - start;
 }
 
-unsigned long testRoundRect() {
-    unsigned long start = micros();
+uint32_t testRoundRect() {
+    uint32_t start = micros();
     lcd.Round_Rectangle(0, 0, lcd.Width-1,lcd.Height-1, 4, PINK);
     return micros() - start;
 }
 
-unsigned long testFillRoundRect() {
-    unsigned long start = micros();
+uint32_t testFillRoundRect() {
+    uint32_t start = micros();
     lcd.Fill_Round_Rectangle(0, 0, lcd.Width-1,lcd.Height-1, 4, GREEN);
     return micros() - start;
 }
 
-unsigned long dead() {
-    lcd.Fill_Screen(BLACK); 
-    return 0;
-}
+uint32_t dead() { lcd.Fill_Screen(BLACK); return 0; }
 
-static unsigned long (*test_function[15])(void) = {
+static uint32_t (*test_function[15])(void) = {
     dead,
     testFillScreen,
     testTextFR,
@@ -153,10 +150,10 @@ static uint8_t *test_str[15]= {
     (uint8_t *)"Fill Round Rectangle(w*h)   ",
 };
 
-unsigned long test_lcd(void){
+uint32_t test_lcd(void){
     lcd.Set_Rotation(LANDSCAPE);
     uint32_t i=0, cycle=15;
-    unsigned long buf[15];
+    uint32_t buf[15];
     Serial.println();
     Serial.println(F("Test Starting."));
     for(i = 0; i< cycle;i++) {

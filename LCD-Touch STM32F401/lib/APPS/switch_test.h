@@ -114,7 +114,7 @@ class swi{
             //digitalWrite(13, LOW);
             digital_write(GPIOC, LL_GPIO_PIN_13,0);
 
-            if (p.z )
+            if (p.v )
             {
                 if(is_pressed(5,5,34,34,p.x,p.y))
                 {
@@ -281,6 +281,7 @@ class swi{
                     }
                     delay(100);
                 }
+                while(1){TSPoint p = ts.getPoint(); if(!p.z) break;}
             }
         }
     }

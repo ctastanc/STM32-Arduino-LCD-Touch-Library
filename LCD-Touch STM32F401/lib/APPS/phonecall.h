@@ -67,14 +67,10 @@ void phonecall() {
     uint16_t text_x_add = 6*button[0].name_size, text_y_add = 8*button[0].name_size;
     show_menu();
     while(true){
-        //digitalWrite(PC13, HIGH);
         digital_write(GPIOC, LL_GPIO_PIN_13,1);
         TSPoint p = ts.getPoint();
-        //digitalWrite(PC13, LOW);
         digital_write(GPIOC, LL_GPIO_PIN_13,0);
-        if (p.z) {
-            /*Serial.print("\tPressure = "); Serial.println(p.z);
-            Serial.print("   X = "); Serial.print(p.x); Serial.print("\tY = "); Serial.println(p.y);*/
+        if (p.v) {
             for(uint16_t i=0;i<sizeof(button)/sizeof(button_info);i++) {
                 if(is_pressed(button[i].x-BTN_R, button[i].y-BTN_R, button[i].x+BTN_R, 
                               button[i].y+BTN_R, p.x, p.y)) {
@@ -98,6 +94,13 @@ void phonecall() {
                         if(n > 0) {
                             text_x -= (text_x_add-1);  
                             lcd.Fill_Rectangle(text_x, text_y, text_x_add, text_y_add-1,BLACK);
-                            n--;}
-    }   }   }   }   }   
+                            n--;
+                        }
+    
+                    }   
+                }   
+            }  
+            while(1){TSPoint p = ts.getPoint(); if(!p.z) break;}
+        }  
+    }   
 }

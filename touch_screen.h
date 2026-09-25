@@ -11,9 +11,9 @@
 
 #define TS_MINX 500 //touch sensitivity for x
 #define TS_MAXX 3500
-#define TS_MINY 240 //touch sensitivity for Y
-#define TS_MAXY 3650
-#define MINPRESSURE 120 //touch sensitivity for press
+#define TS_MINY 350 //touch sensitivity for Y
+#define TS_MAXY 3600
+#define MINPRESSURE 0 //touch sensitivity for press
 #define MAXPRESSURE 4000
 #define RES_VALUE 4095
 
@@ -40,11 +40,11 @@ static void insert_sort(int array[], uint8_t size) {
 
 class TSPoint {
     public:
-    TSPoint(void) { x = y = 0; }
-    TSPoint(int16_t x0, int16_t y0, int16_t z0) { x = x0; y = y0; z = z0; }
-    bool operator==(TSPoint p1) { return ((p1.x == x) && (p1.y == y) && (p1.z == z)); }
-    bool operator!=(TSPoint p1) { return ((p1.x != x) || (p1.y != y) || (p1.z != z)); }
-    int16_t x, y, z;
+    TSPoint(void) { x = y = v = 0; }
+    TSPoint(int16_t x0, int16_t y0, int16_t v0,int16_t z0) { x = x0; y = y0; v = v0; z= z0; }
+    bool operator==(TSPoint p1) { return ((p1.x == x) && (p1.y == y) && (p1.v == v)); }
+    bool operator!=(TSPoint p1) { return ((p1.x != x) || (p1.y != y) || (p1.v != v)); }
+    int16_t x, y, v, z;
 };
 
 class TouchScreen {
@@ -64,52 +64,58 @@ class TouchScreen {
     }
     
     TSPoint getPoint(void) {
-        int x, y, z;
+        int x, y, v, z;
         int samples[NUMSAMPLES];
         uint8_t i, valid = 1;
+        v = 1;
         pin_set(_yp,_xm,_xp,_ym,_ym,_xp); // Z (pressure) reading: XP=LOW, YM=HIGH, XM ve YP INPUT
         int z1 = analogRead(_xm);
         int z2 = analogRead(_yp);
-        z = (RES_VALUE - (z2 - z1)); // 12 Bit pressure
-        if (z > MINPRESSURE && z < MAXPRESSURE) {
+        z = (RES_VALUE - (z2 - z1)); // pressure
+
             pin_set(_ym,_yp,_xp,_xm,_xp,_xm); // X reading: XP=HIGH, XM=LOW; YP ve YM INPUT
-            for (i = 0; i < NUMSAMPLES; i++) samples[i] = analogRead(_yp);
+            for (i = 0; i < NUMSAMPLES; i++) {samples[i] = analogRead(_yp);}
             #if NUMSAMPLES > 2
                 insert_sort(samples, NUMSAMPLES);
             #endif
             #if NUMSAMPLES == 2
-                //if (samples[0] != samples[1]) { valid = 0; }
-                if (samples[0] < samples[1]-2 || samples[0] > samples[1]+2) valid = 0; 
+                //if (samples[0] != samples[1]) { v = 0; }
+                if (samples[0] < samples[1]-1 || samples[0] > samples[1]+1) v = 0; 
             #endif
-            x = (RES_VALUE - samples[NUMSAMPLES/2]); // 12 Bit x
+            x = (RES_VALUE - samples[NUMSAMPLES/2]); 
+            
             pin_set(_xp,_xm,_yp,_ym,_yp,_ym); // Y reading: YP=HIGH, YM=LOW; XP ve XM INPUT
-            for (i = 0; i < NUMSAMPLES; i++) samples[i] = analogRead(_xm);
+            for (i = 0; i < NUMSAMPLES; i++) {samples[i] = analogRead(_xm);}
             #if NUMSAMPLES > 2
                 insert_sort(samples, NUMSAMPLES);
             #endif
             #if NUMSAMPLES == 2
-                //if (samples[0] != samples[1]) { valid = 0; }
-                if (samples[0] < samples[1]-2 || samples[0] > samples[1]+2) valid = 0;
+                //if (samples[0] != samples[1]) { v = 0; }
+                if (samples[0] < samples[1]-1 || samples[0] > samples[1]+1) v = 0;
             #endif
-            y = (RES_VALUE - samples[NUMSAMPLES/2]); // 12 Bit y
-        } else z=0;
-        if (!valid) z=0;
-        pinMode(_xm, OUTPUT); pinMode(_xp, OUTPUT);
+            y = (RES_VALUE - samples[NUMSAMPLES/2]); 
+
+        pinMode(_xm, OUTPUT); pinMode(_xp, OUTPUT); pinMode(_ym, OUTPUT); pinMode(_yp, OUTPUT);
         int16_t y1;
         switch(lcd.rotation) {
             case 0: x = MAP(x, TS_MINX, TS_MAXX, 0, lcd.Width);
-                    y = MAP(y, TS_MINY, TS_MAXY, 0, lcd.Height); break;
+                    y = MAP(y, TS_MINY, TS_MAXY, 0, lcd.Height); 
+                    break;
             case 1: x = MAP(x, TS_MINX, TS_MAXX, 0, lcd.Height);
                     y = MAP(y, TS_MINY, TS_MAXY, 0, lcd.Width);
-                    y1 = y; y = lcd.Height-x; x = y1; break;
+                    y1 = y; y = lcd.Height-x; x = y1; 
+                    break;
             case 2: x = MAP(x, TS_MINX, TS_MAXX, 0, lcd.Width);
                     y = MAP(y, TS_MINY, TS_MAXY, 0, lcd.Height);  
-                    x= lcd.Width-x; y=lcd.Height-y; break;
+                    x= lcd.Width-x; y=lcd.Height-y; 
+                    break;
             case 3: x = MAP(x, TS_MINX, TS_MAXX, 0, lcd.Height);
                     y = MAP(y, TS_MINY, TS_MAXY, 0, lcd.Width);
-                    y1 = y; y = x; x = lcd.Width-y1; break;
+                    y1 = y; y = x; x = lcd.Width-y1; 
+                    break;
         }
-        return TSPoint(x, y, z);
+        if(x<0 || x>lcd.Width || y>lcd.Height || y<0) v=0;
+        return TSPoint(x, y, v, z);
     }
 
     private:
