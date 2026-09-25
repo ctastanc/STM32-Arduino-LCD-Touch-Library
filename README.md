@@ -19,7 +19,7 @@ optimizations, it pushes the hardware parallel bus to its physical transmission 
 * **Loop Unrolling & Batching:** Uses `__attribute__((optimize("unroll-loops")))` combined with a Duff's Device style 
 	8-pixel batching (BLOCK8) method, reducing loop branching overhead to absolute zero during screen/rectangle filling.
 * **Smart Noise Filtering for Touch:** Features an oversampling engine with NUMSAMPLES == 2 tolerance matching 
-	(±2 ADC counts verification) and median insertion sort filtering to eliminate analog signal noise without lagging the CPU.
+	(±2 ADC counts verification) or median insertion sort filtering to eliminate analog signal noise without lagging the CPU.
 * **Overclock Ready:** Safely handle aggressive MCU overclocking (e.g., STM32F401 running at 108MHz).
 
 ---
@@ -32,7 +32,7 @@ The absolute core of the library's speed relies on a tightly optimized hardware-
 #define WRITE8(d) { DATA_PORT1->BSRR = DATA_MASK1 | (d); WR_H; }
 ```
 
-### Why is this so fast?
+#### Why is this so fast?
 1. **Direct Register Manipulation (`BSRR`):** Instead of using slow functions, this macro 
 	directly modifies the **Bit Set/Reset Register (BSRR)** of the STM32 GPIO port. This allows the MCU to clear old 
 	data pins, reset WR pin and set the new 8-bit pixel data (`d`) **in a single CPU clock cycle**.
