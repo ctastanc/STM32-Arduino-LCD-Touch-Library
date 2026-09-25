@@ -88,8 +88,8 @@ The following metrics prove the massive performance jump compared to standard di
 | Fill Rectangle(w*h)		| 		 3,380 µs 			| Zero Branching				|
 | Circle(R=240)				| 		   594 µs 			| Fast Box Drawing				|
 | Fill Circle(R=240)		| 		 2,332 µs 			| High Bandwidth Pixel Pump		|
-| Triangle(320*288*288)		| 		   469 µs 			| High Bandwidth Pixel Pump		|
-| Fill Triangle(320*288*288)| 		 2,085 µs 			| High Bandwidth Pixel Pump		|
+| Triangle(320x88x88)		| 		   469 µs 			| High Bandwidth Pixel Pump		|
+| Fill Triangle(320x288x288)| 		 2,085 µs 			| High Bandwidth Pixel Pump		|
 | Round Rectangle(w*h) 		| 		    77 µs 			| High Bandwidth Pixel Pump		|
 | Fill Round Rectangle(w*h)	| 		 3,370 µs 			| High Bandwidth Pixel Pump		|
 
