@@ -24,15 +24,21 @@ The absolute core of the library's speed relies on a tightly optimized hardware-
 ```
 
 #### Why is this so fast?
-1. **Direct Register Manipulation (`BSRR`):** Instead of using slow Arduino `digitalWrite()` functions, this macro directly modifies the **Bit Set/Reset Register (BSRR)** of the STM32 GPIO port. This allows the MCU to clear old data pins, reset WR pin and set the new 8-bit pixel data (`d`) **in a single CPU clock cycle**.
-2. **Sequential Pin Alignment:** Because `D0-D7` are sequentially aligned on `PA0-PA7`, no expensive runtime bit-shifting or bitmasking calculations are needed. The raw data byte matches the lower port bits perfectly.
-3. **Hardware-Paced Clock Toggling:** The display's Write Clock (`WR`) pin is placed right next to the data pins on `PA8`. Toggling the clock (`WR_H`) is executed in the exact same port context.
+1. **Direct Register Manipulation (`BSRR`):** Instead of using slow Arduino `digitalWrite()` functions, this macro directly modifies 
+	the **Bit Set/Reset Register (BSRR)** of the STM32 GPIO port. This allows the MCU to clear old data pins, reset WR pin and set the 
+	new 8-bit pixel data (`d`) **in a single CPU clock cycle**.
+2. **Sequential Pin Alignment:** Because `D0-D7` are sequentially aligned on `PA0-PA7`, no expensive runtime bit-shifting or bitmasking 
+	calculations are needed. The raw data byte matches the lower port bits perfectly.
+3. **Hardware-Paced Clock Toggling:** The display's Write Clock (`WR`) pin is placed right next to the data pins on `PA8`. 
+	Toggling the clock (`WR_H`) is executed in the exact same port context.
 
 ---
 
 ## 🎨 Zero-Cost RGB565 Color Engine (Usage)
 
-The library features an optimized, packed `RGB` structure that handles standard 24-bit (R,G,B) to 16-bit (RGB565) color conversion **at compile-time** using `constexpr`. Thanks to the `uint16_t` operator overloading, you can use raw hex values and the `RGB` structure interchangeably with absolute zero runtime CPU cost.
+The library features an optimized, packed `RGB` structure that handles standard 24-bit (R,G,B) to 16-bit (RGB565) color conversion **at compile-time** 
+using `constexpr`. Thanks to the `uint16_t` operator overloading, you can use raw hex values and the `RGB` structure interchangeably with 
+absolute zero runtime CPU cost.
 ```h
 struct RGB {
     uint16_t val;
@@ -69,14 +75,16 @@ void loop() {
 ## 🛠️ Supported Hardware
 * **Microcontroller:** Fully compatible with STM32F1, STM32F4, and other popular STM32 boards.
 * **Display Driver:**  ILI9341, ILI9325, ILI9328, ILI9481, ILI9486, ILI9488, ST7735S, HX8357D, HX8347G, HX8347I.
-	The library includes a unified multi-driver template (lcd_regs.h) that automatically handles different command architectures based on compile-time selections:
+	The library includes a unified multi-driver template (lcd_regs.h) that automatically handles 
+	different command architectures based on compile-time selections:
 * **Touch Mechanism:** 4-Wire Resistive Touch (Connected directly to control and data pins).
 
 ---
 
 ## 📊 Benchmarks (STM32F401 Blackpill @ 108MHz Overclock)
 
-The following metrics prove the massive performance jump compared to standard display engines. A full **240x320 screen fill takes only 2.8 milliseconds**, yielding a theoretical limit of **357 FPS** over the parallel bus. 
+The following metrics prove the massive performance jump compared to standard display engines. 
+A full **240x320 screen fill takes only 2.8 milliseconds**, yielding a theoretical limit of **357 FPS** over the parallel bus. 
 
 | Benchmark					| Time (Microseconds)	| Execution Style 				| 
 | -------------------------	| --------------------:	| ----------------------------- | 
@@ -108,7 +116,8 @@ The "colligate_test()" function results:
 
 ## 🔌 Pin Connection (Wiring)
 
-For maximum performance, **the 8-bit Data Bus (D0-D7) and the Write Pin (WR) must be kept sequentially on the same Port (e.g., PORTA)**. This allows the driver to dump 8 bits of data and toggle the clock pin in a single clock cycle using the BSRR register. 
+For maximum performance, **the 8-bit Data Bus (D0-D7) and the Write Pin (WR) must be kept sequentially on the same Port (e.g., PORTA)**. 
+This allows the driver to dump 8 bits of data and toggle the clock pin in a single clock cycle using the BSRR register. 
 
 ### 8-Bit Extension Data Bus(PORTA)
 
