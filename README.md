@@ -16,7 +16,7 @@ optimizations, it pushes the hardware parallel bus to its physical transmission 
 * **STM32F103 Bug Protection:** Implements an advanced preprocessor architecture to completely avoid the notorious 
 	STM32F1xx LL library bug where using output pull configurations could silently drop the pin speed to 10MHz. 
 	Pins are locked at **50MHz** for F103 and maximum frequency for F401.
-* **Loop Unrolling & Batching:** Uses __attribute__((optimize("unroll-loops"))) combined with a Duff's Device style 
+* **Loop Unrolling & Batching:** Uses `__attribute__((optimize("unroll-loops")))` combined with a Duff's Device style 
 	8-pixel batching (BLOCK8) method, reducing loop branching overhead to absolute zero during screen/rectangle filling.
 * **Smart Noise Filtering for Touch:** Features an oversampling engine with NUMSAMPLES == 2 tolerance matching 
 	(±2 ADC counts verification) and median insertion sort filtering to eliminate analog signal noise without lagging the CPU.
@@ -33,7 +33,8 @@ The absolute core of the library's speed relies on a tightly optimized hardware-
 ```
 
 #### Why is this so fast?
-1. **Direct Register Manipulation (`BSRR`):** Instead of using slow Arduino `digitalWrite()` functions, this macro 
+1. **Direct Register Manipulation (`BSRR`):** 
+	Instead of using slow functions, this macro 
 	directly modifies the **Bit Set/Reset Register (BSRR)** of the STM32 GPIO port. This allows the MCU to clear old 
 	data pins, reset WR pin and set the new 8-bit pixel data (`d`) **in a single CPU clock cycle**.
 2. **Sequential Pin Alignment:** Because `D0-D7` are sequentially aligned on `PA0-PA7`, no expensive runtime bit-shifting
