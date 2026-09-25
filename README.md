@@ -33,8 +33,8 @@ The absolute core of the library's speed relies on a tightly optimized hardware-
 ```
 
 #### Why is this so fast?
-#1. **Direct Register Manipulation (`BSRR`):** 
-	Instead of using slow functions, this macro 
+1. **Direct Register Manipulation (`BSRR`):** 
+	#Instead of using slow functions, this macro 
 	directly modifies the **Bit Set/Reset Register (BSRR)** of the STM32 GPIO port. This allows the MCU to clear old 
 	data pins, reset WR pin and set the new 8-bit pixel data (`d`) **in a single CPU clock cycle**.
 2. **Sequential Pin Alignment:** Because `D0-D7` are sequentially aligned on `PA0-PA7`, no expensive runtime bit-shifting
