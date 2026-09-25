@@ -1,16 +1,25 @@
 ## STM32 Arduino LCD & Touch Driver Library
 
-An ultra-fast, high-performance, and bare-metal optimized parallel 8/16-bit TFT LCD and 4-wire resistive touch screen library for STM32 microcontrollers under the Arduino framework. 
+An ultra-fast, high-performance, and bare-metal optimized parallel 8/16-bit TFT LCD and 4-wire resistive touch screen 
+library for STM32 microcontrollers under the Arduino framework. 
 
-This library is specifically designed to eliminate the bloated and sluggish nature of generic Arduino display libraries. By utilizing **STM32 Low-Layer (LL) drivers**, direct register manipulation (BSRR), loop unrolling, and compile-time optimizations, it pushes the hardware parallel bus to its physical transmission limits. 
+This library is specifically designed to eliminate the bloated and sluggish nature of generic Arduino display libraries. 
+By utilizing **STM32 Low-Layer (LL) drivers**, direct register manipulation (BSRR), loop unrolling, and compile-time 
+optimizations, it pushes the hardware parallel bus to its physical transmission limits. 
 
 ---
 
 ## 📌 Key Features & Performance Architecture
-* **Zero-Overhead Address Window:** The critical functions Set_Addr_Window and Draw_Pixel are decorated with '__attribute__((always_inline))' inline, forcing the compiler to expand them in-place. This eliminates function call overhead (PUSH/POP cycles) and accelerates frame/outline drawing by **~25%**.
-* **STM32F103 Bug Protection:** Implements an advanced preprocessor architecture to completely avoid the notorious STM32F1xx LL library bug where using output pull configurations could silently drop the pin speed to 10MHz. Pins are locked at **50MHz** for F103 and maximum frequency for F401.
-* **Loop Unrolling & Batching:** Uses __attribute__((optimize("unroll-loops"))) combined with a Duff's Device style 8-pixel batching (BLOCK8) method, reducing loop branching overhead to absolute zero during screen/rectangle filling.
-* **Smart Noise Filtering for Touch:** Features an oversampling engine with NUMSAMPLES == 2 tolerance matching (±2 ADC counts verification) and median insertion sort filtering to eliminate analog signal noise without lagging the CPU.
+* **Zero-Overhead Address Window:** The critical functions Set_Addr_Window and Draw_Pixel are decorated with 
+	`__attribute__((always_inline))` inline, forcing the compiler to expand them in-place. This eliminates function 
+	call overhead (PUSH/POP cycles) and accelerates frame/outline drawing by **~25%**.
+* **STM32F103 Bug Protection:** Implements an advanced preprocessor architecture to completely avoid the notorious 
+	STM32F1xx LL library bug where using output pull configurations could silently drop the pin speed to 10MHz. 
+	Pins are locked at **50MHz** for F103 and maximum frequency for F401.
+* **Loop Unrolling & Batching:** Uses __attribute__((optimize("unroll-loops"))) combined with a Duff's Device style 
+	8-pixel batching (BLOCK8) method, reducing loop branching overhead to absolute zero during screen/rectangle filling.
+* **Smart Noise Filtering for Touch:** Features an oversampling engine with NUMSAMPLES == 2 tolerance matching 
+	(±2 ADC counts verification) and median insertion sort filtering to eliminate analog signal noise without lagging the CPU.
 * **Overclock Ready:** Safely handle aggressive MCU overclocking (e.g., STM32F401 running at 108MHz).
 
 ---
