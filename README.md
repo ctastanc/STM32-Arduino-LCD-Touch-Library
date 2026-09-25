@@ -7,7 +7,7 @@ This library is specifically designed to eliminate the bloated and sluggish natu
 ---
 
 ## 📌 Key Features & Performance Architecture
-* **Zero-Overhead Address Window:** The critical functions Set_Addr_Window and Draw_Pixel are decorated with __attribute__((always_inline)) inline, forcing the compiler to expand them in-place. This eliminates function call overhead (PUSH/POP cycles) and accelerates frame/outline drawing by **~25%**.
+* **Zero-Overhead Address Window:** The critical functions Set_Addr_Window and Draw_Pixel are decorated with '__attribute__((always_inline))' inline, forcing the compiler to expand them in-place. This eliminates function call overhead (PUSH/POP cycles) and accelerates frame/outline drawing by **~25%**.
 * **STM32F103 Bug Protection:** Implements an advanced preprocessor architecture to completely avoid the notorious STM32F1xx LL library bug where using output pull configurations could silently drop the pin speed to 10MHz. Pins are locked at **50MHz** for F103 and maximum frequency for F401.
 * **Loop Unrolling & Batching:** Uses __attribute__((optimize("unroll-loops"))) combined with a Duff's Device style 8-pixel batching (BLOCK8) method, reducing loop branching overhead to absolute zero during screen/rectangle filling.
 * **Smart Noise Filtering for Touch:** Features an oversampling engine with NUMSAMPLES == 2 tolerance matching (±2 ADC counts verification) and median insertion sort filtering to eliminate analog signal noise without lagging the CPU.
@@ -24,11 +24,11 @@ The absolute core of the library's speed relies on a tightly optimized hardware-
 ```
 
 #### Why is this so fast?
-1. **Direct Register Manipulation (`BSRR`):** Instead of using slow Arduino `digitalWrite()` functions, this macro directly modifies 
-	the **Bit Set/Reset Register (BSRR)** of the STM32 GPIO port. This allows the MCU to clear old data pins, reset WR pin and set the 
-	new 8-bit pixel data (`d`) **in a single CPU clock cycle**.
-2. **Sequential Pin Alignment:** Because `D0-D7` are sequentially aligned on `PA0-PA7`, no expensive runtime bit-shifting or bitmasking 
-	calculations are needed. The raw data byte matches the lower port bits perfectly.
+1. **Direct Register Manipulation (`BSRR`):** Instead of using slow Arduino `digitalWrite()` functions, this macro 
+	directly modifies the **Bit Set/Reset Register (BSRR)** of the STM32 GPIO port. This allows the MCU to clear old 
+	data pins, reset WR pin and set the new 8-bit pixel data (`d`) **in a single CPU clock cycle**.
+2. **Sequential Pin Alignment:** Because `D0-D7` are sequentially aligned on `PA0-PA7`, no expensive runtime bit-shifting
+	or bitmasking calculations are needed. The raw data byte matches the lower port bits perfectly.
 3. **Hardware-Paced Clock Toggling:** The display's Write Clock (`WR`) pin is placed right next to the data pins on `PA8`. 
 	Toggling the clock (`WR_H`) is executed in the exact same port context.
 
@@ -36,9 +36,9 @@ The absolute core of the library's speed relies on a tightly optimized hardware-
 
 ## 🎨 Zero-Cost RGB565 Color Engine (Usage)
 
-The library features an optimized, packed `RGB` structure that handles standard 24-bit (R,G,B) to 16-bit (RGB565) color conversion **at compile-time** 
-using `constexpr`. Thanks to the `uint16_t` operator overloading, you can use raw hex values and the `RGB` structure interchangeably with 
-absolute zero runtime CPU cost.
+The library features an optimized, packed `RGB` structure that handles standard 24-bit (R,G,B) to 16-bit (RGB565) color 
+conversion **at compile-time** using `constexpr`. Thanks to the `uint16_t` operator overloading, you can use raw hex 
+values and the `RGB` structure interchangeably with absolute zero runtime CPU cost.
 ```h
 struct RGB {
     uint16_t val;
