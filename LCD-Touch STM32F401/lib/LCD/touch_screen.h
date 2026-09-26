@@ -76,9 +76,8 @@ class TouchScreen {
                     y1 = y; y = x; x = lcd.Width-y1; 
                     break;
         }
-        if(x<0 || x>lcd.Width || y>lcd.Height || y<0) v = 0;
-        if(v) { if(z<20) v = 0; return TSPoint(x, y, z, v); }
-        else return TSPoint(z, v);
+        if( x<0 || x>lcd.Width || y>lcd.Height || y<0 || z<20 ) v = 0;
+        if(v) return TSPoint(x, y, z, v); else return TSPoint(z, v);
     }
 
     private:

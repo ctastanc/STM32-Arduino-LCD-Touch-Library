@@ -1,11 +1,9 @@
 #include <touch_screen.h>
 
-void clrButton();
-
-void scr() {
-    lcd.Fill_Screen(BLACK);
-    lcd.Rectangle(0,0,lcd.Width,lcd.Height,YELLOW);
-    clrButton();
+void main_screen();
+void clrButton() {
+    lcd.Fill_Rectangle(lcd.Width/2-32,lcd.Height-31,64,30,BLUE);
+    lcd.Print("Clear",lcd.Width/2-27,lcd.Height-24,2,WHITE);
 }
 
 bool clrCheck(TSPoint p) { 
@@ -13,21 +11,22 @@ bool clrCheck(TSPoint p) {
     else return false;
 }
 
-void clrButton() {
-    lcd.Fill_Rectangle(lcd.Width/2-32,lcd.Height-31,64,30,BLUE);
-    lcd.Print("Clear",lcd.Width/2-27,lcd.Height-24,2,WHITE);
-}
-
 void clrPressed() { 
     lcd.Rectangle(lcd.Width/2-32,lcd.Height-31,64,30,BLACK);
     lcd.Rectangle(lcd.Width/2-31,lcd.Height-30,62,28,BLACK); 
 }
 
-void clrReleased() { scr(); }
+void clrReleased() { main_screen(); }
+
+void main_screen() {
+    lcd.Fill_Screen(BLACK);
+    lcd.Rectangle(0,0,lcd.Width,lcd.Height,YELLOW);
+    clrButton();
+}
 
 void touch_demo(void) {
-    scr();
-    while(1){
+    main_screen();
+    while(true){
         TSPoint p = ts.getPoint();
         if (p.v) {
             lcd.Fill_Rectangle(lcd.Width/2-112,lcd.Height-25,80,16,BLACK);
