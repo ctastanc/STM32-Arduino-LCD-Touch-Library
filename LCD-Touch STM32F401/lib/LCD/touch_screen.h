@@ -12,7 +12,6 @@
 #define TS_MINY 350 //touch sensitivity for Y
 #define TS_MAXY 3600
 #define RES_VALUE 4095
-
 #define MAP(x,in_min,in_max,out_min,out_max) ((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
 #define NUMSAMPLES 2
 
@@ -28,7 +27,7 @@ class TouchScreen {
     public:
     TouchScreen() { _yp = YP; _xm = XM; _ym = YM; _xp = XP; }
 
-    void pin_set(uint8_t in1, uint8_t in2, uint8_t out1, uint8_t out2, uint8_t h, uint8_t l) {
+    void set_pin(uint8_t in1, uint8_t in2, uint8_t out1, uint8_t out2, uint8_t h, uint8_t l) {
         digitalWrite(in1, LOW); pinMode(in1, INPUT);
         digitalWrite(in2, LOW); pinMode(in2, INPUT);
         pinMode(out1, OUTPUT); digitalWrite(l, LOW);
@@ -36,18 +35,18 @@ class TouchScreen {
     }
 
     int getXY(uint8_t pin, uint16_t &v ) {
-        for (int i = 0; i < NUMSAMPLES; i++) {samples[i] = analogRead(pin);}
+        for (int i = 0; i < NUMSAMPLES; i++) { samples[i] = analogRead(pin); }
         if (samples[0] < samples[1]-1 || samples[0] > samples[1]+1) v = 0; 
         return (RES_VALUE - samples[NUMSAMPLES/2]); 
     }
     
     TSPoint getPoint(void) {
         uint16_t x, y, z, v = 1, y1;
-        pin_set(_ym,_yp,_xp,_xm,_xp,_xm); 
+        set_pin(_ym,_yp,_xp,_xm,_xp,_xm); 
         x = getXY(_yp, v);
-        pin_set(_xp,_xm,_yp,_ym,_yp,_ym); 
+        set_pin(_xp,_xm,_yp,_ym,_yp,_ym); 
         y = getXY(_xm, v);
-        pin_set(_yp,_xm,_xp,_ym,_ym,_xp); 
+        set_pin(_yp,_xm,_xp,_ym,_ym,_xp); 
         int z1 = analogRead(_xm);
         int z2 = analogRead(_yp);
         z = (RES_VALUE - (z2 - z1)); // pressure

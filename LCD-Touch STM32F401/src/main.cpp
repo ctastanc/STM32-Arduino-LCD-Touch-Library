@@ -62,7 +62,7 @@ void rotate_rect(void) {
     lcd.Fill_Screen(BLACK);
     while(1) {
         srand(time(0));
-        int rn = colors[(rand() % 16)];
+        int rn = colors[(rand() % 16)]; // int rn = 15+random(0xFFF0) ;
         lcd.Rectangle(0,0,lcd.Width,lcd.Height,YELLOW);
         lcd.Fast_HLine(35,120,245,BLUE);
         lcd.Fast_VLine(160,35,175,BLUE);
@@ -94,7 +94,7 @@ void rotate_rect(void) {
     }
 }
 
-void read_test() {
+void test_read() {
     for(int i= 0; i<16;i++) {
         lcd.Pixel(50, i*15+10 ,colors[i]);
         int p=lcd.Read_Pixel(50,i*15+10);
@@ -110,20 +110,22 @@ void setup(void) {
        STM32F103 devices equipped with 8MHz crystal. 
        Do not use it if you lack sufficient knowledge about your hardware.
        Adverse results may occur. You bear full responsibility. */
-    SystemClock_OC(OC_108MHz); // Overclock to 108MHz
+    //SystemClock_OC(OC_108MHz); // Overclock to 108MHz
     /**********************************************************************/
     analogReadResolution(12);
     Serial.begin(115200);
     delay(150);
     Serial.println("system running...");
     set_pin_output(GPIOC, LL_GPIO_PIN_13);
+    digital_write(GPIOC,LL_GPIO_PIN_13,1);
     lcd.Init();
     lcd.Fill_Screen(BLACK);
     lcd.Set_Rotation(LANDSCAPE);
 }
 
 void loop(void) {
-    //rotate_rect();
+    
+    rotate_rect();
     //lcd.Print_HScroll((uint8_t*)("What will happen in the future is also one of the mysteries of the universe."),1,1,lcd.Height-125,2,RED,BLACK,10);
     //lcd.Print(String(12345,BIN),CENTER,100,2,RED);
     //full_screen_test();
@@ -140,7 +142,8 @@ void loop(void) {
     //sw.switch_test();
     //colligate_test(); 
     //Scroll_Test();
-    //read_test();
+    //test_read();
     //pn.pong();
-    test_lcd();
+    //test_lcd();
+    
 }
