@@ -12,7 +12,6 @@
 #define TS_MINY 350 //touch sensitivity for Y
 #define TS_MAXY 3600
 #define RES_VALUE 4095
-#define MAP(x,in_min,in_max,out_min,out_max) ((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
 #define NUMSAMPLES 2
 
 class TSPoint {
@@ -26,6 +25,11 @@ class TSPoint {
 class TouchScreen {
     public:
     TouchScreen() { _yp = YP; _xm = XM; _ym = YM; _xp = XP; }
+    
+    template <typename T1, typename T2, typename T3, typename T4, typename T5>
+    constexpr int32_t map_value(T1 x, T2 in_min, T3 in_max, T4 out_min, T5 out_max) {
+        return (static_cast<int32_t>(x - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
+    }
 
     void set_pin(uint8_t in1, uint8_t in2, uint8_t out1, uint8_t out2, uint8_t h, uint8_t l) {
         digitalWrite(in1, LOW); pinMode(in1, INPUT);
@@ -35,13 +39,13 @@ class TouchScreen {
     }
 
     int getXY(uint8_t pin, uint16_t &v ) {
-        for (int i = 0; i < NUMSAMPLES; i++) { samples[i] = analogRead(pin); }
+        for (int i = 0; i < NUMSAMPLES; i++) samples[i] = analogRead(pin); 
         if (samples[0] < samples[1]-1 || samples[0] > samples[1]+1) v = 0; 
         return (RES_VALUE - samples[NUMSAMPLES/2]); 
     }
     
     TSPoint getPoint(void) {
-        uint16_t x, y, z, v = 1, y1;
+        uint16_t x, y, z, v = 1;
         set_pin(_ym,_yp,_xp,_xm,_xp,_xm); 
         x = getXY(_yp, v);
         set_pin(_xp,_xm,_yp,_ym,_yp,_ym); 
@@ -51,23 +55,14 @@ class TouchScreen {
         int z2 = analogRead(_yp);
         z = (RES_VALUE - (z2 - z1)); // pressure
         pinMode(_xm, OUTPUT); pinMode(_xp, OUTPUT); pinMode(_ym, OUTPUT); pinMode(_yp, OUTPUT);
-        switch(lcd.rotation) {
-            case 0: x = MAP(x, TS_MINX, TS_MAXX, 0, lcd.Width);
-                    y = MAP(y, TS_MINY, TS_MAXY, 0, lcd.Height); 
-                    break;
-            case 1: x = MAP(x, TS_MINX, TS_MAXX, 0, lcd.Height);
-                    y = MAP(y, TS_MINY, TS_MAXY, 0, lcd.Width);
-                    y1 = y; y = lcd.Height-x; x = y1; 
-                    break;
-            case 2: x = MAP(x, TS_MINX, TS_MAXX, 0, lcd.Width);
-                    y = MAP(y, TS_MINY, TS_MAXY, 0, lcd.Height);  
-                    x = lcd.Width-x; y = lcd.Height-y; 
-                    break;
-            case 3: x = MAP(x, TS_MINX, TS_MAXX, 0, lcd.Height);
-                    y = MAP(y, TS_MINY, TS_MAXY, 0, lcd.Width);
-                    y1 = y; y = x; x = lcd.Width-y1; 
-                    break;
-        }
+
+        int32_t rx = map_value(x, TS_MINX, TS_MAXX, 0, (lcd.rotation % 2 == 0) ? lcd.Width : lcd.Height);
+        int32_t ry = map_value(y, TS_MINY, TS_MAXY, 0, (lcd.rotation % 2 == 0) ? lcd.Height : lcd.Width);
+        struct Point { int32_t x; int32_t y; };
+        Point rot_table[4] = { { rx, ry }, { ry, lcd.Height - rx }, { lcd.Width - rx, lcd.Height - ry }, { lcd.Width - ry, rx } };
+        x = rot_table[lcd.rotation & 3].x; 
+        y = rot_table[lcd.rotation & 3].y;
+
         if( x>lcd.Width || y>lcd.Height || z<20 ) v = 0;
         if(v) return TSPoint(x, y, z, v); else return TSPoint(z, v);
     }
