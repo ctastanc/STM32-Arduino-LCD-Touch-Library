@@ -1,18 +1,16 @@
 #pragma once
-
 /********************************************************************************** 
     ATTENTION:
     To ensure the ADC operates cleanly and accurately, keep the USB power cable and 
     other cables as short as possible, and ensure there is no leakage in the cabling.
 
 ************************************************************************************/
-
 #include <LCD_SRW.h>
 
-#define TS_MINX 500//510//500 //touch sensitivity for x
-#define TS_MAXX 3500//3500//3500
-#define TS_MINY 350//350//350 //touch sensitivity for Y
-#define TS_MAXY 3600//3600//3600
+#define TS_MINX 500 //touch sensitivity for x
+#define TS_MAXX 3500
+#define TS_MINY 350 //touch sensitivity for Y
+#define TS_MAXY 3600
 #define RES_VALUE 4095
 
 #define MAP(x,in_min,in_max,out_min,out_max) ((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
@@ -37,14 +35,14 @@ class TouchScreen {
         pinMode(out2, OUTPUT); digitalWrite(h, HIGH);
     }
 
-    int getXY(uint8_t pin, int &v ) {
+    int getXY(uint8_t pin, uint16_t &v ) {
         for (int i = 0; i < NUMSAMPLES; i++) {samples[i] = analogRead(pin);}
         if (samples[0] < samples[1]-1 || samples[0] > samples[1]+1) v = 0; 
         return (RES_VALUE - samples[NUMSAMPLES/2]); 
     }
     
     TSPoint getPoint(void) {
-        int x, y, z, v = 1, y1;
+        uint16_t x, y, z, v = 1, y1;
         pin_set(_ym,_yp,_xp,_xm,_xp,_xm); 
         x = getXY(_yp, v);
         pin_set(_xp,_xm,_yp,_ym,_yp,_ym); 
@@ -71,7 +69,7 @@ class TouchScreen {
                     y1 = y; y = x; x = lcd.Width-y1; 
                     break;
         }
-        if( x<0 || x>lcd.Width || y>lcd.Height || y<0 || z<20 ) v = 0;
+        if( x>lcd.Width || y>lcd.Height || z<20 ) v = 0;
         if(v) return TSPoint(x, y, z, v); else return TSPoint(z, v);
     }
 
