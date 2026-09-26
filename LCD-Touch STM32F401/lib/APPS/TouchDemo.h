@@ -1,6 +1,7 @@
 #include <touch_screen.h>
 
 void main_screen();
+
 void clrButton() {
     lcd.Fill_Rectangle(lcd.Width/2-32,lcd.Height-31,64,30,BLUE);
     lcd.Print("Clear",lcd.Width/2-27,lcd.Height-24,2,WHITE);
@@ -26,7 +27,7 @@ void main_screen() {
 
 void touch_demo(void) {
     main_screen();
-    while(true){
+    while(true) {
         TSPoint p = ts.getPoint();
         if (p.v) {
             lcd.Fill_Rectangle(lcd.Width/2-112,lcd.Height-25,80,16,BLACK);
@@ -35,12 +36,9 @@ void touch_demo(void) {
             lcd.Print(p.y,lcd.Width/2-70,lcd.Height-25,2,RED,BLACK,1);
             lcd.Print(String("Z:"+String(p.z)),lcd.Width/2+40,lcd.Height-25,2,RED,BLACK,1);
             lcd.Pixel(p.x, p.y, RED);
-            if(clrCheck(p)){
+            if(clrCheck(p)) {
                 clrPressed();
-                while(1) { 
-                    p = ts.getPoint(); 
-                    if(!p.z) break; 
-                }
+                while(true) { p = ts.getPoint(); if(!p.z) break; }
                 if(clrCheck(p)) clrReleased(); else clrButton();
             }
         }
