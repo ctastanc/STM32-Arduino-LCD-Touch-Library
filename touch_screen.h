@@ -16,7 +16,6 @@
 #define RES_VALUE 4095
 
 #define MAP(x,in_min,in_max,out_min,out_max) ((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
-
 #define NUMSAMPLES 2
 
 class TSPoint {
@@ -45,8 +44,7 @@ class TouchScreen {
     }
     
     TSPoint getPoint(void) {
-        int x, y, z, v = 1;
-        
+        int x, y, z, v = 1, y1;
         pin_set(_ym,_yp,_xp,_xm,_xp,_xm); 
         x = getXY(_yp, v);
         pin_set(_xp,_xm,_yp,_ym,_yp,_ym); 
@@ -55,10 +53,7 @@ class TouchScreen {
         int z1 = analogRead(_xm);
         int z2 = analogRead(_yp);
         z = (RES_VALUE - (z2 - z1)); // pressure
-
         pinMode(_xm, OUTPUT); pinMode(_xp, OUTPUT); pinMode(_ym, OUTPUT); pinMode(_yp, OUTPUT);
-
-        int16_t y1;
         switch(lcd.rotation) {
             case 0: x = MAP(x, TS_MINX, TS_MAXX, 0, lcd.Width);
                     y = MAP(y, TS_MINY, TS_MAXY, 0, lcd.Height); 
