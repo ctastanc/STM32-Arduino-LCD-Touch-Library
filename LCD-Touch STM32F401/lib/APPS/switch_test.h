@@ -8,21 +8,18 @@ class swi{
     bool switch_flag_1 = true,switch_flag_2 = true,switch_flag_3 = true,switch_flag_4 = true,switch_flag_5 = true,switch_flag_6 = true;  
     int16_t menu_flag = 1,old_menu_flag;     
 
-    //diaplay a picture
     void show_picture( uint8_t *color_buf,int16_t buf_size,int16_t x1,int16_t y1,int16_t x2,int16_t y2)
     {  
         CS_L; lcd.Set_Addr_Window(x1, y1, x2, y2);
         lcd.Push_Any_Color(color_buf, buf_size, 1, 1);
     }
 
-    //Check whether to press or not
     bool is_pressed(int16_t x1,int16_t y1,int16_t x2,int16_t y2,int16_t px,int16_t py)
     {
         if((px > x1 && px < x2) && (py > y1 && py < y2))  return true;  
         else return false;
     }
 
-    //show the system menu
     void show_system_menu(void)
     {    
         lcd.Print("time setting",10,150,2,BLACK, BLACK,0);
@@ -108,10 +105,8 @@ class swi{
     {
         main_menu();
         while(1){
-            //digitalWrite(13, HIGH);
             digital_write(GPIOC, LL_GPIO_PIN_13,1);
             TSPoint p = ts.getPoint();
-            //digitalWrite(13, LOW);
             digital_write(GPIOC, LL_GPIO_PIN_13,0);
 
             if (p.v )
@@ -132,7 +127,6 @@ class swi{
                     lcd.Print("switch is on ",60,11,2,GREEN, BLACK,0);
                     switch_flag_1 = true;
                     }
-                    delay(100);
                 }
                 if(is_pressed(195,40,234,54,p.x,p.y))
                 {
@@ -146,7 +140,6 @@ class swi{
                     show_picture((uint8_t*)switch_on_3,sizeof(switch_on_3)/2,195,40,234,54);
                     switch_flag_2 = true;
                     }
-                    delay(100);
                 }
                 if(is_pressed(195,60,234,74,p.x,p.y))
                 {
@@ -160,7 +153,6 @@ class swi{
                     show_picture((uint8_t*)switch_on_3,sizeof(switch_on_3)/2,195,60,234,74);
                     switch_flag_3 = true;
                     }
-                    delay(100);
                 }
                 if(is_pressed(205,81,217,93,p.x,p.y))
                 {
@@ -174,7 +166,6 @@ class swi{
                     show_picture((uint8_t*)switch_on_1,sizeof(switch_on_1)/2,204,80,218,94);
                         switch_flag_4 = true;
                     }
-                    delay(100);
                 }
                 if(is_pressed(205,101,217,113,p.x,p.y))
                 {
@@ -188,7 +179,6 @@ class swi{
                     show_picture((uint8_t*)switch_on_1,sizeof(switch_on_1)/2,204,100,218,114);
                     switch_flag_5 = true;
                     }
-                    delay(100);
                 }
                 if(is_pressed(5,119,lcd.Width-1,137,p.x,p.y))
                 {     
@@ -279,7 +269,6 @@ class swi{
                             break;                  
                         }       
                     }
-                    delay(100);
                 }
                 while(1){TSPoint p = ts.getPoint(); if(!p.z) break;}
             }

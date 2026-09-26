@@ -1,11 +1,11 @@
 #include <touch_screen.h> 
 #include <LCD_SRW.h> 
 
-#define BTN_R 25 //the radius of button 
-#define BTN_SPC_X 25 //the horizontal distance between button
-#define BTN_SPC_Y 5  //the vertical distance between button
-#define EDG_Y 5 //lower edge distance 
-#define EDG_X 20 //left and right distance
+#define BTN_R 25 // the radius of button 
+#define BTN_SPC_X 25 // the horizontal distance between button
+#define BTN_SPC_Y 5  // the vertical distance between button
+#define EDG_Y 5 // lower edge distance 
+#define EDG_X 20 // left and right distance
 
 typedef struct _button_info {
     uint8_t name[10];
