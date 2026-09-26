@@ -13,8 +13,6 @@
 #define TS_MAXX 3500//3500//3500
 #define TS_MINY 350//350//350 //touch sensitivity for Y
 #define TS_MAXY 3600//3600//3600
-#define MINPRESSURE 0 //touch sensitivity for press
-#define MAXPRESSURE 4000
 #define RES_VALUE 4095
 
 #define MAP(x,in_min,in_max,out_min,out_max) ((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
@@ -31,8 +29,7 @@ class TSPoint {
 
 class TouchScreen {
     public:
-    TouchScreen() { _yp = YP; _xm = XM; _ym = YM; _xp = XP; _rxplate = 0; }
-    TouchScreen(uint16_t rxplate) { _yp = YP; _xm = XM; _ym = YM; _xp = XP; _rxplate = rxplate; }
+    TouchScreen() { _yp = YP; _xm = XM; _ym = YM; _xp = XP; }
 
     void pin_set(uint8_t in1, uint8_t in2, uint8_t out1, uint8_t out2, uint8_t h, uint8_t l) {
         digitalWrite(in1, LOW); pinMode(in1, INPUT);
@@ -86,7 +83,6 @@ class TouchScreen {
     private:
     int samples[NUMSAMPLES];
     uint8_t _yp, _ym, _xm, _xp;
-    uint16_t _rxplate;
 };
 
 TouchScreen ts=TouchScreen();
