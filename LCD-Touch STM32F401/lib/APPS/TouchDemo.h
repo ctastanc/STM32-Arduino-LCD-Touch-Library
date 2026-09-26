@@ -1,16 +1,14 @@
 #include <touch_screen.h>
 
-void touch_demo(void);
-
 void clrButton();
 
-void scr(){
+void scr() {
     lcd.Fill_Screen(BLACK);
     lcd.Rectangle(0,0,lcd.Width,lcd.Height,YELLOW);
     clrButton();
 }
 
-bool checkClr(TSPoint p) { 
+bool clrCheck(TSPoint p) { 
     if(p.x>=lcd.Width/2-30 && p.x<lcd.Width/2+30 && p.y >lcd.Height-30 && p.y<lcd.Height) return true; 
     else return false;
 }
@@ -28,27 +26,23 @@ void clrPressed() {
 void clrReleased() { scr(); }
 
 void touch_demo(void) {
-    lcd.Set_Rotation(LANDSCAPE);
     scr();
     while(1){
         TSPoint p = ts.getPoint();
         if (p.v) {
-            Serial.print("\tPressure = "); Serial.print(p.z);
-            Serial.print("   X = "); Serial.print(p.x);
-            Serial.print("\tY = "); Serial.println(p.y);
-            lcd.Fill_Rectangle(15,lcd.Height-25,33,16,BLACK);
-            lcd.Fill_Rectangle(75,lcd.Height-25,33,16,BLACK);
-            lcd.Print(p.x,15,lcd.Height-25,2,RED,BLACK,1);
-            lcd.Print(p.y,75,lcd.Height-25,2,RED,BLACK,1);
+            lcd.Fill_Rectangle(lcd.Width/2-112,lcd.Height-25,80,16,BLACK);
+            lcd.Fill_Rectangle(lcd.Width/2+40,lcd.Height-25,65,16,BLACK);
+            lcd.Print(p.x,lcd.Width/2-112,lcd.Height-25,2,RED,BLACK,1);
+            lcd.Print(p.y,lcd.Width/2-70,lcd.Height-25,2,RED,BLACK,1);
+            lcd.Print(String("Z:"+String(p.z)),lcd.Width/2+40,lcd.Height-25,2,RED,BLACK,1);
             lcd.Pixel(p.x, p.y, RED);
-            if(checkClr(p)){
+            if(clrCheck(p)){
                 clrPressed();
                 while(1) { 
                     p = ts.getPoint(); 
                     if(!p.z) break; 
                 }
-                if(checkClr(p)) clrReleased(); else clrButton();
-                
+                if(clrCheck(p)) clrReleased(); else clrButton();
             }
         }
     }

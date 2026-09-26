@@ -48,7 +48,7 @@ class TouchScreen {
         int x, y, z, v = 1;
         
         pin_set(_ym,_yp,_xp,_xm,_xp,_xm); 
-        x = getXY(_yp,v);
+        x = getXY(_yp, v);
         pin_set(_xp,_xm,_yp,_ym,_yp,_ym); 
         y = getXY(_xm, v);
         pin_set(_yp,_xm,_xp,_ym,_ym,_xp); 
@@ -77,7 +77,8 @@ class TouchScreen {
                     break;
         }
         if(x<0 || x>lcd.Width || y>lcd.Height || y<0) v = 0;
-        if(v) return TSPoint(x, y, z, v); else return TSPoint(z, v);
+        if(v) { if(z<20) v = 0; return TSPoint(x, y, z, v); }
+        else return TSPoint(z, v);
     }
 
     private:
