@@ -9,9 +9,7 @@ void main_screen() {
     clrButton.Draw();
 }
 
-void clrReleased() { 
-    main_screen();
- }
+void clrReleased() { main_screen(); }
 
 void print_coordinates(TSPoint p) {
     lcd.Fill_Rectangle(lcd.Width/2-112,lcd.Height-25,80,16,BLACK);
@@ -26,10 +24,9 @@ void touch_demo(void) {
     clrButton =  Buttons(lcd.Width/2-32,lcd.Height-31,64,30,BLUE,"Clear",WHITE,clrReleased);
     main_screen();
     while(true) {
-        int32_t start = micros();
+        //int32_t start = micros();
         p = ts.getPoint();
         if (p.v) {
-            lcd.Print((micros()-start),lcd.Width/2-70,lcd.Height-100,2,RED,BLACK,1);
             print_coordinates(p);
             lcd.Pixel(p.x, p.y, RED);
             if( clrButton.isThis(p.x, p.y) ) {
@@ -37,6 +34,7 @@ void touch_demo(void) {
                 while(true) { p = ts.getPoint(); if(!p.z) break; }
                 if(clrButton.isThis(p.x, p.y)) clrButton.Released(); else clrButton.Cancel();
             }
+            //lcd.Print((micros()-start),lcd.Width/2-70,lcd.Height-100,2,RED,BLACK,1);
         }
     }
 }
