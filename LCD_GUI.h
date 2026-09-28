@@ -671,7 +671,7 @@ class LCD_GUI
     void Print_Number_Int(long long num, int16_t length, uint8_t filler, int16_t system) {
         uint8_t *p = num_buf+26;
         bool flag = false;
-        int16_t len = 0,nlen = 0,left_len = 0,i = 0;
+        int16_t len = 0,nlen = 0,left_len = 0,i = 0, h=0;
         *p = '\0';
         if(0 == num) {
             *(--p) = '0';
@@ -681,20 +681,23 @@ class LCD_GUI
              num = -num;
              flag = true;
         }
-        while((num > 0) && (len < 10)) {
+        for(len,num;(num > 0) && (len < 10);len++) {
             if(num%system > 9) { *(--p) = 'A' + (num%system-10); }
             else *(--p) = '0' + num%system;
             num = num/system;
-            len++;
         }
         if(flag) { *(--p) = '-'; }
-        if(length > (len + flag + 1)) {
-            if(length > sizeof(num_buf)) { nlen = sizeof(num_buf) - len - flag - 1; }
-            else nlen = length - len - flag - 1;
+        if(system==16) { *(--p) ='x'; *(--p) ='0'; h = 2; }
+        if(system==8) { *(--p) ='o'; *(--p) ='0'; h = 2; }
+
+        if(length > (len + flag + 1 +h)) {
+            if(length > sizeof(num_buf)) { nlen = sizeof(num_buf) - len - flag - 1 - h; }
+            else nlen = length - len - flag - 1 - h;
             for(i = 0;i< nlen;i++) *(--p) = filler;
-            left_len = sizeof(num_buf) - nlen - len - flag - 1;
+            left_len = sizeof(num_buf) - nlen - len - flag - 1 - h;
         } 
-        else left_len = sizeof(num_buf) - len - flag - 1;
+        else left_len = sizeof(num_buf) - len - flag - 1 - h;
+        
         for(i = 0; i < (sizeof(num_buf)-left_len);i++) num_buf[i] = num_buf[left_len + i];
         num_buf[i] = '\0';
         text_len = (i-1);
@@ -718,30 +721,21 @@ class LCD_GUI
         if(dec<1) dec=1; else if(dec>5) dec=5;
         if(num<0) flag = true;
         dtostrf(num, length, dec, (char *)num_buf);
-        if(divider != '.') {
-            while(i < (int16_t)sizeof(num_buf)) {
-                if('.' == *(p+i)) { *(p+i) = divider; }	i++;
-            }
-        }
+        if(divider != '.') for(i;i < (int16_t)sizeof(num_buf);i++) if('.' == *(p+i)) *(p+i) = divider; 
         if(filler != ' ') {
             if(flag) {
                 *p = '-'; i = 1;
-                while(i < (int16_t)sizeof(num_buf)) {
-                    if((*(p+i) == ' ') || (*(p+i) == '-')) { *(p+i) = filler; } i++;
-                }
+                for(i;i < (int16_t)sizeof(num_buf);i++) if((*(p+i) == ' ') || (*(p+i) == '-')) *(p+i) = filler;  
             }
             else {
                 i = 0;
-                while(i < (int16_t)sizeof(num_buf)) {
-                    if(' ' == *(p+i)) { *(p+i) = filler; } i++;
-                }
+                for(i;i < (int16_t)sizeof(num_buf);i++) if(' ' == *(p+i)) *(p+i) = filler; 
             }
         }
         text_len = strlen((const char*)num_buf);
         text = num_buf;
     }
     
-	//protected:
     uint8_t num_buf[27];
 	int16_t text_x, text_y;
 	uint16_t text_fc, text_bc, draw_color; 
