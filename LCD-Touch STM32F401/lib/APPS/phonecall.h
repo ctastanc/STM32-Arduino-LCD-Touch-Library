@@ -1,4 +1,4 @@
-#include <touch_screen.h> 
+#include <touch_screen.h>
 #include <LCD_SRW.h> 
 
 #define BTN_R 25 // the radius of button 
@@ -63,12 +63,13 @@ void phonecall() {
     lcd.Fill_Screen(BLACK);
     lcd.Set_Rotation(PORTRAIT);
     Initialize_Buttons();
+    TSPoint p;
     uint16_t text_x=10,text_y=6, n=0;
     uint16_t text_x_add = 6*button[0].name_size, text_y_add = 8*button[0].name_size;
     show_menu();
     while(true){
         digital_write(GPIOC, LL_GPIO_PIN_13,1);
-        TSPoint p = ts.getPoint();
+        p = ts.getPoint();
         digital_write(GPIOC, LL_GPIO_PIN_13,0);
         if (p.v) {
             for(uint16_t i=0;i<sizeof(button)/sizeof(button_info);i++) {
@@ -100,7 +101,7 @@ void phonecall() {
                     }   
                 }   
             }  
-            while(1){TSPoint p = ts.getPoint(); if(!p.z) break;}
+            while(1) {p = ts.getPoint(); if(!p.z) break;}
         }  
     }   
 }

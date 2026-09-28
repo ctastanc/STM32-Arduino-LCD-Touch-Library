@@ -313,7 +313,7 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
         #endif   
     }
 
-    uint32_t get_line(uint8_t *st, char* &line_ref) {
+    uint32_t get_line(char *st, char* &line_ref) {
         uint32_t str_len = strlen((const char *)st);
         line_ref = (char*)malloc((str_len * 5 * text_size) + 2);
         char *temp = line_ref; // Temporary pointer to preserve the original address
@@ -355,7 +355,7 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
         @param    b      Back color for 16 bit or RGB(r,g,b) color
         @param    speed  Scroll delay
     */
-    void Print_HScroll(const uint8_t *st,int16_t x1,int16_t x2,int16_t y,int16_t size,const RGB& f,const RGB& b, uint16_t speed){
+    void Print_HScroll(const char *st,int16_t x1,int16_t x2,int16_t y,int16_t size,const RGB& f,const RGB& b, uint16_t speed){
         text_size=size;
         text_fc=f.val;
         text_bc=b.val;
@@ -364,8 +364,8 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
         int old_len=strlen((const char *)st);
         char* new_arr = (char*)malloc(add_spc_len + old_len + 1);
         memset(new_arr, ' ', add_spc_len); 
-        strcpy(new_arr + add_spc_len, (char*)st);
-        uint32_t line_len = get_line((uint8_t*)new_arr, line);
+        strcpy(new_arr + add_spc_len, st);
+        uint32_t line_len = get_line((char*)new_arr, line);
         free(new_arr);
         CS_L; CMDDATA8(MD, rot_val ^ 0x20); 
         for(int step = 0; step < line_len; step++) {sc(line,line_len,x1,x2,y,step); delay(speed);}

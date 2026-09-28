@@ -354,22 +354,22 @@ unsigned long (*show_function[])(void) =  {
     show_random_triangles,
     show_random_bit_map,
 };
-uint8_t *show_str[]= {
-    (uint8_t *)"show text ", 
-    (uint8_t *)"show triangle function ",
-    (uint8_t *)"show sinewave ",
-    (uint8_t *)"show fill rectangle ",
-    (uint8_t *)"show fill round rectangle ",
-    (uint8_t *)"show fill circle ",
-    (uint8_t *)"show fill triangle ",
-    (uint8_t *)"show grid lines ",
-    (uint8_t *)"show random pixels ",
-    (uint8_t *)"show random lines ",
-    (uint8_t *)"show random rectangles ",
-    (uint8_t *)"show random round rectangles ",
-    (uint8_t *)"show random circles ",
-    (uint8_t *)"show random triangles ",
-    (uint8_t *)"show random bit_map "
+static const char *show_str[]= {
+    "show text ", 
+    "show triangle function ",
+    "show sinewave ",
+    "show fill rectangle ",
+    "show fill round rectangle ",
+    "show fill circle ",
+    "show fill triangle ",
+    "show grid lines ",
+    "show random pixels ",
+    "show random lines ",
+    "show random rectangles ",
+    "show random round rectangles ",
+    "show random circles ",
+    "show random triangles ",
+    "show random bit_map "
 };
 
 //display the running time of programs 
@@ -385,7 +385,7 @@ unsigned long show_total_time(void){
         lcd.Print(show_str[i],(lcd.Width-260)/2-1,(lcd.Height-150)/2+i*10-1,1,0xFD20, 0,0);
         lcd.Print(buf[i], (lcd.Width-260)/2-1+200, (lcd.Height-150)/2+i*10-1,1,RGB(0, 255, 0));
     }
-    //delay(25000);
+    delay(25000);
     return micros()- time_start; 
 }
 
@@ -400,7 +400,7 @@ void show_end(unsigned long run_time){
     lcd.Print("Please wait ...", CENTER, lcd.Height/2-1,1,RGB(0,255,255));
     lcd.Print("Total runtime(us):  ", lcd.Width/2-1-90, lcd.Height/2-1+40,1,RGB(255,255,0));
     lcd.Print(run_time, lcd.Width/2-1+30, lcd.Height/2-1+40,1, RGB(0, 255, 0),1);  
-   // delay(2000);   
+    delay(2000);   
 }
 
 void colligate_test() {

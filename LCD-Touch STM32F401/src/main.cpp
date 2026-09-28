@@ -35,6 +35,7 @@
 #include <test_lcd.h>
 #include <sys_oc.h>
 #include <pong.h>
+#include <touch_calibrate.h>
 
 const uint16_t colors[16] ={ BLUE, RED, GREEN, CYAN, MAGENTA,  YELLOW, WHITE, ORANGE,
     DARKGREEN, DARKCYAN,MAROON,PURPLE,OLIVE,LIGHTGREY, GREENYELLOW,PINK};
@@ -43,24 +44,19 @@ void full_screen_test() {
     uint32_t start = micros(); 
     lcd.Fill_Screen(BLUE); 
     uint32_t elapsed_us = micros() - start;
-    Serial.println(String(elapsed_us)+ " us"); 
-    digital_write(GPIOC, LL_GPIO_PIN_13,1);
-    lcd.Print((String)("MCU "+String(SystemCoreClock/1000000) + " MHz"),CENTER,55,3,YELLOW,BLUE,0);
-    lcd.Print((String)(String(elapsed_us)+" us"),CENTER,130,4,YELLOW,BLUE,0);
-    lcd.Print((String)("APB1 "+String(HAL_RCC_GetPCLK1Freq()/1000000) +" Mhz"),CENTER,205,3,YELLOW,BLACK,0);
-    delay(1000);
-    lcd.Fill_Screen(RED); 
-    digital_write(GPIOC, LL_GPIO_PIN_13,0);
-    lcd.Print((String)("MCU "+String(SystemCoreClock/1000000) + " MHz"),CENTER,55,3,YELLOW,BLUE,0);
-    lcd.Print((String)(String(elapsed_us)+" us"),CENTER,130,4,YELLOW,BLUE,0);
-    lcd.Print((String)("APB1 "+String(HAL_RCC_GetPCLK1Freq()/1000000) +" Mhz"),CENTER,205,3,YELLOW,BLACK,0);
-    delay(1000);
+    Serial.print("Full Screen   : "); Serial.println(String(elapsed_us)+ " us"); 
+
+    lcd.Print((String)("MCU Frequency "+String(SystemCoreClock/1000000) + " MHz"),CENTER,55,3,WHITE,BLUE,0);
+    lcd.Print((String)("Full Screen "+String(elapsed_us)+" us"),CENTER,100,3,WHITE,BLUE,0);
+    lcd.Print((String)("PCLK1 "+String(HAL_RCC_GetPCLK1Freq()/1000000) +" Mhz"),CENTER,145,3,WHITE,BLACK,0);
+    lcd.Print((String)("PCLK2 "+String(HAL_RCC_GetPCLK2Freq()/1000000) +" Mhz"),CENTER,180,3,WHITE,BLACK,0);
+    while(true);
 }
 
 void rotate_rect(void) { 
     lcd.Set_Rotation(LANDSCAPE);
     lcd.Fill_Screen(BLACK);
-    while(1) {
+    while(true) {
         srand(time(0));
         int rn = colors[(rand() % 16)]; // int rn = 15+random(0xFFF0) ;
         lcd.Rectangle(0,0,lcd.Width,lcd.Height,YELLOW);
@@ -104,14 +100,14 @@ void test_read() {
 }
 
 void setup(void) {
-    /**********************************************************************
-       ATTENTION:
-       This line applies to STM32F401 devices equipped with a 25MHz crystal and 
-       STM32F103 devices equipped with 8MHz crystal. 
-       Do not use it if you lack sufficient knowledge about your hardware.
-       Adverse results may occur. You bear full responsibility. */
-    //SystemClock_OC(OC_108MHz); // Overclock to 108MHz
-    /**********************************************************************/
+/*****************************************************************************
+    ATTENTION:
+    This line applies to STM32F401 devices equipped with a 25MHz crystal and 
+    STM32F103 devices equipped with 8MHz crystal. 
+    Do not use it if you lack sufficient knowledge about your hardware.
+    Adverse results may occur. You bear full responsibility. */
+    SystemClock_OC(OC_108MHz); 
+/*****************************************************************************/
     analogReadResolution(12);
     Serial.begin(115200);
     delay(150);
@@ -120,13 +116,13 @@ void setup(void) {
     digital_write(GPIOC,LL_GPIO_PIN_13,1);
     lcd.Init();
     lcd.Fill_Screen(BLACK);
-    lcd.Set_Rotation(LANDSCAPE);
+    lcd.Set_Rotation(1);
 }
 
 void loop(void) {
     
-    rotate_rect();
-    //lcd.Print_HScroll((uint8_t*)("What will happen in the future is also one of the mysteries of the universe."),1,1,lcd.Height-125,2,RED,BLACK,10);
+    //rotate_rect();
+    //lcd.Print_HScroll("What will happen in the future is also one of the mysteries of the universe.",1,1,lcd.Height-125,2,RED,BLACK,10);
     //lcd.Print(String(12345,BIN),CENTER,100,2,RED);
     //full_screen_test();
     //fast_sin_cos();
@@ -144,6 +140,6 @@ void loop(void) {
     //Scroll_Test();
     //test_read();
     //pn.pong();
-    //test_lcd();
-    
+    test_lcd();
+    //touch_calibration();
 }

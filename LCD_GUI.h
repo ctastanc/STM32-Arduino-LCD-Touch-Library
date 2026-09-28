@@ -1,8 +1,6 @@
 #pragma once
 
 #include <Arduino.h>	
-#include <type_traits>
-#include <string_view>
 
 #define LEFT 0
 #define RIGHT 9999
@@ -29,8 +27,8 @@
 #define PINK         0xF81F  /* 255,   0, 255 */
 
 #define swap(a, b) { int16_t t = a; a = b; b = t; }
-// Color 16 bit or RGB(r,g,b)
-struct RGB {
+
+struct RGB { // Color 16 bit or RGB(r,g,b)
     uint16_t val;
     constexpr RGB(uint16_t c) : val(c) {}
     constexpr RGB(uint8_t r, uint8_t g, uint8_t b) : val(((uint16_t)(r&0xF8)<<8) | ((uint16_t)(g&0xFC)<<3) | (b>>3)) {} 
@@ -43,7 +41,6 @@ class LCD_GUI
     Derived& impl() { return static_cast<Derived&>(*this); }
     const Derived& impl() const { return static_cast<const Derived&>(*this); }
 	public:
-
     /*!
         @brief    Display char, string, number and float
         @param    val    Char, string, number or float number
@@ -57,33 +54,20 @@ class LCD_GUI
         @param    dec    Decimal point (default 2)
     */
     template <typename T> 	
-    void Print(T val, int16_t x, int16_t y, uint8_t size, const RGB& fc, const RGB& bc=0, bool mode=0, int16_t system = 10, uint8_t dec = 2) {
-        text_mode = mode;
-        text_size = size;
-        text_fc = fc;
-        text_bc = bc;  
-        text_x = x;
-        text_y = y;
-        // Control for static texts, arrays, and pointers
-        if constexpr (std::is_convertible_v<T, std::string_view> || std::is_same_v<std::decay_t<T>, uint8_t*> || 
-                    std::is_same_v<std::decay_t<T>, const uint8_t*>) { 
-            std::string_view sv;
-            if constexpr (std::is_pointer_v<std::decay_t<T>> && sizeof(std::remove_pointer_t<std::decay_t<T>>) == 1) {
-                sv = std::string_view(reinterpret_cast<const char*>(val));
-            } else { sv = std::string_view(val); }
-            text_len = sv.length();
-            text = (const uint8_t*)sv.data();
-            Print_Str();
+    void Print(T val, int16_t x, int16_t y, uint8_t size, const RGB& fc, const RGB& bc=0, bool mode=0, int16_t system=10, uint8_t dec=2) {
+        text_x = x; text_y = y; text_size = size; text_fc = fc; text_bc = bc; text_mode = mode;
+        // All Texts, Pointers, and Arrays (char*, const char[], uint8_t*, const uint8_t*)
+        if constexpr (std::is_pointer_v<std::decay_t<T>> || std::is_array_v<std::remove_reference_t<T>>) {
+            text = (const uint8_t*)(val); text_len = strlen((const char*)(val));
         } 
-        // If an Arduino-style dynamic String object is received
-        else if constexpr (std::is_same_v<T, String>) {	
-            text_len = val.length();
-            text = (const uint8_t *)(val.c_str());
-            Print_Str(); 
+        else if constexpr (std::is_same_v<std::decay_t<T>, String>) {	
+            text = (const uint8_t*)(val.c_str()); text_len = val.length();
         } 
         else if constexpr (std::is_floating_point_v<T>) { Print_Number_Float((double)val, dec, '.', 0, ' '); } 
         else if constexpr (std::is_integral_v<T>) {	Print_Number_Int((long long)val, 0, ' ', system); }
+        Print_Str(); 
     }
+
     // CRTP forwarding methods (non-virtual, 100% inlineable, zero-cost)
     void Draw_Pixe(int16_t x, int16_t y, uint16_t color) { impl().Draw_Pixe(x, y, color); }
     void Fill_Rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t c) { impl().Fill_Rect(x, y, w, h, c); }
@@ -96,7 +80,7 @@ class LCD_GUI
     LCD_GUI(void) {
         text_bc = 0xF800;
         text_fc = 0x07E0;
-        draw_color= RGB(0xF800);
+        draw_color = RGB(0xF800);
         text_size = 1;
         text_mode = 0;
     }
@@ -246,6 +230,24 @@ class LCD_GUI
     }
 
     /*!
+    @brief   Draw a rectangle with W, h no fill color
+        @param    x     Top left corner x coordinate
+        @param    y     Top left corner y coordinate
+        @param    w     Width in pixels
+        @param    h     Height in pixels
+        @param    h     Edge thickness
+        @param    color 16-bit or RGB(r,g,b) Color to draw with
+    */
+    void RectangleThickness(int16_t x, int16_t y, int16_t w, int16_t h, int16_t t, const RGB& color) {
+        for(int i = 0; i < t; i++) {
+            Fill_Rect(x+i, y+i, w-(2*i), 1, color);
+            Fill_Rect(x+i, y+h-1-(i), w-(2*i), 1, color);
+            Fill_Rect(x+i, y+i, 1, h-(2*i), color);
+            Fill_Rect(x+w-1-i, y+i, 1, h-(2*i), color);
+        }
+    }
+
+    /*!
     @brief    Fill a rectangle completely with one color. 
         @param    x     Top left corner x coordinate
         @param    y     Top left corner y coordinate
@@ -310,7 +312,7 @@ class LCD_GUI
         x0 = (int16_t)((x * c) - (y * s));
         y0 = (int16_t)((x * s) + (y * c));
     }
-
+    
     /*!
     @brief     Draw a rotated rectangle
         @param    cenX  x coordinate of center of rectangle.
@@ -667,8 +669,7 @@ class LCD_GUI
         @param    system  Number system (default 10)
     */
     void Print_Number_Int(long long num, int16_t length, uint8_t filler, int16_t system) {
-        uint8_t st[27] = {0};
-        uint8_t *p = st+26;
+        uint8_t *p = num_buf+26;
         bool flag = false;
         int16_t len = 0,nlen = 0,left_len = 0,i = 0;
         *p = '\0';
@@ -688,17 +689,16 @@ class LCD_GUI
         }
         if(flag) { *(--p) = '-'; }
         if(length > (len + flag + 1)) {
-            if(length > sizeof(st)) { nlen = sizeof(st) - len - flag - 1; }
+            if(length > sizeof(num_buf)) { nlen = sizeof(num_buf) - len - flag - 1; }
             else nlen = length - len - flag - 1;
             for(i = 0;i< nlen;i++) *(--p) = filler;
-            left_len = sizeof(st) - nlen - len - flag - 1;
+            left_len = sizeof(num_buf) - nlen - len - flag - 1;
         } 
-        else left_len = sizeof(st) - len - flag - 1;
-        for(i = 0; i < (sizeof(st)-left_len);i++) st[i] = st[left_len + i];
-        st[i] = '\0';
-        text_len = static_cast<size_t>(i-1);
-        text=st;
-        Print_Str();
+        else left_len = sizeof(num_buf) - len - flag - 1;
+        for(i = 0; i < (sizeof(num_buf)-left_len);i++) num_buf[i] = num_buf[left_len + i];
+        num_buf[i] = '\0';
+        text_len = (i-1);
+        text = num_buf;
     }
 
     /*!
@@ -712,42 +712,37 @@ class LCD_GUI
         @param    filler  Filler (default ' ')
     */
     void Print_Number_Float(double num, uint8_t dec, uint8_t divider, int16_t length, uint8_t filler) {
-        uint8_t st[27] = {0};
-        uint8_t * p = st;
+        uint8_t * p = num_buf;
         bool flag = false;
         int16_t i = 0;
         if(dec<1) dec=1; else if(dec>5) dec=5;
         if(num<0) flag = true;
-        dtostrf(num, length, dec, (char *)st);
+        dtostrf(num, length, dec, (char *)num_buf);
         if(divider != '.') {
-            while(i < (int16_t)sizeof(st)) {
+            while(i < (int16_t)sizeof(num_buf)) {
                 if('.' == *(p+i)) { *(p+i) = divider; }	i++;
             }
         }
         if(filler != ' ') {
             if(flag) {
                 *p = '-'; i = 1;
-                while(i < (int16_t)sizeof(st)) {
+                while(i < (int16_t)sizeof(num_buf)) {
                     if((*(p+i) == ' ') || (*(p+i) == '-')) { *(p+i) = filler; } i++;
                 }
             }
             else {
                 i = 0;
-                while(i < (int16_t)sizeof(st)) {
+                while(i < (int16_t)sizeof(num_buf)) {
                     if(' ' == *(p+i)) { *(p+i) = filler; } i++;
                 }
             }
         }
-        size_t str_len = 0;
-        while (str_len < sizeof(st) && st[str_len] != '\0') {
-            str_len++;
-        }
-        text_len = str_len;
-        text=st;
-        Print_Str();
+        text_len = strlen((const char*)num_buf);
+        text = num_buf;
     }
     
 	//protected:
+    uint8_t num_buf[27];
 	int16_t text_x, text_y;
 	uint16_t text_fc, text_bc, draw_color; 
 	uint8_t text_size;

@@ -132,22 +132,22 @@ static uint32_t (*test_function[15])(void) = {
     testFillRoundRect,
 };
 
-static uint8_t *test_str[15]= {
-    (uint8_t *)"--------------------------  ",
-    (uint8_t *)"Full Screen(240x320         ", 
-    (uint8_t *)"Text Fore Color             ",
-    (uint8_t *)"Text Back Color             ",
-    (uint8_t *)"Cross Line(400 pixel)       ",
-    (uint8_t *)"Line(320 pixel)             ",
-    (uint8_t *)"Fast line(320 pixel)        ",
-    (uint8_t *)"Rectangle(w*h)              ",
-    (uint8_t *)"Fill Rectangle(w*h)         ",
-    (uint8_t *)"Circle(R=240)               ",
-    (uint8_t *)"Fill Circle(R=240)          ",
-    (uint8_t *)"Triangle(320*288*288)       ",
-    (uint8_t *)"Fill Triangle(320*288*288)  ",
-    (uint8_t *)"Round Rectangle(w*h)        ",
-    (uint8_t *)"Fill Round Rectangle(w*h)   ",
+static const char *test_str[15]= {
+    "--------------------------  ",
+    "Full Screen(240x320         ", 
+    "Text Fore Color             ",
+    "Text Back Color             ",
+    "Cross Line(400 pixel)       ",
+    "Line(320 pixel)             ",
+    "Fast line(320 pixel)        ",
+    "Rectangle(w*h)              ",
+    "Fill Rectangle(w*h)         ",
+    "Circle(R=240)               ",
+    "Fill Circle(R=240)          ",
+    "Triangle(320*288*288)       ",
+    "Fill Triangle(320*288*288)  ",
+    "Round Rectangle(w*h)        ",
+    "Fill Round Rectangle(w*h)   ",
 };
 
 uint32_t test_lcd(void){
