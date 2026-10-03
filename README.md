@@ -84,7 +84,7 @@ the need for resource-intensive functions such as `set_draw_color` or `set_text_
 ```h
 	template <typename T>
     void Print(T val, int16_t x, int16_t y, uint8_t size, const RGB fc = RGB(), 
-	const RGB bc=RGB::AutoBC(), bool mode=0, int16_t system=10, uint8_t dec=2)
+		const RGB bc=RGB::AutoBC(), bool mode=0, int16_t system=10, uint8_t dec=2)
 	...
 	void Fill_Rectangle(int16_t x, int16_t y, int16_t w, int16_t h, const RGB color = RGB())
 	...
