@@ -109,10 +109,10 @@ void loop() {
     // You can also use it inline inside any drawing functions:
     lcd.Fill_Rectangle_WH(10, 10, 50, 50, RGB(240, 10, 150));
 	
-	lcd.Fill.Rectangle(160,120,50,50,RED);
-	lcd.Fill.Circle(40,40,10); // this RED
-	lcd.Print("Hello world.",0,80,2); // also this RED
-	lcd.Print("Hello world.",0,60,2,YELLOW); // this YELLOW
+	lcd.Fill.Rectangle(160, 120, 50, 50, RED);
+	lcd.Fill.Circle(40, 40, 10); // this RED
+	lcd.Print("Hello world.", 0, 80, 2); // also this RED
+	lcd.Print("Hello world.", 0, 60, 2, YELLOW); // this YELLOW
 }
 ```
 
