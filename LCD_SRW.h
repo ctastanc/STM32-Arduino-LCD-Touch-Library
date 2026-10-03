@@ -273,13 +273,14 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
             for (int16_t row = 0; row < sy; row++) {
                 for (int16_t col = 0; col < sx; col++) {
                     color = *(data + (row*sx + col)*1);
-                    Fill_Rect(x+col*scale, y+row*scale, scale, scale, color);
+                    Fill_Rectangle(x+col*scale, y+row*scale, scale, scale, color);
                 }
             }
         }
     }
 
-    __attribute__((always_inline)) inline void Set_Addr_Window(int16_t x1, int16_t y1, int16_t x2, int16_t y2) {
+    __attribute__((always_inline)) 
+    inline void Set_Addr_Window(int16_t x1, int16_t y1, int16_t x2, int16_t y2) {
         #if(LCD_DRIVER == ID_932X)
             int x, y, t;
             switch(rotation) {
@@ -312,165 +313,171 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
             CMD8(YS); DATA16(y1); DATA16(y2);
         #endif   
     }
-
-    uint32_t get_line(char *st, char* &line_ref) {
-        uint32_t str_len = strlen((const char *)st);
-        line_ref = (char*)malloc((str_len * 5 * text_size) + 2);
-        char *temp = line_ref; // Temporary pointer to preserve the original address
-        uint32_t line_len = 0;
-        for(uint32_t i = 0; i < str_len; i++) {
-            uint8_t ch = st[i];
-            for(uint32_t cl = 0; cl < ((ch == ' ') ? 2 : 5); cl++) {
-                for(uint32_t c = 0; c < text_size; c++) {
-                    *temp++ = font[ch * 5 + cl]; line_len++;
-                }
-            } *temp++=0; line_len++;
-        } *temp++=0; line_len++;
-        return line_len;
-    }
-
-    void sc(char *line, uint32_t line_len, uint32_t x1, int16_t x2, int16_t y, uint32_t step ){
-        uint32_t line_len1 = 0, total_w = 0;
-        for(line_len1=step; line_len1 < line_len; line_len1++) {
-            if(x1+total_w + 1 >= Width-x2) break;
-            total_w += 1;
-        }
-        Set_Addr_Window(y, x1, y+text_size*8-1, x1 + total_w - 1 ); CMD8(MW);
-        for(uint32_t i=step; i<line_len1; i++) {
-            for (uint32_t row = 0; row < 8;) {
-                uint32_t c = (line[i] >> row++ & 1) ? text_fc:text_bc;
-                uint32_t p = text_size; do{DATA16(c);} while(--p);
-            }
-        } 
-    }
-
+    
     /*!
         @brief    Horzintal scroll string.
         @param    st     String
-        @param    x1     left margin
-        @param    x2     right margin
+        @param    x      x coordinate
         @param    y      y coordinate
         @param    size   text size
         @param    f      Fore color for 16 bit or RGB(r,g,b) color     
         @param    b      Back color for 16 bit or RGB(r,g,b) color
         @param    speed  Scroll delay
     */
-    void Print_HScroll(const char *st,int16_t x1,int16_t x2,int16_t y,int16_t size,const RGB& f,const RGB& b, uint16_t speed){
-        text_size=size;
-        text_fc=f.val;
-        text_bc=b.val;
-        char *line;
-        int add_spc_len = (Width-x1-x2)/(2*text_size+1);
-        int old_len=strlen((const char *)st);
-        char* new_arr = (char*)malloc(add_spc_len + old_len + 1);
-        memset(new_arr, ' ', add_spc_len); 
-        strcpy(new_arr + add_spc_len, st);
-        uint32_t line_len = get_line((char*)new_arr, line);
-        free(new_arr);
-        CS_L; CMDDATA8(MD, rot_val ^ 0x20); 
-        for(int step = 0; step < line_len; step++) {sc(line,line_len,x1,x2,y,step); delay(speed);}
-        CMDDATA8(MD, rot_val); CS_H;
-        free(line); 
+    void Print_LeftScroll(const char *st, int16_t x, int16_t y, int16_t size, const RGB f, const RGB b, uint16_t speed) {
+        uint ts = size, fc = f, bc = b;
+        const int char_spacing = 1;                 // Character spacing (pixels)
+        const int char_w = 5 * ts + char_spacing;   // Total width of 1 character (e.g., 5*2 + 1 = 11)
+        int16_t cur_x_start = x;
+        CS_L;
+        while (true) {
+            cur_x_start--; // The text shifts exactly 1 pixel to the left in each cycle.
+            if (cur_x_start + char_w <= 0) {  // If the first character has completely exited from the left side of the screen, shift the text by one character.
+                cur_x_start += char_w; // Reset/shift coordinates
+                st++;
+                if (*st == '\0') break; // End of text
+            }
+            int char_x = cur_x_start;
+            int len = strlen(st);
+            for (int i = 0; i < len && char_x < Width; i++, char_x += char_w) {
+                if (char_x + char_w <= 0) continue; // Do not perform the action if the character is completely off-left.
+                const uint8_t *ch = &font[st[i] * 5];
+                int col_x = char_x;
+                for (int c = 0; c < 5; c++, col_x += ts) { // 1. Draw 5 columns of font.
+                    if (col_x + (int)ts <= 0 || col_x >= Width) continue; // Skip if the column is outside the screen boundaries.
+                    int draw_x1 = (col_x < 0) ? 0 : col_x; // Clip the left and right edges
+                    int draw_x2 = (col_x + (int)ts - 1 >= Width) ? (Width - 1) : (col_x + (int)ts - 1);
+                    int draw_w = draw_x2 - draw_x1 + 1;
+                    if (draw_w <= 0) continue;
+                    uint8_t l = ch[c];
+                    for (int r = 0; r < 7; r++, l >>= 1) {
+                        uint cl = (l & 1) ? fc : bc;
+                        Set_Addr_Window(draw_x1, y + r * ts, draw_x2, y + r * ts + ts - 1); CMD8(MW);
+                        uint p = draw_w * ts; do { DATA16(cl); } while (--p);
+                    }
+                }
+                if (col_x >= 0 && col_x < Width) {
+                    Set_Addr_Window(col_x, y, col_x, y + 7 * ts - 1); CMD8(MW);
+                    uint p = 7 * ts; do { DATA16(bc); } while (--p);
+                }
+            }
+            delay(speed);
+            if (*st == '\0') break;
+        }
+        CS_H;
     }
-    
+
     __attribute__((optimize("O3"), noinline))
     void Print_Str() {
-        const uint32_t ts = text_size;
-        const int32_t ty = text_y;
-        const uint16_t tfc = text_fc;
-        uint total_w=0, tw=0;
-        uint x1=(text_x==CENTER||text_x==RIGHT) ? 0:text_x;
-        for(uint i=0; i < text_len; i++) {
-            tw = 1+((text[i]==' ' ? 2:5)*ts);
-            if(x1+total_w+tw > Width) { text_len=i; break; }
-            total_w +=tw;
-        }
-        if (text_x == CENTER) text_x = (Width-total_w)/2;
-        else if (text_x == RIGHT) text_x = Width-total_w-1;
-        if(text_x>=Width||ty>=Height||text_x+5*ts<0||ty+ts*8-1<0) return;
+        uint ts = text_size, ty = text_y, fc = text_fc, bc = text_bc;
+        uint32_t fc_hi = DATA_MASK1 | (fc >> 8); uint32_t fc_lo = DATA_MASK1 | (fc & 0xFF);
+        uint32_t bc_hi = DATA_MASK1 | (bc >> 8); uint32_t bc_lo = DATA_MASK1 | (bc & 0xFF);
+        uint x1 = (text_x == CENTER || text_x == RIGHT) ? 0 : text_x;
+        uint char_w = 5 * ts + 1;
+        if (text_len > (Width - x1) / char_w) text_len = (Width - x1) / char_w;  
+        uint total_w = text_len * char_w;
+        if (text_x == CENTER) text_x = (Width - total_w) / 2; 
+        else if (text_x == RIGHT) text_x = Width - total_w - 1;
+        uint tx = text_x;
         CS_L;
-        if (text_mode == 0) { 
-            uint _x = text_x-1;
-            for(uint i=0; i<text_len; i++){
-            uint ch = text[i]; _x++;
-            for(uint c=0; c<((ch==' ')?2:5); c++, _x+=ts) {
-                uint l=font[ch*5+c];
-                if constexpr(LCD_DRIVER != ID_932X && LCD_DRIVER != ID_7575) SET_X(_x, _x+ts-1);
-                for(uint r=0; r<8; r++, l>>=1) {
-                    if (l&1) {
-                        if constexpr(LCD_DRIVER == ID_932X || LCD_DRIVER == ID_7575) {
-                            Set_Addr_Window(_x, ty+r*ts, _x+ts-1, ty+r*ts+ts-1);}
-                        else { SET_Y( ty+r*ts, ty+r*ts+ts-1); } CMD8(MW);
-                        switch (ts) {
-                            case 1: DATA16(tfc); break;
-                            case 2: BLOCK4(tfc); break;
-                            default: BLOCK8(tfc); uint p = (ts*ts)-8; do {DATA16(tfc); } while (--p); break;
-        }   }   }   }   } 
-        } else { 
-        #if (LCD_DRIVER != ID_932X && LCD_DRIVER != ID_7575)    
-            uint32_t fc = tfc; uint32_t bc = text_bc;
-            CMDDATA8(MD, rot_val ^ 0x20);
-            Set_Addr_Window(ty, text_x, ty+ts*8-1, text_x+total_w-1); CMD8(MW);        
-            for(uint i=0; i<text_len; i++){
-                uint ch = text[i];
-                for(uint c=0; c<((ch==' ')?2:5); c++) {
-                    uint l = font[ch*5+c];
-                    if(ts==1) {for(uint r=0;r<8;r++) DATA16(((l>>r&1)?fc:bc));}
-                    else{ for(uint r=0; r<ts*8; r++) 
-                        for(uint p=0; p<ts; p++) DATA16(((l>>(r&7)&1)?fc:bc));}
-                }  uint r = ts; do BLOCK8(bc) while(--r);
-            } CMDDATA8(MD, rot_val);
-        #elif(LCD_DRIVER == ID_932X || LCD_DRIVER == ID_7575)
-            Set_Addr_Window(text_x, text_y, text_x+total_w-1, text_y+(text_size*8)-1); CMD8(MW);
-            for (uint32_t r=0; r<8; r++) {
-                for (uint32_t y=0; y<text_size; y++) {
-                    for (uint32_t i=0; i<text_len; i++) {
-                        uint32_t ch = text[i];
-                        for (uint32_t c=0; c<((ch==' ')?2:5); c++) {
-                            uint32_t cl = (font[ch*5+c]>>r & 1) ? text_fc:text_bc;
-                            if(text_size == 1) { DATA16(cl); }
-                            else for (uint32_t x = 0; x < text_size; x++) DATA16(cl);
-                        } DATA16(text_bc); // space 1
+        if (text_mode == 0) { // FOREGROUND ONLY
+            uint32_t ts2 = ts * ts;
+            for (uint i = 0; i < text_len; i++) {
+                const uint8_t *ch = &font[text[i] * 5];
+                for (uint c = 0; c < 5; c++, tx += ts) {
+                    uint8_t l = *ch++;
+                    if (!l) continue; // Skip empty columns instantly
+                    uint8_t r = 0;
+                    while (l) {
+                        while (!(l & 1)) { l >>= 1; r++; }
+                        uint8_t len = 0;
+                        while (l & 1)    { l >>= 1; len++; }
+                        Set_Addr_Window(tx, ty + r * ts, tx + ts - 1, ty + (r + len) * ts - 1); CMD8(MW);
+                        uint32_t p = len * ts2;
+                        do { DATA_COLOR(fc_hi,fc_lo); } while (--p);
+                        r += len;
+                    }
+                } tx++;
+            }
+        } else { // BACKGROUND INCLUDED
+            Set_Addr_Window(tx, ty, tx + total_w - 1, ty + (ts * 7) - 1); CMD8(MW);
+            if (ts == 1) { 
+                for (uint32_t r = 0; r < 7; r++) {
+                    for (uint32_t i = 0; i < text_len; i++) {
+                        const uint8_t *ch = &font[text[i] * 5];
+                        for (uint32_t c = 0; c < 5; c++) {
+                            if (*ch++ & (1 << r)) { DATA_COLOR(fc_hi,fc_lo); }
+                            else                  { DATA_COLOR(bc_hi,bc_lo); }
+                        } DATA_COLOR(bc_hi,bc_lo); // 1 px boşluk
+                    }
+                }
+            } else { 
+                for (uint32_t r = 0; r < 7; r++) {
+                    for (uint32_t y = 0; y < ts; y++) {
+                        for (uint32_t i = 0; i < text_len; i++) {
+                            const uint8_t *ch = &font[text[i] * 5];
+                            for (uint32_t c = 0; c < 5; c++) {
+                                uint32_t p = ts;
+                                if (*ch++ & (1 << r)) { do { DATA_COLOR(fc_hi,fc_lo); } while (--p); }
+                                else                  { do { DATA_COLOR(bc_hi,bc_lo); } while (--p); }
+                            } DATA_COLOR(bc_hi,bc_lo); // 1 px boşluk
+                        }
                     }
                 }
             }
-        #endif   
-        } CS_H;
+        }
+        CS_H;
     }
 
-    __attribute__((always_inline)) inline void Draw_Pixe(int16_t x, int16_t y, uint16_t color)  {
-        if((uint32_t)x >= Width || (uint32_t)y >= Height) return;
-        CS_L; Set_Addr_Window(x, y, x, y); CMD8(MW); DATA16(color); CS_H;
+    /*!
+    @brief   Draw a pixel
+        @param    x     x coordinate
+        @param    y     y coordinate
+        @param    c     16-bit or RGB(r,g,b) Color to draw with
+    */
+    __attribute__((always_inline)) 
+    inline void Pixe(int16_t x, int16_t y, uint16_t c)  {
+        //if((uint32_t)x >= Width || (uint32_t)y >= Height) return;
+        //uint32_t hi = DATA_MASK1 | (c >> 8); uint32_t lo = DATA_MASK1 | (c & 0xFF);
+        CS_L; Set_Addr_Window(x, y, x, y); CMD8(MW); DATA16(c); CS_H;
     }
 
+    /*!
+        @brief   Fill Sreen color
+        @param    c     16-bit or RGB(r,g,b) Color to draw with
+    */
     void Fill_Scree(uint16_t c) {
-        //uint8_t rt=PORTRAIT;
-        //if (rotation != PORTRAIT) {rt = rotation; Set_Rotation(PORTRAIT);} // Rotation 0 to reduce tearing
+        uint32_t hi = DATA_MASK1 | (c >> 8); uint32_t lo = DATA_MASK1 | (c & 0xFF);
         CS_L; Set_Addr_Window(0, 0, Width-1, Height-1);	CMD8(MW);
-        uint32_t n = (240UL * 320UL) / 48;
-        while (n--) { BLOCK8(c); BLOCK8(c); BLOCK8(c); BLOCK8(c); BLOCK8(c); BLOCK8(c);}
+        uint32_t n = (240UL * 320UL) /48; 
+        while (n--) { BLOCK8(hi,lo); BLOCK8(hi,lo); BLOCK8(hi,lo); BLOCK8(hi,lo); BLOCK8(hi,lo); BLOCK8(hi,lo);}
         if constexpr(LCD_DRIVER == ID_932X) {Set_Addr_Window(0, 0, Width-1, Height-1);}
         else if constexpr(LCD_DRIVER == ID_7575) Set_LR(); 
         CS_H;
-        //if (rotation != rt) Set_Rotation(rt);
     }
 
-    __attribute__((optimize("unroll-loops")))
-    __attribute__((always_inline)) inline void Fill_Rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t c) {
+    /*!
+    @brief   Draw a rectangle with fill color
+        @param    x     Top left corner x coordinate
+        @param    y     Top left corner y coordinate
+        @param    w     Width in pixels
+        @param    h     Height in pixels
+        @param    c     16-bit or RGB(r,g,b) Color to draw with
+    */
+    __attribute__((optimize("unroll-loops"), always_inline)) 
+    inline void Fill_Rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t c) {
         if (w <= 0 || h <= 0) return; 
-        int16_t end;
-        uint32_t n = h * w;
+        uint32_t hi = DATA_MASK1 | (c >> 8); uint32_t lo = DATA_MASK1 | (c & 0xFF);
+        uint32_t n = h * w; 
         CS_L; Set_Addr_Window(x, y, x+w-1, y+h-1); CMD8(MW);
-        //while(n--){DATA16(c);}
-        uint32_t batches = n >> 3;      //3: n / 8 
+        uint32_t batches = n >> 3;    //3: n / 8 
         uint8_t remainder = n & 0x07;   //7: n % 8 
-        while (batches--) {	BLOCK8(c);}
-        while (remainder--) { DATA16(c); }
+        while (batches--) {	BLOCK8(hi,lo); }
+        while (remainder--) { DATA_COLOR(hi,lo); }
         if constexpr(LCD_DRIVER == ID_932X) {Set_Addr_Window(0, 0, Width-1, Height-1);}
         else if constexpr(LCD_DRIVER == ID_7575) Set_LR(); 
         CS_H; 
     }
-
 	protected: 
 	private:
 };

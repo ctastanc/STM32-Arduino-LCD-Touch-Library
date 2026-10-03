@@ -55,5 +55,5 @@ class readp{
 };
 
 readp rp;
-
+void read_pixel(){rp.read_pixel();}
 

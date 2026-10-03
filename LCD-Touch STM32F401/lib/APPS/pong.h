@@ -164,7 +164,7 @@ class pongs {
             ball_y += ball_dy; // Keep in bounds
         }
 
-        //lcd.Rectangle_WH(oldball_x, oldball_y, ball_w, ball_h, BLACK); // Less TFT refresh aliasing than line above for large balls
+        //lcd.Rectangle(oldball_x, oldball_y, ball_w, ball_h, BLACK); // Less TFT refresh aliasing than line above for large balls
         //lcd.Fill_Rectangle(   ball_x,    ball_y, ball_w, ball_h, RED);
 
         lcd.Fill_Circle(oldball_x, oldball_y, ball_w/2, BLACK); // Less TFT refresh aliasing than line above for large balls
@@ -187,7 +187,7 @@ class pongs {
 
     }
 
-    void pong() {
+    void pon() {
         lcd.Set_Rotation(LANDSCAPE);
         lcd.Fill_Screen(BLACK);
   
@@ -202,4 +202,5 @@ class pongs {
         }
     }
 };
-pongs pn;
+pongs pon;
+void pong() {pon.pon();}

@@ -213,3 +213,4 @@ class metlin{
 };
 
 metlin ml;
+void Meter_Linear(){ml.Meter_Linear();}

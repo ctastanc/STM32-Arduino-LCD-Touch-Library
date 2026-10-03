@@ -129,3 +129,4 @@ class disp_s {
     }
 };
 disp_s ds;
+void display_scroll() {ds.disp_scroll();}

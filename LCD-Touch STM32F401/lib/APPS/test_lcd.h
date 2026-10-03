@@ -8,15 +8,15 @@ uint32_t testFillScreen() {
 
 uint32_t testTextFR() {
     uint32_t start = micros();
-    lcd.Print("Hello World!", CENTER, 24, 1, WHITE,BLUE,0);
-    lcd.Print(1234.56, CENTER, 35, 2, YELLOW,BLUE,0);
-    lcd.Print("lcd ILI9341", CENTER, 55, 2, RED,BLUE,0);
-    lcd.Print("ENERGY", CENTER, 85, 4, GREEN,BLUE,0);
-    lcd.Print("In Universe.", CENTER, 130, 2, GREEN,BLUE,0);
-    lcd.Print("What will happen in the", CENTER, 150, 1, RED,BLUE,0);
-    lcd.Print("future is also one of the", CENTER, 160, 1, WHITE,BLUE,0);
-    lcd.Print("mysteries of the universe.", CENTER, 170, 1, GREEN,BLUE,0);
-    lcd.Print("If you aspire to unravel", CENTER, 180, 1, GREEN,BLUE,0);
+    lcd.Print("Hello world!", CENTER, 24, 1, YELLOW,BLUE,0);
+    lcd.Print(1234.56, CENTER, 35, 2);//, YELLOW,BLUE,0);
+    lcd.Print("lcd ILI9341", CENTER, 55, 2);//, RED,BLUE,0);
+    lcd.Print("ENERGY", CENTER, 85, 4);//, GREEN,BLUE,0);
+    lcd.Print("In Universe.", CENTER, 130, 2);//, GREEN,BLUE,0);
+    lcd.Print("What will happen in the", CENTER, 150, 1);//, RED,BLUE,0);
+    lcd.Print("future is also one of the", CENTER, 160, 1);//, WHITE,BLUE,0);
+    lcd.Print("mysteries of the universe.", CENTER, 170, 1);//, GREEN,BLUE,0);
+    lcd.Print("If you aspire to unravel", CENTER, 180, 1);//, GREEN,BLUE,0);
     lcd.Print("the secrets of the universe,", CENTER, 190, 1, GREEN,BLUE,0);
     lcd.Print("think in terms of energy,", CENTER, 200, 1, GREEN,BLUE,0);
     lcd.Print("frequency, and vibrations.", CENTER, 210, 1, GREEN,BLUE,0); 
@@ -26,7 +26,7 @@ uint32_t testTextFR() {
 
 uint32_t testTextBG() {
     uint32_t start = micros();
-    lcd.Print("Hello World!", CENTER, 24, 1, WHITE,BLUE,1);
+    lcd.Print("Hello world!", CENTER, 24, 1, WHITE,BLUE,1);
     lcd.Print(1234.56, CENTER, 35, 2, YELLOW,BLUE,1);
     lcd.Print("lcd ILI9341", CENTER, 55, 2, RED,BLUE,1);
     lcd.Print("ENERGY", CENTER, 85, 4, GREEN,BLUE,1);
@@ -134,20 +134,20 @@ static uint32_t (*test_function[15])(void) = {
 
 static const char *test_str[15]= {
     "--------------------------  ",
-    "Full Screen(240x320         ", 
-    "Text Fore Color             ",
-    "Text Back Color             ",
-    "Cross Line(400 pixel)       ",
-    "Line(320 pixel)             ",
-    "Fast line(320 pixel)        ",
-    "Rectangle(w*h)              ",
-    "Fill Rectangle(w*h)         ",
-    "Circle(R=240)               ",
-    "Fill Circle(R=240)          ",
-    "Triangle(320*288*288)       ",
-    "Fill Triangle(320*288*288)  ",
-    "Round Rectangle(w*h)        ",
-    "Fill Round Rectangle(w*h)   ",
+    "Full Screen(240x320         :", 
+    "Text Fore Color             :",
+    "Text Back Color             :",
+    "Cross Line(400 pixel)       :",
+    "Line(320 pixel)             :",
+    "Fast line(320 pixel)        :",
+    "Rectangle(w*h)              :",
+    "Fill Rectangle(w*h)         :",
+    "Circle(R=240)               :",
+    "Fill Circle(R=240)          :",
+    "Triangle(320*288*288)       :",
+    "Fill Triangle(320*288*288)  :",
+    "Round Rectangle(w*h)        :",
+    "Fill Round Rectangle(w*h)   :",
 };
 
 uint32_t test_lcd(void){

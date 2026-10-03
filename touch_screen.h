@@ -9,8 +9,8 @@
 
 #define TS_MINX 450//500 //touch sensitivity for x
 #define TS_MAXX 3549//3500
-#define TS_MINY 299//286//350 //touch sensitivity for Y
-#define TS_MAXY 3592//3586//3600
+#define TS_MINY 299//350 //touch sensitivity for Y
+#define TS_MAXY 3592//3600
 #define RES_VALUE 4095
 #define NUMSAMPLES 2
 
@@ -80,7 +80,8 @@ class TouchScreen {
         x = rot_table[lcd.rotation].x; 
         y = rot_table[lcd.rotation].y;
 
-        if( x>lcd.Width || y>lcd.Height || z<500 ) z = v = 0; 
+        if( x>lcd.Width || y>lcd.Height ) v = 0; 
+        if(z<50) v=z=0; // z should be tested independently of x and y. Because if x or y is false, z will be "0" as well.
         if(v) return TSPoint(x, y, z, v); else return TSPoint(z, v);
     }
 

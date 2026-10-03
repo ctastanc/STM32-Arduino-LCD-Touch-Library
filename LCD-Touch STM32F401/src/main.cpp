@@ -1,10 +1,4 @@
-/***********************************************************************************
-*
-*  This demo was made for LCD modules with 8bit data port.
-*  STM32 - LCD 8-bit parallel LCD + TouchScreen
-*  Hardware Environment: STM32 Arduino STM32F401
-*
-*===========================/pin usage as follow:/================================
+/****************************** pin usage as follow ************************************
 *     ILI9341      LCD_CS  LCD_RS  LCD_WR  LCD_RD  LCD_RST  SD_SS  SD_DI  SD_DO  SD_SCK
 *     STM32          B1      B0      PA8    PB14     PB15
 *     Touch          YP      XM
@@ -12,17 +6,16 @@
 *     ILI9341      LCD_D0  LCD_D1  LCD_D2  LCD_D3  LCD_D4  LCD_D5  LCD_D6  LCD_D7
 *     STM32          PA0     PA1     PA2     PA3     PA4     PA5     PA6     PA7
 *     Touch           XP     YM
-*=================================================================================
-*
+****************************************************************************************
 * LCD_MODEL, LCD_SYS_INTERFACE and PIN DEFNITIONS are defined in setting.h
-*
-**********************************************************************************/
+****************************************************************************************/
 
 #include <LCD_SRW.h> 
+#include <sys_oc.h>
 #include <sin_cos.h>
 #include <phonecall.h>
 #include <touchdemo.h>
-#include <bench2.h>
+#include <test1.h>
 #include <read_pixel.h>
 #include <switch_test.h>
 #include <colligate_test.h>
@@ -33,19 +26,16 @@
 #include <disp_scroll.h>
 #include <Scroll_Test.h>
 #include <test_lcd.h>
-#include <sys_oc.h>
 #include <pong.h>
 #include <touch_calibrate.h>
-
-const uint16_t colors[16] ={ BLUE, RED, GREEN, CYAN, MAGENTA,  YELLOW, WHITE, ORANGE,
-    DARKGREEN, DARKCYAN,MAROON,PURPLE,OLIVE,LIGHTGREY, GREENYELLOW,PINK};
+#include <rotate_rects.h>
+#include <test_read.h>
 
 void full_screen_test() {
     uint32_t start = micros(); 
     lcd.Fill_Screen(BLUE); 
     uint32_t elapsed_us = micros() - start;
     Serial.print("Full Screen   : "); Serial.println(String(elapsed_us)+ " us"); 
-
     lcd.Print((String)("MCU Frequency "+String(SystemCoreClock/1000000) + " MHz"),CENTER,55,3,WHITE,BLUE,0);
     lcd.Print((String)("Full Screen "+String(elapsed_us)+" us"),CENTER,100,3,WHITE,BLUE,0);
     lcd.Print((String)("PCLK1 "+String(HAL_RCC_GetPCLK1Freq()/1000000) +" Mhz"),CENTER,145,3,WHITE,BLACK,0);
@@ -53,52 +43,10 @@ void full_screen_test() {
     while(true);
 }
 
-void rotate_rect(void) { 
-    lcd.Set_Rotation(LANDSCAPE);
-    lcd.Fill_Screen(BLACK);
-    while(true) {
-        srand(time(0));
-        int rn = colors[(rand() % 16)]; // int rn = 15+random(0xFFF0) ;
-        lcd.Rectangle(0,0,lcd.Width,lcd.Height,YELLOW);
-        lcd.Fast_HLine(35,120,245,BLUE);
-        lcd.Fast_VLine(160,35,175,BLUE);
-        lcd.Fill_Circle(160,120,40,BLACK);
-        lcd.Circle(160,120,40,YELLOW);
-        for(int z=1;z<3;z++) { 
-            for(int x=1;x<91;x++) { 
-                lcd.Fill_Rotated_Rectangle(160,120,50,50,x,rn);
-                lcd.Fill_Rotated_Rectangle(80,60,50,50,90-x,rn);
-                lcd.Fill_Rotated_Rectangle(240,180,50,50,90-x,rn);
-                for(int i=2;i<5;i=i+2) {
-                    lcd.Rotated_Rectangle(160,120,50+i,50+i,x,BLACK);
-                    lcd.Rotated_Rectangle(80,60,50+i,50+i,90-x,BLACK);
-                    lcd.Rotated_Rectangle(240,180,50+i,50+i,90-x,BLACK);
-                }
-            }
-        }
-        int rn1 = colors[(rand() % 16)];
-        for(int x=90;x>=0;x--) {
-            lcd.Fill_Rotated_Rectangle(160,120,50,50,x,rn1);
-            lcd.Fill_Rotated_Rectangle(240,60,50,50,90-x,rn1);
-            lcd.Fill_Rotated_Rectangle(80,180,50,50,90-x,rn1);
-            for(int i=2;i<5;i=i+2) {
-                lcd.Rotated_Rectangle(160,120,50+i,50+i,x,BLACK);
-                lcd.Rotated_Rectangle(240,60,50+i,50+i,90-x,BLACK);
-                lcd.Rotated_Rectangle(80,180,50+i,50+i,90-x,BLACK);
-            }
-        }
-    }
+void text_scrool() { 
+    const char* text = "What will happen in the future is also one of the mysteries of the universe.";
+    lcd.Print_LeftScroll(text, lcd.Width, lcd.Height-125, 2, RED, BLACK, 10);
 }
-
-void test_read() {
-    for(int i= 0; i<16;i++) {
-        lcd.Pixel(50, i*15+10 ,colors[i]);
-        int p=lcd.Read_Pixel(50,i*15+10);
-        lcd.Print(p,70,i*15+5,1,p);
-        lcd.Print((String)("ILI"+String(lcd.Read_ID(),HEX)),160,110,2,GREEN);
-    }
-}
-
 void setup(void) {
 /*****************************************************************************
     ATTENTION:
@@ -115,31 +63,35 @@ void setup(void) {
     set_pin_output(GPIOC, LL_GPIO_PIN_13);
     digital_write(GPIOC,LL_GPIO_PIN_13,1);
     lcd.Init();
-    lcd.Fill_Screen(BLACK);
-    lcd.Set_Rotation(1);
+    lcd.Cls(BLACK);
+    lcd.Set_Rotation(LANDSCAPE);
 }
 
 void loop(void) {
-    
-    //rotate_rect();
-    //lcd.Print_HScroll("What will happen in the future is also one of the mysteries of the universe.",1,1,lcd.Height-125,2,RED,BLACK,10);
-    //lcd.Print(String(12345,BIN),CENTER,100,2,RED);
-    //full_screen_test();
-    //fast_sin_cos();
+/***TOUCH********************/ 
+    //touch_calibration();
     //touch_demo();
     //phonecall();
-    //b2.bench2();
-    //ml.Meter_Linear();
-    //cl.clock_analog();
-    //mt.meters();
-    //ds.disp_scroll();
-    //cb.cube_demo();
-    //rp.read_pixel();
-    //sw.switch_test();
-    //colligate_test(); 
-    //Scroll_Test();
+    //switch_test();
+//***READ********************/
+    //read_pixel();
     //test_read();
-    //pn.pong();
+//***OTHERS*****************/
+    //Meter_Linear();
+    //clock_analog();
+    //meters();
+    //display_scroll();
+    //fast_sin_cos();
+    //Scroll_Test();
+    //cube_demo();
+    //rotate_rect();
+    //text_scrool();
+    //pong();
+//***TEST*******************/
+    //colligate_test();
     test_lcd();
-    //touch_calibration();
+    //test1();
+    //full_screen_test();
+    //lcd.Print(String(12345,BIN),CENTER,100,2,RED);
+
 }

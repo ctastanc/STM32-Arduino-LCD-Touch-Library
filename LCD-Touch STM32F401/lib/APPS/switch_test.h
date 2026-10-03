@@ -105,10 +105,9 @@ class swi{
     {
         main_menu();
         while(1){
-            digital_write(GPIOC, LL_GPIO_PIN_13,1);
+            //digital_write(GPIOC, LL_GPIO_PIN_13,1);
             TSPoint p = ts.getPoint();
-            digital_write(GPIOC, LL_GPIO_PIN_13,0);
-
+            //digital_write(GPIOC, LL_GPIO_PIN_13,0);
             if (p.v )
             {
                 if(is_pressed(5,5,34,34,p.x,p.y))
@@ -183,7 +182,7 @@ class swi{
                 if(is_pressed(5,119,lcd.Width-1,137,p.x,p.y))
                 {     
                     lcd.Fill_Rectangle(0, 117, lcd.Width, 21,MAGENTA);
-                    delay(100);
+                    //delay(100);
                     lcd.Fill_Rectangle(0, 117, lcd.Width, 21,WHITE);
                     if(switch_flag_6)
                     {
@@ -270,10 +269,12 @@ class swi{
                         }       
                     }
                 }
-                while(1){TSPoint p = ts.getPoint(); if(!p.z) break;}
+                while(1) { p = ts.getPoint(); if(p.z==0) break; }
+                delay(10);
             }
         }
     }
 };
 
 swi sw;
+void switch_test(){sw.switch_test();}

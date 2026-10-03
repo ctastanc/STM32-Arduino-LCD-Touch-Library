@@ -28,12 +28,38 @@
 
 #define swap(a, b) { int16_t t = a; a = b; b = t; }
 
-struct RGB { // Color 16 bit or RGB(r,g,b)
+/*struct RGB { // Color 16 bit or RGB(r,g,b)
     uint16_t val;
     constexpr RGB(uint16_t c) : val(c) {}
     constexpr RGB(uint8_t r, uint8_t g, uint8_t b) : val(((uint16_t)(r&0xF8)<<8) | ((uint16_t)(g&0xFC)<<3) | (b>>3)) {} 
     constexpr operator uint16_t() const { return val; }
-}__attribute__((packed));
+};*/
+struct RGB {
+    uint32_t val;
+    static inline uint16_t last_fc = 0xFFFF; 
+    static inline uint16_t last_bc = 0x0000; 
+    static constexpr uint32_t AUTO_FC = 0xFFFFFFFE;
+    static constexpr uint32_t AUTO_BC = 0xFFFFFFFF; 
+    
+    constexpr RGB() : val(AUTO_FC) {}
+    constexpr RGB(uint16_t c) : val(c) {}
+    constexpr RGB(uint8_t r, uint8_t g, uint8_t b) : val(((uint16_t)(r & 0xF8) << 8) | ((uint16_t)(g & 0xFC) << 3) | (b >> 3)) {}
+
+    static constexpr RGB AutoBC() { RGB c; c.val = AUTO_BC; return c; }
+    uint16_t getFC() const {
+        if (val != AUTO_FC && val != AUTO_BC) {
+            last_fc = (uint16_t)val;
+        }
+        return last_fc;
+    }
+    uint16_t getBC() const {
+        if (val != AUTO_FC && val != AUTO_BC) {
+            last_bc = (uint16_t)val;
+        }
+        return last_bc;
+    }
+    operator uint16_t() const { return getFC(); }
+};
 
 template <typename Derived>
 class LCD_GUI
@@ -47,34 +73,32 @@ class LCD_GUI
         @param    x      x coordinate
         @param    y      y coordinate
         @param    size   Text size
-        @param    fc     Fore color for 16 bit or RGB(r,g,b) color     
-        @param    bc     Back color for 16 bit or RGB(r,g,b) color (default:0)
-        @param    mode   1:Back color, 0:No back color (default:0)
+        @param    fc     Foreground color for 16 bit or RGB(r,g,b) color     
+        @param    bc     Background color for 16 bit or RGB(r,g,b) color (default:0)
+        @param    mode   0:Foreground only 1:Foreground and Background  (default:0)
         @param    system Number system (default 10)
         @param    dec    Decimal point (default 2)
     */
     template <typename T> 	
-    void Print(T val, int16_t x, int16_t y, uint8_t size, const RGB& fc, const RGB& bc=0, bool mode=0, int16_t system=10, uint8_t dec=2) {
-        text_x = x; text_y = y; text_size = size; text_fc = fc; text_bc = bc; text_mode = mode;
+    void Print(T val, int16_t x, int16_t y, uint8_t size, const RGB fc = RGB(), const RGB bc=RGB::AutoBC(), bool mode=0, int16_t system=10, uint8_t dec=2) {
+        text_x = x; text_y = y; text_size = size;  text_fc = fc.getFC(); text_bc = bc.getBC(); text_mode = mode;
         // All Texts, Pointers, and Arrays (char*, const char[], uint8_t*, const uint8_t*)
         if constexpr (std::is_pointer_v<std::decay_t<T>> || std::is_array_v<std::remove_reference_t<T>>) {
-            text = (const uint8_t*)(val); text_len = strlen((const char*)(val));
-        } 
+            text = (const uint8_t*)(val); text_len = strlen((const char*)(val)); } 
         else if constexpr (std::is_same_v<std::decay_t<T>, String>) {	
-            text = (const uint8_t*)(val.c_str()); text_len = val.length();
-        } 
+            text = (const uint8_t*)(val.c_str()); text_len = val.length(); } 
         else if constexpr (std::is_floating_point_v<T>) { Print_Number_Float((double)val, dec, '.', 0, ' '); } 
         else if constexpr (std::is_integral_v<T>) {	Print_Number_Int((long long)val, 0, ' ', system); }
         Print_Str(); 
     }
 
     // CRTP forwarding methods (non-virtual, 100% inlineable, zero-cost)
-    void Draw_Pixe(int16_t x, int16_t y, uint16_t color) { impl().Draw_Pixe(x, y, color); }
+    void Pixe(int16_t x, int16_t y, uint16_t c) { impl().Pixe(x, y, c); }
     void Fill_Rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t c) { impl().Fill_Rect(x, y, w, h, c); }
     void Draw_Bit_Map(int16_t x, int16_t y, int16_t sx, int16_t sy, const uint16_t *data, int16_t scale) { impl().Draw_Bit_Map(x, y, sx, sy, data, scale); }
     void Push_Any_Color(uint16_t * block, int16_t n, bool first, uint8_t flags) { impl().Push_Any_Color(block, n, first, flags); }
     int16_t Read_GRAM(int16_t x, int16_t y, uint16_t *block, int16_t w, int16_t h) { return impl().Read_GRAM(x, y, block, w, h); }
-    void Fill_Scree(uint16_t color) { impl().Fill_Scree(color); }
+    void Fill_Scree(uint16_t c) { impl().Fill_Scree(c); }
     void Print_Str() { impl().Print_Str(); }
     
     LCD_GUI(void) {
@@ -91,11 +115,11 @@ class LCD_GUI
  
     int16_t Get_Text_Y_Cursor(void) const { return text_y; }
 
-    void Set_Text_Color(const RGB& color) { text_fc = color; }
+    void Set_Text_Color(const RGB color = RGB()) { text_fc = color; }
   
     uint16_t Get_Text_Color(void) const {	return text_fc; }
 
-    void Set_Text_Back_Color(const RGB& color) { text_bc = color; }
+    void Set_Text_Back_Color(const RGB color = RGB()) { text_bc = color; }
 
     uint16_t Get_Text_Back_Color(void) const { return text_bc; }
 
@@ -107,11 +131,13 @@ class LCD_GUI
 
     bool Get_Text_Mode(void) const { return text_mode; }
     
-    void Set_Draw_Color(const RGB& color) { draw_color = color; } //set 16bits or RGB draw color
+    void Set_Draw_Color(const RGB color = RGB()) { draw_color = color; } //set 16bits or RGB draw color
 
     uint16_t Get_Draw_Color(void) const { return draw_color; }
 
-    void Fill_Screen(const RGB& color) { Fill_Scree(color); }
+    void Cls(const RGB color = RGB()) { Fill_Scree(color); }
+
+    void Fill_Screen(const RGB color = RGB()) { Fill_Scree(color); }
 
     /*!
     @brief    Write a pixel.
@@ -119,13 +145,12 @@ class LCD_GUI
         @param   y   y coordinate
         @param   color 16-bit or RGB(r,g,b) Color to fill with
     */
-    void Pixel(int16_t x, int16_t y, const RGB& color) { Draw_Pixe(x, y, color); }
+    void Pixel(int16_t x, int16_t y, const RGB color = RGB()) { Pixe(x, y, color); }
 
     /*!
-    @brief    Read a pixel.
+    @brief    Read a pixel. return 16-bit Color
         @param   x   x coordinate
         @param   y   y coordinate
-        @param   color return 16-bit Color
     */
     uint16_t Read_Pixel(int16_t x, int16_t y) {
         uint16_t color;
@@ -141,7 +166,7 @@ class LCD_GUI
         @param    h   Height in pixels
         @param    color 16-bit or RGB(r,g,b) Color to fill with
     */
-    void Fast_VLine(int16_t x, int16_t y, int16_t h, const RGB& color) {
+    void Fast_VLine(int16_t x, int16_t y, int16_t h, const RGB color = RGB()) {
          Fill_Rect(x, y, 1, h, color);
     }
 
@@ -153,7 +178,7 @@ class LCD_GUI
         @param    w   Width in pixels
         @param    color 16-bit or RGB(r,g,b) Color to fill with
     */
-    void Fast_HLine(int16_t x, int16_t y, int16_t w,const RGB& color) {
+    void Fast_HLine(int16_t x, int16_t y, int16_t w,const RGB color = RGB()) {
         Fill_Rect(x, y, w, 1, color);
     }
 
@@ -166,7 +191,7 @@ class LCD_GUI
         @param    y2  End point y coordinate
         @param    color 16-bit or RGB(r,g,b) Color to draw with
     */
-    void Line(int16_t x1, int16_t y1, int16_t x2, int16_t y2, const RGB& color) {
+    void Line(int16_t x1, int16_t y1, int16_t x2, int16_t y2, const RGB color = RGB()) {
         if (x1 == x2) {
             if (y1 > y2) swap(y1, y2);
             Fast_VLine(x1, y1, y2 - y1 + 1, color);
@@ -185,14 +210,14 @@ class LCD_GUI
                     err -= dy;
                     if (err < 0) {
                         int16_t len = x - run_start + 1;
-                        if (len == 1) Draw_Pixe(run_start, y1, color); else Fast_HLine(run_start, y1, len, color);
+                        if (len == 1) Pixe(run_start, y1, color); else Fast_HLine(run_start, y1, len, color);
                         run_start = x + 1;
                         y1 += ystep;
                         err += dx;
                     }
                 }
                 int16_t len = x2 - run_start + 1;
-                if (len == 1) Draw_Pixe(run_start, y1, color); else Fast_HLine(run_start, y1, len, color);
+                if (len == 1) Pixe(run_start, y1, color); else Fast_HLine(run_start, y1, len, color);
             } else {
                 // Y-major: vertical run slices
                 if (y1 > y2) { swap(x1, x2); swap(y1, y2); }
@@ -202,14 +227,14 @@ class LCD_GUI
                     err -= dx;
                     if (err < 0) {
                         int16_t len = y - run_start + 1;
-                        if (len == 1) Draw_Pixe(x1, run_start, color); else Fast_VLine(x1, run_start, len, color);
+                        if (len == 1) Pixe(x1, run_start, color); else Fast_VLine(x1, run_start, len, color);
                         run_start = y + 1;
                         x1 += xstep;
                         err += dy;
                     }
                 }
                 int16_t len = y2 - run_start + 1;
-                if (len == 1) Draw_Pixe(x1, run_start, color); else Fast_VLine(x1, run_start, len, color);
+                if (len == 1) Pixe(x1, run_start, color); else Fast_VLine(x1, run_start, len, color);
             }
         }
     }
@@ -222,29 +247,11 @@ class LCD_GUI
         @param    h     Height in pixels
         @param    color 16-bit or RGB(r,g,b) Color to draw with
     */
-    void Rectangle(int16_t x, int16_t y, int16_t w, int16_t h, const RGB& color) {
+    void Rectangle(int16_t x, int16_t y, int16_t w, int16_t h, const RGB color = RGB()) {
         Fill_Rect(x, y, w, 1, color);
         Fill_Rect(x, y+h-1, w, 1, color);
         Fill_Rect(x, y, 1, h, color);
         Fill_Rect(x+w-1, y, 1, h, color);
-    }
-
-    /*!
-    @brief   Draw a rectangle with W, h no fill color
-        @param    x     Top left corner x coordinate
-        @param    y     Top left corner y coordinate
-        @param    w     Width in pixels
-        @param    h     Height in pixels
-        @param    h     Edge thickness
-        @param    color 16-bit or RGB(r,g,b) Color to draw with
-    */
-    void RectangleThickness(int16_t x, int16_t y, int16_t w, int16_t h, int16_t t, const RGB& color) {
-        for(int i = 0; i < t; i++) {
-            Fill_Rect(x+i, y+i, w-(2*i), 1, color);
-            Fill_Rect(x+i, y+h-1-(i), w-(2*i), 1, color);
-            Fill_Rect(x+i, y+i, 1, h-(2*i), color);
-            Fill_Rect(x+w-1-i, y+i, 1, h-(2*i), color);
-        }
     }
 
     /*!
@@ -255,8 +262,26 @@ class LCD_GUI
         @param    h     Height in pixels
         @param    color 16-bit or RGB(r,g,b) Color to fill with
     */
-      void Fill_Rectangle(int16_t x, int16_t y, int16_t w, int16_t h, const RGB& color) {
+    void Fill_Rectangle(int16_t x, int16_t y, int16_t w, int16_t h, const RGB color = RGB()) {
         Fill_Rect(x, y, w, h, color);
+    }
+
+    /*!
+    @brief   Draw a rectangle with W, h no fill color
+        @param    x     Top left corner x coordinate
+        @param    y     Top left corner y coordinate
+        @param    w     Width in pixels
+        @param    h     Height in pixels
+        @param    t     Edge thickness
+        @param    color 16-bit or RGB(r,g,b) Color to draw with
+    */
+    void RectangleThickness(int16_t x, int16_t y, int16_t w, int16_t h, int16_t t, const RGB color = RGB()) {
+        for(int i = 0; i < t; i++) {
+            Fill_Rect(x+i, y+i, w-(2*i), 1, color);
+            Fill_Rect(x+i, y+h-1-(i), w-(2*i), 1, color);
+            Fill_Rect(x+i, y+i, 1, h-(2*i), color);
+            Fill_Rect(x+w-1-i, y+i, 1, h-(2*i), color);
+        }
     }
 
     /*!
@@ -268,7 +293,7 @@ class LCD_GUI
         @param    r     Radius of corner rounding
         @param    color 16-bit or RGB(r,g,b) Color to draw with
     */
-    void Round_Rectangle(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r,const RGB& color) {
+    void Round_Rectangle(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r,const RGB color = RGB()) {
         Fill_Rect(x+r, y, w-2*r, 1, color);
         Fill_Rect(x+r, y+h-1, w-2*r, 1, color);
         Fill_Rect(x, y+r, 1, h-2*r, color);
@@ -288,7 +313,7 @@ class LCD_GUI
         @param    r     Radius of corner rounding
         @param    color 16-bit or RGB(r,g,b) Color to draw/fill with
     */
-    void Fill_Round_Rectangle(int16_t x, int16_t y, int16_t w,int16_t h, int16_t r,const RGB& color) {
+    void Fill_Round_Rectangle(int16_t x, int16_t y, int16_t w,int16_t h, int16_t r, const RGB color = RGB()) {
         Fill_Rect(x+r, y, w-2*r, h, color);
         Fill_Circle_Helper(x+w-r-1, y+r, r, 1, h-2*r-1, color);
         Fill_Circle_Helper(x+r, y+r, r, 2, h-2*r-1, color);
@@ -328,7 +353,7 @@ class LCD_GUI
         @param    angleDeg  angle of rotation of rectangle
         @param    color 16-bit 5-6-5 Color to fill/draw with
     */
-    void Rotated_Rectangle(int16_t cenX, int16_t cenY, int16_t w, int16_t h, int16_t angleDeg, uint16_t color) {
+    void Rotated_Rectangle(int16_t cenX, int16_t cenY, int16_t w, int16_t h, int16_t angleDeg, const RGB color = RGB()) {
         if (w < 1 || h < 1) return; // We don't draw zero dimensioned objects
         int16_t W = w - 1;
         int16_t H = h - 1;
@@ -375,7 +400,7 @@ class LCD_GUI
         @param    angleDeg  angle of rotation of rectangle
         @param    color 16-bit 5-6-5 Color to fill/draw with
     */
-    void Fill_Rotated_Rectangle(int16_t cenX, int16_t cenY, int16_t w, int16_t h, int16_t angleDeg, uint16_t color) {
+    void Fill_Rotated_Rectangle(int16_t cenX, int16_t cenY, int16_t w, int16_t h, int16_t angleDeg, const RGB color = RGB()) {
         if (w < 1 || h < 1) return; // We don't draw zero dimensioned objects
         int16_t W = w - 1;
         int16_t H = h - 1;
@@ -412,23 +437,23 @@ class LCD_GUI
         @param    r   Radius of circle
         @param    color 16-bit or RGB(r,g,b) Color to draw with
     */
-    void Circle(int16_t x, int16_t y, int16_t r, const RGB& color) {
+    void Circle(int16_t x, int16_t y, int16_t r, const RGB color = RGB()) {
         int16_t f = 1 - r, ddF_x = 1, ddF_y = -2 * r, x1= 0, y1= r;
-        Draw_Pixe(x, y+r, color);
-        Draw_Pixe(x, y-r, color);
-        Draw_Pixe(x+r, y, color);
-        Draw_Pixe(x-r, y, color);
+        Pixe(x, y+r, color);
+        Pixe(x, y-r, color);
+        Pixe(x+r, y, color);
+        Pixe(x-r, y, color);
         while (x1<y1) {
             if (f >= 0)	{ y1--; ddF_y += 2; f += ddF_y; }
             x1++; ddF_x += 2; f += ddF_x;
-            Draw_Pixe(x + x1, y + y1, color);
-            Draw_Pixe(x - x1, y + y1, color);
-            Draw_Pixe(x + x1, y - y1, color);
-            Draw_Pixe(x - x1, y - y1, color);
-            Draw_Pixe(x + y1, y + x1, color);
-            Draw_Pixe(x - y1, y + x1, color);
-            Draw_Pixe(x + y1, y - x1, color);
-            Draw_Pixe(x - y1, y - x1, color);
+            Pixe(x + x1, y + y1, color);
+            Pixe(x - x1, y + y1, color);
+            Pixe(x + x1, y - y1, color);
+            Pixe(x - x1, y - y1, color);
+            Pixe(x + y1, y + x1, color);
+            Pixe(x - y1, y + x1, color);
+            Pixe(x + y1, y - x1, color);
+            Pixe(x - y1, y - x1, color);
         }
     }
 
@@ -447,20 +472,20 @@ class LCD_GUI
             if (f >= 0)	{ y--; ddF_y += 2; f += ddF_y; }
             x++; ddF_x += 2; f += ddF_x;
             if (corners & 0x4) {
-                Draw_Pixe(x0 + x, y0 + y, color);
-                Draw_Pixe(x0 + y, y0 + x, color);
+                Pixe(x0 + x, y0 + y, color);
+                Pixe(x0 + y, y0 + x, color);
             }
             if (corners & 0x2) {
-                Draw_Pixe(x0 + x, y0 - y, color);
-                Draw_Pixe(x0 + y, y0 - x, color);
+                Pixe(x0 + x, y0 - y, color);
+                Pixe(x0 + y, y0 - x, color);
             }
             if (corners & 0x8) {
-                Draw_Pixe(x0 - y, y0 + x, color);
-                Draw_Pixe(x0 - x, y0 + y, color);
+                Pixe(x0 - y, y0 + x, color);
+                Pixe(x0 - x, y0 + y, color);
             }
             if (corners & 0x1) {
-                Draw_Pixe(x0 - y, y0 - x, color);
-                Draw_Pixe(x0 - x, y0 - y, color);
+                Pixe(x0 - y, y0 - x, color);
+                Pixe(x0 - x, y0 - y, color);
             }
         }
     }
@@ -472,7 +497,7 @@ class LCD_GUI
         @param    r   Radius of circle
         @param    color 16-bit or RGB(r,g,b) Color to fill with
     */
-    void Fill_Circle(int16_t x, int16_t y, int16_t r, const RGB& color) {
+    void Fill_Circle(int16_t x, int16_t y, int16_t r, const RGB color = RGB()) {
         Fill_Rect(x, y-r, 1, 2*r+1, color);
         Fill_Circle_Helper(x, y, r, 3, 0, color);
     }
@@ -520,7 +545,7 @@ class LCD_GUI
         @param    y2  Vertex #2 y coordinate
         @param    color 16-bit or RGB(r,g,b) Color to draw with
     */
-    void Triangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1,int16_t x2, int16_t y2,const RGB& color) {
+    void Triangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1,int16_t x2, int16_t y2,const RGB color = RGB()) {
         Line(x0, y0, x1, y1, color);
         Line(x1, y1, x2, y2, color);
         Line(x2, y2, x0, y0, color);
@@ -536,7 +561,7 @@ class LCD_GUI
         @param    y2  Vertex #2 y coordinate
         @param    color 16-bit or RGB(r,g,b) Color to fill/draw with
     */
-    void Fill_Triangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, const RGB& color) {
+    void Fill_Triangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, const RGB color = RGB()) {
         int16_t a, b, y, last;
         if (y0 > y1) { swap(y0, y1); swap(x0, x1); }
         if (y1 > y2) { swap(y2, y1); swap(x2, x1); }
@@ -580,7 +605,7 @@ class LCD_GUI
         @param    rh   Vertical radius of ellipse
         @param    color 16-bit 5-6-5 Color to draw with
     */
-    void Ellipse(int16_t x0, int16_t y0, int16_t rw, int16_t rh, const RGB& color) {
+    void Ellipse(int16_t x0, int16_t y0, int16_t rw, int16_t rh, const RGB color = RGB()) {
         // Bresenham's ellipse algorithm
         int16_t x = 0, y = rh;
         int32_t rw2 = rw * rw, rh2 = rh * rh;
@@ -588,10 +613,10 @@ class LCD_GUI
         int32_t decision = rh2 - (rw2 * rh) + (rw2 / 4);
         // region 1
         while ((twoRh2 * x) < (twoRw2 * y)) {
-            Draw_Pixe(x0 + x, y0 + y, color);
-            Draw_Pixe(x0 - x, y0 + y, color);
-            Draw_Pixe(x0 + x, y0 - y, color);
-            Draw_Pixe(x0 - x, y0 - y, color);
+            Pixe(x0 + x, y0 + y, color);
+            Pixe(x0 - x, y0 + y, color);
+            Pixe(x0 + x, y0 - y, color);
+            Pixe(x0 - x, y0 - y, color);
             x++;
             if (decision < 0) {
             decision += rh2 + (twoRh2 * x);
@@ -604,10 +629,10 @@ class LCD_GUI
         decision = ((rh2 * (2 * x + 1) * (2 * x + 1)) >> 2) +
                     (rw2 * (y - 1) * (y - 1)) - (rw2 * rh2);
         while (y >= 0) {
-            Draw_Pixe(x0 + x, y0 + y, color);
-            Draw_Pixe(x0 - x, y0 + y, color);
-            Draw_Pixe(x0 + x, y0 - y, color);
-            Draw_Pixe(x0 - x, y0 - y, color);
+            Pixe(x0 + x, y0 + y, color);
+            Pixe(x0 - x, y0 + y, color);
+            Pixe(x0 + x, y0 - y, color);
+            Pixe(x0 - x, y0 - y, color);
             y--;
             if (decision > 0) {
             decision += rw2 - (twoRw2 * y);
@@ -626,7 +651,7 @@ class LCD_GUI
         @param    rh   Vertical radius of ellipse
         @param    color 16-bit 5-6-5 Color to draw with
     */
-    void Fill_Ellipse(int16_t x0, int16_t y0, int16_t rw, int16_t rh, uint16_t color) {
+    void Fill_Ellipse(int16_t x0, int16_t y0, int16_t rw, int16_t rh, const RGB color = RGB()) {
         // Bresenham's ellipse algorithm
         int16_t x = 0, y = rh;
         int32_t rw2 = rw * rw, rh2 = rh * rh;
@@ -660,10 +685,8 @@ class LCD_GUI
     }
 
     /*!
-    @brief    Print number int
+        @brief    Print number int
         @param    num  Number
-        @param    x    x coordinate
-        @param    y    y coordinate
         @param    lenght  Number lenght (default 0)
         @param    filler  Filler (default ' ')
         @param    system  Number system (default 10)
@@ -690,7 +713,7 @@ class LCD_GUI
         if(system==16) { *(--p) ='x'; *(--p) ='0'; h = 2; }
         if(system==8) { *(--p) ='o'; *(--p) ='0'; h = 2; }
 
-        if(length > (len + flag + 1 +h)) {
+        if(length > (len + flag + 1 + h)) {
             if(length > sizeof(num_buf)) { nlen = sizeof(num_buf) - len - flag - 1 - h; }
             else nlen = length - len - flag - 1 - h;
             for(i = 0;i< nlen;i++) *(--p) = filler;
@@ -705,11 +728,9 @@ class LCD_GUI
     }
 
     /*!
-    @brief    Print number int
+        @brief    Print number int
         @param    num  Float Number
         @param    dec  Decimal lenght (default 2)
-        @param    x    x coordinate
-        @param    y    y coordinate
         @param    divider Float divider (default '.')
         @param    lenght  Number lenght (default 0)
         @param    filler  Filler (default ' ')

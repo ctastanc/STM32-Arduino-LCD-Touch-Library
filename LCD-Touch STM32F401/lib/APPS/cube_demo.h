@@ -147,3 +147,4 @@ class cub{
 };
 
 cub cb;
+void cube_demo() {cb.cube_demo();}

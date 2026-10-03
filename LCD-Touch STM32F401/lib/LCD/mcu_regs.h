@@ -136,7 +136,7 @@ static inline void enable_gpio_clock(GPIO_TypeDef* GPIOx) {
     #define SET_WRITE_DIR() LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 8, LL_GPIO_MODE_OUT)
     #define SET_READ_DIR()  LL_SET_PINS(LL_GPIO_SetPinMode, DATA_PORT1, Data_Pins_8Bit, 8, LL_GPIO_MODE_INPUT)
   
-    #define WRITE8(d) { DATA_PORT1->BSRR = DATA_MASK1 | (d); WR_H;  }
+    #define WRITE8(d) { DATA_PORT1->BSRR = DATA_MASK1 | (d); WR_H; }
     #define READ8(dst) { RD_L; RD_DELAY; dst = (uint8_t)(DATA_PORT1->IDR & (0x00FFU)); RD_H; }
     #define READ16(dst) { uint8_t hi; READ8(hi); READ8(dst); dst |= (hi << 8); }
     #define CMD8(x) { RS_CMD; WRITE8(x); RS_DATA; }
@@ -145,6 +145,7 @@ static inline void enable_gpio_clock(GPIO_TypeDef* GPIOx) {
     #define DATA16(x) { WRITE8(x>>8); WRITE8(x&0xFF); }
     #define CMDDATA8(a,d) { RS_CMD; WRITE8(a); RS_DATA; WRITE8(d); }
     #define CMDDATA16(a,d) { RS_CMD; WRITE8(a>>8); WRITE8(a&0XFF); RS_DATA; WRITE8(d>>8); WRITE8(d&0XFF); }
+    #define DATA_COLOR(hi,lo) do { DATA_PORT1->BSRR = hi; WR_H; DATA_PORT1->BSRR = lo; WR_H; } while(0)
 #endif
 
 #if(LCD_SYS_INTERFACE==16) 
@@ -182,12 +183,14 @@ static inline void enable_gpio_clock(GPIO_TypeDef* GPIOx) {
     #define DATA16(x) { WRITE16(x); }
     #define CMDDATA8(a,d) { RS_CMD; WRITE8(a); RS_DATA; WRITE8(d); }
     #define CMDDATA16(a,d) { RS_CMD; WRITE16(a); RS_DATA; WRITE16(d); }
+    #define DATA_COLOR(hi,lo) do { DATA_PORT1->BSRR = hi; WR_H; DATA_PORT1->BSRR = (lo>>5); WR_H; } while(0)
 #endif
 
 #define SET_X(x1,x2) {CMD8(XS); DATA16(x1); DATA16(x2);}
 #define SET_Y(y1,y2) {CMD8(YS); DATA16(y1); DATA16(y2);}
-#define BLOCK4(c) {DATA16(c); DATA16(c); DATA16(c); DATA16(c);}
-#define BLOCK8(c) {BLOCK4(c); BLOCK4(c);}
+#define BLOCK4(hi,lo) {DATA_COLOR(hi,lo); DATA_COLOR(hi,lo); DATA_COLOR(hi,lo); DATA_COLOR(hi,lo);}
+#define BLOCK7(hi,lo) {BLOCK4(hi,lo); DATA_COLOR(hi,lo); DATA_COLOR(hi,lo); DATA_COLOR(hi,lo);}
+#define BLOCK8(hi,lo) {BLOCK4(hi,lo); BLOCK4(hi,lo);}
 
 static inline void set_pin_output(GPIO_TypeDef* port, uint32_t pin) {
     if (!port) return;

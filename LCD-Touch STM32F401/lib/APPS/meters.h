@@ -307,3 +307,4 @@ class meter{
 };
 
 meter mt;
+void meters() {mt.meters();}

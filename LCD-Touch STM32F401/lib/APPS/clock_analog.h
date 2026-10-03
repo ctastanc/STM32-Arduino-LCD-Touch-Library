@@ -149,3 +149,4 @@ class clka{
     }
 };
 clka cl;
+void clock_analog() {cl.clock_analog();}
