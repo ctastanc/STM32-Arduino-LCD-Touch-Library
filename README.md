@@ -43,7 +43,7 @@ The absolute core of the library's speed relies on a tightly optimized hardware-
 
 ---
 
-## 🎨 Zero-Cost RGB565 Color Engine (Usage)
+## 🎨 Zero-Cost RGB565 Color Engine and Smart Color Selector (Usage)
 
 The library features an optimized, packed `RGB` structure that handles standard 24-bit (R,G,B) to 16-bit (RGB565) color 
 conversion **at compile-time** using `constexpr`. Thanks to the `uint16_t` operator overloading, you can use raw hex 
