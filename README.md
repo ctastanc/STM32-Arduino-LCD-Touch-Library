@@ -58,7 +58,8 @@ struct RGB {
     
     constexpr RGB() : val(AUTO_FC) {}
     constexpr RGB(uint16_t c) : val(c) {}
-    constexpr RGB(uint8_t r, uint8_t g, uint8_t b) : val(((uint16_t)(r & 0xF8) << 8) | ((uint16_t)(g & 0xFC) << 3) | (b >> 3)) {}
+    constexpr RGB(uint8_t r, uint8_t g, uint8_t b) : 
+		val(((uint16_t)(r & 0xF8) << 8) | ((uint16_t)(g & 0xFC) << 3) | (b >> 3)) {}
 
     static constexpr RGB AutoBC() { RGB c; c.val = AUTO_BC; return c; }
     uint16_t getFC() const {
@@ -82,8 +83,8 @@ applies to subsequent text or drawing operations, eliminating the need to re-spe
 the need for resource-intensive functions such as `set_draw_color` or `set_text_color`.
 ```h
 	template <typename T>
-    void Print(T val, int16_t x, int16_t y, uint8_t size, const RGB fc = RGB(), const RGB bc=RGB::AutoBC(), 
-	bool mode=0, int16_t system=10, uint8_t dec=2)
+    void Print(T val, int16_t x, int16_t y, uint8_t size, const RGB fc = RGB(), 
+	const RGB bc=RGB::AutoBC(), bool mode=0, int16_t system=10, uint8_t dec=2)
 	...
 	void Fill_Rectangle(int16_t x, int16_t y, int16_t w, int16_t h, const RGB color = RGB())
 	...
