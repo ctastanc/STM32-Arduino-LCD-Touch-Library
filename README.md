@@ -112,7 +112,7 @@ void loop() {
 	lcd.Fill.Rectangle(160, 120, 50, 50, RED);
 	lcd.Fill.Circle(40, 40, 10); // this RED
 	lcd.Print("Hello world.", 0, 80, 2); // also this RED
-	lcd.Print("Hello world.", 0, 60, 2, YELLOW); // this YELLOW
+	lcd.Print("Bye-bye, world.", 0, 60, 2, YELLOW); // this YELLOW
 }
 ```
 
