@@ -429,12 +429,6 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
         CS_H;
     }
 
-    /*!
-    @brief   Draw a pixel
-        @param    x     x coordinate
-        @param    y     y coordinate
-        @param    c     16-bit or RGB(r,g,b) Color to draw with
-    */
     __attribute__((always_inline)) 
     inline void Pixe(int16_t x, int16_t y, uint16_t c)  {
         //if((uint32_t)x >= Width || (uint32_t)y >= Height) return;
@@ -442,10 +436,6 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
         CS_L; Set_Addr_Window(x, y, x, y); CMD8(MW); DATA16(c); CS_H;
     }
 
-    /*!
-        @brief   Fill Sreen color
-        @param    c     16-bit or RGB(r,g,b) Color to draw with
-    */
     void Fill_Scree(uint16_t c) {
         uint32_t hi = DATA_MASK1 | (c >> 8); uint32_t lo = DATA_MASK1 | (c & 0xFF);
         CS_L; Set_Addr_Window(0, 0, Width-1, Height-1);	CMD8(MW);
@@ -456,15 +446,7 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
         CS_H;
     }
 
-    /*!
-    @brief   Draw a rectangle with fill color
-        @param    x     Top left corner x coordinate
-        @param    y     Top left corner y coordinate
-        @param    w     Width in pixels
-        @param    h     Height in pixels
-        @param    c     16-bit or RGB(r,g,b) Color to draw with
-    */
-    __attribute__((optimize("unroll-loops"), always_inline)) 
+     __attribute__((optimize("unroll-loops"), always_inline)) 
     inline void Fill_Rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t c) {
         if (w <= 0 || h <= 0) return; 
         uint32_t hi = DATA_MASK1 | (c >> 8); uint32_t lo = DATA_MASK1 | (c & 0xFF);
