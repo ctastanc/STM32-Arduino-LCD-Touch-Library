@@ -50,19 +50,38 @@ conversion **at compile-time** using `constexpr`. Thanks to the `uint16_t` opera
 values and the `RGB` structure interchangeably with absolute zero runtime CPU cost.
 ```h
 struct RGB {
-    uint16_t val;
+    uint32_t val;
+    static inline uint16_t last_fc = 0xFFFF; 
+    static inline uint16_t last_bc = 0x0000; 
+    static constexpr uint32_t AUTO_FC = 0xFFFFFFFE;
+    static constexpr uint32_t AUTO_BC = 0xFFFFFFFF; 
+    
+    constexpr RGB() : val(AUTO_FC) {}
     constexpr RGB(uint16_t c) : val(c) {}
-    constexpr RGB(uint8_t r, uint8_t g, uint8_t b) : val(((uint16_t)(r&0xF8)<<8) | ((uint16_t)(g&0xFC)<<3) | (b>>3)) {} 
-    constexpr operator uint16_t() const { return val; }
-}__attribute__((packed));
+    constexpr RGB(uint8_t r, uint8_t g, uint8_t b) : val(((uint16_t)(r & 0xF8) << 8) | ((uint16_t)(g & 0xFC) << 3) | (b >> 3)) {}
 
-template <typename T> 	
-    void Print(T val, int16_t x, int16_t y, uint8_t size, const RGB& fc, const RGB& bc=0, bool mode=0, int16_t system = 10, uint8_t dec = 2)
+    static constexpr RGB AutoBC() { RGB c; c.val = AUTO_BC; return c; }
+    uint16_t getFC() const {
+        if (val != AUTO_FC && val != AUTO_BC) {
+            last_fc = (uint16_t)val;
+        }
+        return last_fc;
+    }
+    uint16_t getBC() const {
+        if (val != AUTO_FC && val != AUTO_BC) {
+            last_bc = (uint16_t)val;
+        }
+        return last_bc;
+    }
+    operator uint16_t() const { return getFC(); }
+};
+
 ```
 Additionally, thanks to the intelligent RGB architecture, the last color used for drawing text or shapes automatically 
 applies to subsequent text or drawing operations, eliminating the need to re-specify color information. This removes 
 the need for resource-intensive functions such as `set_draw_color` or `set_text_color`.
 ```h
+	template <typename T>
     void Print(T val, int16_t x, int16_t y, uint8_t size, const RGB fc = RGB(), const RGB bc=RGB::AutoBC(), 
 	bool mode=0, int16_t system=10, uint8_t dec=2)
 	...
