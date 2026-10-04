@@ -133,7 +133,7 @@ A full **240x320 screen fill takes only 2.8 milliseconds**, yielding a theoretic
 | Benchmark					| Time (Microseconds)	| Execution Style 				| 
 | -------------------------	| --------------------:	| ----------------------------- | 
 | Screen Fill(240x320)		|		 2,891 µs 		| Ultra-Fast Batching (357 FPS)	|
-| Cross Line(400 pixel)		|		   293 µs 		| Direct Port Write				|
+| Cross Line(400 pixel)		|		   300 µs 		| Direct Port Write				|
 | Line(320 pixel)			| 			16 µs 		| Fully Inlined Address Window	|
 | Fast Line(320 pixel)		| 			16 µs 		| Zero Function Call Overhead	|
 | Rectangle(WxH) 			| 			50 µs 		| Unrolled Loops				|
