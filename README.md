@@ -130,20 +130,20 @@ void loop() {
 The following metrics prove the massive performance jump compared to standard display engines. 
 A full **240x320 screen fill takes only 2.8 milliseconds**, yielding a theoretical limit of **357 FPS** over the parallel bus. 
 
-| Benchmark					| Time (Microseconds)	| Execution Style 				| 
-| -------------------------	| --------------------:	| ----------------------------- | 
-| Screen Fill(240x320)		|		 2,891 µs 		| Ultra-Fast Batching (357 FPS)	|
-| Cross Line(400 pixel)		|		   300 µs 		| Direct Port Write				|
-| Line(320 pixel)			| 			16 µs 		| Fully Inlined Address Window	|
-| Fast Line(320 pixel)		| 			16 µs 		| Zero Function Call Overhead	|
-| Rectangle(WxH) 			| 			50 µs 		| Unrolled Loops				|
-| Fill Rectangle(WxH)		| 		 3,070 µs 		| Zero Branching				|
-| Circle(R=240)				| 		   539 µs 		| Fast Box Drawing				|
-| Fill Circle(R=240)		| 		 2,224 µs 		| High Bandwidth Pixel Pump		|
-| Triangle(320x288x288)		| 		   443 µs 		| High Bandwidth Pixel Pump		|
-| Fill Triangle(320x288x288)| 		 1,953 µs 		| High Bandwidth Pixel Pump		|
-| Round Rectangle(WxH) 		| 		    72 µs 		| High Bandwidth Pixel Pump		|
-| Fill Round Rectangle(WxH)	| 		 3,066 µs 		| High Bandwidth Pixel Pump		|
+| Benchmark					|Time 84MHz |Time 96MHz	|Time 108MHz|		Execution Style			| 
+| -------------------------	|----------:|----------:|----------:| ----------------------------- | 
+| Screen Fill(240x320)		| 3,732 µs	| 3,265 µs	| 2,891 µs	| Ultra-Fast Batching (357 FPS)	|
+| Cross Line(400 pixel)		|   386 µs 	|	338	µs	|   300 µs	| Direct Port Write				|
+| Line(320 pixel)			|	 19 µs 	|	 17 µs	|  	 16 µs	| Fully Inlined Address Window	|
+| Fast Line(320 pixel)		|  	 20 µs 	|	 18 µs	| 	 16 µs	| Zero Function Call Overhead	|
+| Rectangle(WxH) 			|    64 µs 	|	 56 µs	| 	 50 µs	| Unrolled Loops				|
+| Fill Rectangle(WxH)		| 3,947 µs 	| 3,453 µs	| 3,070 µs	| Zero Branching				|
+| Circle(R=240)				|   693 µs 	|	606	µs	|   539 µs	| Fast Box Drawing				|
+| Fill Circle(R=240)		| 2,859 µs 	| 2,501 µs	| 2,224 µs	| High Bandwidth Pixel Pump		|
+| Triangle(320x288x288)		|   569 µs 	|	500	µs	| 	443 µs	| High Bandwidth Pixel Pump		|
+| Fill Triangle(320x288x288)| 1,510 µs 	| 2,196 µs	| 1,953 µs	| High Bandwidth Pixel Pump		|
+| Round Rectangle(WxH) 		| 	 92 µs 	|	 80 µs	| 	 72 µs	| High Bandwidth Pixel Pump		|
+| Fill Round Rectangle(WxH)	| 3,942 µs 	| 3,449 µs	| 3,066 µs	| High Bandwidth Pixel Pump		|
 
 The "colligate_test()" function results:
 
