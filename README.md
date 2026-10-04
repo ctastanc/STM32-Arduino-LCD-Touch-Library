@@ -136,14 +136,14 @@ A full **240x320 screen fill takes only 2.8 milliseconds**, yielding a theoretic
 | Cross Line(400 pixel)		|		   293 µs 		| Direct Port Write				|
 | Line(320 pixel)			| 			16 µs 		| Fully Inlined Address Window	|
 | Fast Line(320 pixel)		| 			16 µs 		| Zero Function Call Overhead	|
-| Rectangle(WxH) 			| 			53 µs 		| Unrolled Loops				|
-| Fill Rectangle(WxH)		| 		 3,291 µs 		| Zero Branching				|
-| Circle(R=240)				| 		   559 µs 		| Fast Box Drawing				|
-| Fill Circle(R=240)		| 		 2,272 µs 		| High Bandwidth Pixel Pump		|
-| Triangle(320x288x288)		| 		   447 µs 		| High Bandwidth Pixel Pump		|
-| Fill Triangle(320x288x288)| 		 2,033 µs 		| High Bandwidth Pixel Pump		|
-| Round Rectangle(WxH) 		| 		    75 µs 		| High Bandwidth Pixel Pump		|
-| Fill Round Rectangle(WxH)	| 		 3,281 µs 		| High Bandwidth Pixel Pump		|
+| Rectangle(WxH) 			| 			50 µs 		| Unrolled Loops				|
+| Fill Rectangle(WxH)		| 		 3,070 µs 		| Zero Branching				|
+| Circle(R=240)				| 		   539 µs 		| Fast Box Drawing				|
+| Fill Circle(R=240)		| 		 2,224 µs 		| High Bandwidth Pixel Pump		|
+| Triangle(320x288x288)		| 		   443 µs 		| High Bandwidth Pixel Pump		|
+| Fill Triangle(320x288x288)| 		 1,953 µs 		| High Bandwidth Pixel Pump		|
+| Round Rectangle(WxH) 		| 		    72 µs 		| High Bandwidth Pixel Pump		|
+| Fill Round Rectangle(WxH)	| 		 3,066 µs 		| High Bandwidth Pixel Pump		|
 
 The "colligate_test()" function results:
 
