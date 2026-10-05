@@ -24,7 +24,7 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
     using LCD_GUI<LCD_SRW>::draw_color;
     //uint8_t char_spc = 2;
 	int16_t Width, Height, rotation, rot_val;
-
+    
     LCD_SRW() {
         SET_PORTS();
         RS_DATA; CS_H; WR_H; RD_H; RST_L; RST_H;
@@ -133,7 +133,7 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
         CS_L;
         CMD16(reg);
         SET_READ_DIR();
-        delay(1);
+        //delay(1);
         do { READ16(ret); } while (--index >= 0);
         CS_H;
         SET_WRITE_DIR();
@@ -334,8 +334,7 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
             cur_x_start--; // The text shifts exactly 1 pixel to the left in each cycle.
             if (cur_x_start + char_w <= 0) {  // If the first character has completely exited from the left side of the screen, shift the text by one character.
                 cur_x_start += char_w; // Reset/shift coordinates
-                st++;
-                if (*st == '\0') break; // End of text
+                st++; if (*st == '\0') break; // End of text
             }
             int char_x = cur_x_start;
             int len = strlen(st);
@@ -363,21 +362,19 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
             }
             delay(speed);
             if (*st == '\0') break;
-        }
-        CS_H;
+        } CS_H;
     }
 
     __attribute__((optimize("O3"), noinline))
     void Print_Str() {
         uint ts = text_size, ty = text_y, fc = text_fc, bc = text_bc;
-        uint32_t fc_hi = DATA_MASK1 | (fc >> 8); uint32_t fc_lo = DATA_MASK1 | (fc & 0xFF);
-        uint32_t bc_hi = DATA_MASK1 | (bc >> 8); uint32_t bc_lo = DATA_MASK1 | (bc & 0xFF);
+        uint32_t fc_hi = DATA_MASK1 | (fc >> 8), fc_lo = DATA_MASK1 | (fc & 0xFF),
+                 bc_hi = DATA_MASK1 | (bc >> 8), bc_lo = DATA_MASK1 | (bc & 0xFF);
         uint x1 = (text_x == CENTER || text_x == RIGHT) ? 0 : text_x;
         uint char_w = 5 * ts + 1;
         if (text_len > (Width - x1) / char_w) text_len = (Width - x1) / char_w;  
         uint total_w = text_len * char_w;
-        if (text_x == CENTER) text_x = (Width - total_w) / 2; 
-        else if (text_x == RIGHT) text_x = Width - total_w - 1;
+        if (text_x == CENTER) text_x = (Width - total_w)/2; else if (text_x == RIGHT) text_x = Width - total_w-1;
         uint tx = text_x;
         CS_L;
         if (text_mode == 0) { // FOREGROUND ONLY
@@ -385,19 +382,17 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
             for (uint i = 0; i < text_len; i++) {
                 const uint8_t *ch = &font[text[i] * 5];
                 for (uint c = 0; c < 5; c++, tx += ts) {
-                    uint8_t l = *ch++;
-                    if (!l) continue; // Skip empty columns instantly
-                    uint8_t r = 0;
-                    while (l) {
-                        while (!(l & 1)) { l >>= 1; r++; }
-                        uint8_t len = 0;
-                        while (l & 1)    { l >>= 1; len++; }
-                        Set_Addr_Window(tx, ty + r * ts, tx + ts - 1, ty + (r + len) * ts - 1); CMD8(MW);
-                        uint32_t p = len * ts2;
-                        do { DATA_COLOR(fc_hi,fc_lo); } while (--p);
-                        r += len;
+                    uint8_t v_line = *ch++; if (!v_line) continue; uint8_t pix = 0;
+                    while (v_line) {
+                        while (!(v_line & 1)) { v_line >>= 1; pix++; }
+                        uint8_t pix_len = 0;
+                        while (v_line & 1) { v_line >>= 1; pix_len++; }
+                        Set_Addr_Window(tx, ty + pix * ts, tx + ts - 1, ty + (pix + pix_len) * ts - 1); CMD8(MW);
+                        uint32_t p = pix_len * ts2;
+                        do DATA_COLOR(fc_hi,fc_lo); while (--p);
+                        pix += pix_len;
                     }
-                } tx++;
+                } tx++; // Character spacing
             }
         } else { // BACKGROUND INCLUDED
             Set_Addr_Window(tx, ty, tx + total_w - 1, ty + (ts * 7) - 1); CMD8(MW);
@@ -406,9 +401,8 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
                     for (uint32_t i = 0; i < text_len; i++) {
                         const uint8_t *ch = &font[text[i] * 5];
                         for (uint32_t c = 0; c < 5; c++) {
-                            if (*ch++ & (1 << r)) { DATA_COLOR(fc_hi,fc_lo); }
-                            else                  { DATA_COLOR(bc_hi,bc_lo); }
-                        } DATA_COLOR(bc_hi,bc_lo); // 1 px boşluk
+                            if (*ch++ & (1 << r)) DATA_COLOR(fc_hi,fc_lo); else DATA_COLOR(bc_hi,bc_lo);
+                        } DATA_COLOR(bc_hi,bc_lo); // Character spacing
                     }
                 }
             } else { 
@@ -418,9 +412,9 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
                             const uint8_t *ch = &font[text[i] * 5];
                             for (uint32_t c = 0; c < 5; c++) {
                                 uint32_t p = ts;
-                                if (*ch++ & (1 << r)) { do { DATA_COLOR(fc_hi,fc_lo); } while (--p); }
-                                else                  { do { DATA_COLOR(bc_hi,bc_lo); } while (--p); }
-                            } DATA_COLOR(bc_hi,bc_lo); // 1 px boşluk
+                                if (*ch++ & (1 << r)) do DATA_COLOR(fc_hi,fc_lo); while (--p); 
+                                    else do DATA_COLOR(bc_hi,bc_lo); while (--p);
+                            } DATA_COLOR(bc_hi,bc_lo); // Character spacing
                         }
                     }
                 }
@@ -432,29 +426,27 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
     __attribute__((always_inline)) 
     inline void Pixe(int16_t x, int16_t y, uint16_t c)  {
         //if((uint32_t)x >= Width || (uint32_t)y >= Height) return;
-        //uint32_t hi = DATA_MASK1 | (c >> 8); uint32_t lo = DATA_MASK1 | (c & 0xFF);
         CS_L; Set_Addr_Window(x, y, x, y); CMD8(MW); DATA16(c); CS_H;
     }
 
     void Fill_Scree(uint16_t c) {
-        uint32_t hi = DATA_MASK1 | (c >> 8); uint32_t lo = DATA_MASK1 | (c & 0xFF);
         CS_L; Set_Addr_Window(0, 0, Width-1, Height-1);	CMD8(MW);
-        uint32_t n = (240UL * 320UL) /48; 
-        while (n--) { BLOCK8(hi,lo); BLOCK8(hi,lo); BLOCK8(hi,lo); BLOCK8(hi,lo); BLOCK8(hi,lo); BLOCK8(hi,lo);}
+        uint32_t n = (uint32_t)Width * Height /64; 
+        while (n--) { BLOCK_D16(c); BLOCK_D16(c); BLOCK_D16(c); BLOCK_D16(c); }
         if constexpr(LCD_DRIVER == ID_932X) {Set_Addr_Window(0, 0, Width-1, Height-1);}
         else if constexpr(LCD_DRIVER == ID_7575) Set_LR(); 
         CS_H;
     }
 
-     __attribute__((optimize("unroll-loops"), always_inline)) 
+    __attribute__((optimize("unroll-loops"), always_inline)) 
     inline void Fill_Rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t c) {
         if (w <= 0 || h <= 0) return; 
-        uint32_t hi = DATA_MASK1 | (c >> 8); uint32_t lo = DATA_MASK1 | (c & 0xFF);
+        uint32_t hi = DATA_MASK1 | (c >> 8), lo = DATA_MASK1 | (c & 0xFF); 
         uint32_t n = h * w; 
         CS_L; Set_Addr_Window(x, y, x+w-1, y+h-1); CMD8(MW);
-        uint32_t batches = n >> 3;    //3: n / 8 
-        uint8_t remainder = n & 0x07;   //7: n % 8 
-        while (batches--) {	BLOCK8(hi,lo); }
+        uint32_t batches = n >> 4;    //3: n / 8 4: n/16
+        uint8_t remainder = n & 15;   //7: n % 8 15: n % 16
+        while (batches--) {	BLOCK_C8(hi,lo); BLOCK_C8(hi,lo); }
         while (remainder--) { DATA_COLOR(hi,lo); }
         if constexpr(LCD_DRIVER == ID_932X) {Set_Addr_Window(0, 0, Width-1, Height-1);}
         else if constexpr(LCD_DRIVER == ID_7575) Set_LR(); 

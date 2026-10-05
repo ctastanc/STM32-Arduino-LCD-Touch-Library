@@ -2,8 +2,8 @@
 
 void fast_sin_cos(void);
 
-static uint16_t *sbuf = new uint16_t[318];
-static uint16_t *cbuf = new uint16_t[318];
+static uint16_t *sbuf = new uint16_t[320];
+static uint16_t *cbuf = new uint16_t[320];
 static uint16_t *sin_table = new uint16_t[360];
 static uint16_t *cos_table = new uint16_t[360];
 
@@ -28,22 +28,14 @@ void fast_sin_cos(void) {
     init_tables();
     while(1) {
         uint16_t start = micros();
-        CS_L;
-        for (int i = 0; i < 318; i++) {
+        for (int i = 0; i < 320; i++) {
             uint16_t ns = sin_table[(i + delta) % 360];
             uint16_t nc = cos_table[(i + delta) % 360];
-            if(i != 159) SET_X(i,i); // col address set
-            if (sbuf[i] != ns && ns!=119) {
-                SET_Y(sbuf[i],sbuf[i]);// page address set
-                CMD8(MW); DATA16(BLACK); // 0x2C  write memory
-                SET_Y(sbuf[i]=ns,sbuf[i]); 
-                CMD8(MW); DATA16(CYAN);
+            if (sbuf[i] != ns && ns!=119 && i != 159) {
+                lcd.Pixel(i,sbuf[i],BLACK); lcd.Pixel(i,sbuf[i]=ns,CYAN);
             }
-            if (cbuf[i] != nc && nc!=119) {
-                SET_Y(cbuf[i],cbuf[i]);
-                CMD8(MW); DATA16(BLACK); 
-                SET_Y(cbuf[i]=nc,cbuf[i]);
-                CMD8(MW); DATA16(YELLOW); 
+            if (cbuf[i] != nc && nc!=119 && i != 159) {
+                lcd.Pixel(i,cbuf[i],BLACK); lcd.Pixel(i,cbuf[i]=nc,YELLOW);
             }
         }
         delta = (delta +1) % 360;
@@ -57,4 +49,3 @@ void fast_sin_cos(void) {
         delay(5); //speed up/down
     }
 }
-// fast_sin_cos.h dosyası

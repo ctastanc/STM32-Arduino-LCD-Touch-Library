@@ -70,7 +70,7 @@ class TouchScreen {
         int z1 = analogRead(_xm);
         int z2 = analogRead(_yp);
         z = (RES_VALUE - (z2 - z1)); // pressure
-        pinMode(_xm, OUTPUT); pinMode(_yp, OUTPUT); /*pinMode(_xp, OUTPUT); pinMode(_ym, OUTPUT);*/ 
+        pinMode(_xm, OUTPUT); pinMode(_yp, OUTPUT); RS_DATA;/*pinMode(_xp, OUTPUT); pinMode(_ym, OUTPUT);*/ 
 
         int32_t rx = map_value(x, TS_MINX, TS_MAXX, 0, (lcd.rotation % 2 == 0) ? lcd.Width : lcd.Height);
         int32_t ry = map_value(y, TS_MINY, TS_MAXY, 0, (lcd.rotation % 2 == 0) ? lcd.Height : lcd.Width);

@@ -58,6 +58,8 @@ struct RGB {
         }
         return last_bc;
     }
+    //uint8_t hi() const { return (uint8_t)(getFC() >> 8); }
+    //uint8_t lo() const { return (uint8_t)(getFC() & 0xFF); }
     operator uint16_t() const { return getFC(); }
 };
 
@@ -96,7 +98,7 @@ class LCD_GUI
     void Pixe(int16_t x, int16_t y, uint16_t c) { impl().Pixe(x, y, c); }
     void Fill_Rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t c) { impl().Fill_Rect(x, y, w, h, c); }
     void Draw_Bit_Map(int16_t x, int16_t y, int16_t sx, int16_t sy, const uint16_t *data, int16_t scale) { impl().Draw_Bit_Map(x, y, sx, sy, data, scale); }
-    void Push_Any_Color(uint16_t * block, int16_t n, bool first, uint8_t flags) { impl().Push_Any_Color(block, n, first, flags); }
+    void Push_Any_Color(uint16_t *block, int16_t n, bool first, uint8_t flags) { impl().Push_Any_Color(block, n, first, flags); }
     int16_t Read_GRAM(int16_t x, int16_t y, uint16_t *block, int16_t w, int16_t h) { return impl().Read_GRAM(x, y, block, w, h); }
     void Fill_Scree(uint16_t c) { impl().Fill_Scree(c); }
     void Print_Str() { impl().Print_Str(); }
@@ -167,7 +169,7 @@ class LCD_GUI
         @param    color 16-bit or RGB(r,g,b) Color to fill with
     */
     void Fast_VLine(int16_t x, int16_t y, int16_t h, const RGB color = RGB()) {
-         Fill_Rect(x, y, 1, h, color);
+        Fill_Rect(x, y, 1, h, color);
     }
 
     /*!
@@ -182,7 +184,6 @@ class LCD_GUI
         Fill_Rect(x, y, w, 1, color);
     }
 
-
     /*!
     @brief    Draw a line using high-speed Run-Length Slice algorithm
         @param    x1  Start point x coordinate
@@ -192,49 +193,39 @@ class LCD_GUI
         @param    color 16-bit or RGB(r,g,b) Color to draw with
     */
     void Line(int16_t x1, int16_t y1, int16_t x2, int16_t y2, const RGB color = RGB()) {
+        const uint16_t c = color.getFC();
         if (x1 == x2) {
-            if (y1 > y2) swap(y1, y2);
-            Fast_VLine(x1, y1, y2 - y1 + 1, color);
+            if (y1 > y2) swap(y1, y2); Fill_Rect(x1, y1, 1, y2 - y1 + 1, c);
         } else if (y1 == y2) {
-            if (x1 > x2) swap(x1, x2);
-            Fast_HLine(x1, y1, x2 - x1 + 1, color);
+            if (x1 > x2) swap(x1, x2); Fill_Rect(x1, y1, x2 - x1 + 1, 1, c);
         } else {
-            int16_t dx = abs(x2 - x1);
-            int16_t dy = abs(y2 - y1);
+            int16_t dx = abs(x2 - x1), dy = abs(y2 - y1);
             if (dx >= dy) {
-                // X-major: horizontal run slices
                 if (x1 > x2) { swap(x1, x2); swap(y1, y2); }
-                int16_t ystep = (y1 < y2) ? 1 : -1;
-                int16_t err = dx / 2, run_start = x1;
+                int16_t ystep = (y1 < y2) ? 1 : -1, err = dx >> 1, run_start = x1;
                 for (int16_t x = x1; x < x2; x++) {
                     err -= dy;
                     if (err < 0) {
                         int16_t len = x - run_start + 1;
-                        if (len == 1) Pixe(run_start, y1, color); else Fast_HLine(run_start, y1, len, color);
-                        run_start = x + 1;
-                        y1 += ystep;
-                        err += dx;
+                        if (len == 1) Pixe(run_start, y1, c); else Fill_Rect(run_start, y1, len, 1, c);
+                        run_start = x + 1; y1 += ystep; err += dx;
                     }
                 }
                 int16_t len = x2 - run_start + 1;
-                if (len == 1) Pixe(run_start, y1, color); else Fast_HLine(run_start, y1, len, color);
+                if (len == 1) Pixe(run_start, y1, c); else Fill_Rect(run_start, y1, len, 1, c);
             } else {
-                // Y-major: vertical run slices
                 if (y1 > y2) { swap(x1, x2); swap(y1, y2); }
-                int16_t xstep = (x1 < x2) ? 1 : -1;
-                int16_t err = dy / 2, run_start = y1;
+                int16_t xstep = (x1 < x2) ? 1 : -1, err = dy >> 1, run_start = y1;
                 for (int16_t y = y1; y < y2; y++) {
                     err -= dx;
                     if (err < 0) {
                         int16_t len = y - run_start + 1;
-                        if (len == 1) Pixe(x1, run_start, color); else Fast_VLine(x1, run_start, len, color);
-                        run_start = y + 1;
-                        x1 += xstep;
-                        err += dy;
+                        if (len == 1) Pixe(x1, run_start, c); else Fill_Rect(x1, run_start, 1, len, c);
+                        run_start = y + 1; x1 += xstep; err += dy;
                     }
                 }
                 int16_t len = y2 - run_start + 1;
-                if (len == 1) Pixe(x1, run_start, color); else Fast_VLine(x1, run_start, len, color);
+                if (len == 1) Pixe(x1, run_start, c); else Fill_Rect(x1, run_start, 1, len, c);
             }
         }
     }
@@ -248,10 +239,9 @@ class LCD_GUI
         @param    color 16-bit or RGB(r,g,b) Color to draw with
     */
     void Rectangle(int16_t x, int16_t y, int16_t w, int16_t h, const RGB color = RGB()) {
-        Fill_Rect(x, y, w, 1, color);
-        Fill_Rect(x, y+h-1, w, 1, color);
-        Fill_Rect(x, y, 1, h, color);
-        Fill_Rect(x+w-1, y, 1, h, color);
+        const uint16_t c = color.getFC();
+        Fill_Rect(x, y, w, 1, c); Fill_Rect(x, y+h-1, w, 1, c);
+        Fill_Rect(x, y, 1, h, c); Fill_Rect(x+w-1, y, 1, h, c);
     }
 
     /*!
@@ -276,11 +266,10 @@ class LCD_GUI
         @param    color 16-bit or RGB(r,g,b) Color to draw with
     */
     void RectangleThickness(int16_t x, int16_t y, int16_t w, int16_t h, int16_t t, const RGB color = RGB()) {
+        const uint16_t c = color.getFC();
         for(int i = 0; i < t; i++) {
-            Fill_Rect(x+i, y+i, w-(2*i), 1, color);
-            Fill_Rect(x+i, y+h-1-(i), w-(2*i), 1, color);
-            Fill_Rect(x+i, y+i, 1, h-(2*i), color);
-            Fill_Rect(x+w-1-i, y+i, 1, h-(2*i), color);
+            Fill_Rect(x+i, y+i, w-(2*i), 1, c); Fill_Rect(x+i, y+h-1-(i), w-(2*i), 1, c);
+            Fill_Rect(x+i, y+i, 1, h-(2*i), c); Fill_Rect(x+w-1-i, y+i, 1, h-(2*i), c);
         }
     }
 
@@ -294,14 +283,11 @@ class LCD_GUI
         @param    color 16-bit or RGB(r,g,b) Color to draw with
     */
     void Round_Rectangle(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r,const RGB color = RGB()) {
-        Fill_Rect(x+r, y, w-2*r, 1, color);
-        Fill_Rect(x+r, y+h-1, w-2*r, 1, color);
-        Fill_Rect(x, y+r, 1, h-2*r, color);
-        Fill_Rect(x+w-1, y+r, 1, h-2*r, color);
-        Circle_Helper(x+r, y+r, r, 1, color);
-        Circle_Helper(x+w-r-1, y+r, r, 2, color);
-        Circle_Helper(x+w-r-1, y+h-r-1, r, 4, color);
-        Circle_Helper(x+r, y+h-r-1, r, 8, color);
+        const uint16_t c = color.getFC();
+        Fill_Rect(x+r, y, w-2*r, 1, c); Fill_Rect(x+r, y+h-1, w-2*r, 1, c);
+        Fill_Rect(x, y+r, 1, h-2*r, c); Fill_Rect(x+w-1, y+r, 1, h-2*r, c);
+        Circle_Helper(x+r, y+r, r, 1, c); Circle_Helper(x+w-r-1, y+r, r, 2, c);
+        Circle_Helper(x+w-r-1, y+h-r-1, r, 4, c); Circle_Helper(x+r, y+h-r-1, r, 8, c);
     }
 
     /*!
@@ -314,9 +300,10 @@ class LCD_GUI
         @param    color 16-bit or RGB(r,g,b) Color to draw/fill with
     */
     void Fill_Round_Rectangle(int16_t x, int16_t y, int16_t w,int16_t h, int16_t r, const RGB color = RGB()) {
-        Fill_Rect(x+r, y, w-2*r, h, color);
-        Fill_Circle_Helper(x+w-r-1, y+r, r, 1, h-2*r-1, color);
-        Fill_Circle_Helper(x+r, y+r, r, 2, h-2*r-1, color);
+        const uint16_t c = color.getFC();
+        Fill_Rect(x+r, y, w-2*r, h, c);
+        Fill_Circle_Helper(x+w-r-1, y+r, r, 1, h-2*r-1, c);
+        Fill_Circle_Helper(x+r, y+r, r, 2, h-2*r-1, c);
     }
 
     /*!
@@ -329,13 +316,8 @@ class LCD_GUI
     */
     void Rotate_Point(int16_t &x0, int16_t &y0, int16_t angleDeg) {
         double angleRad = radians(angleDeg);
-        double s = sin(angleRad);
-        double c = cos(angleRad);
-        double x = x0;
-        double y = y0;
-        // Rotate point
-        x0 = (int16_t)((x * c) - (y * s));
-        y0 = (int16_t)((x * s) + (y * c));
+        double s = sin(angleRad), c = cos(angleRad), x = x0, y = y0;
+        x0 = (int16_t)((x * c) - (y * s)); y0 = (int16_t)((x * s) + (y * c));
     }
     
     /*!
@@ -355,34 +337,20 @@ class LCD_GUI
     */
     void Rotated_Rectangle(int16_t cenX, int16_t cenY, int16_t w, int16_t h, int16_t angleDeg, const RGB color = RGB()) {
         if (w < 1 || h < 1) return; // We don't draw zero dimensioned objects
-        int16_t W = w - 1;
-        int16_t H = h - 1;
-        int16_t halfW = (W / 2); // Midpoint should always be integer
-        int16_t halfH = (H / 2); // Midpoint should always be integer
-        int16_t x0 = W - halfW; // bottom-right
-        int16_t y0 = H - halfH; // bottom-right
-        int16_t x1 = -halfW;    // bottom-left
-        int16_t y1 = H - halfH; // bottom-left
-        int16_t x2 = -halfW;    // top-left
-        int16_t y2 = -halfH;    // top-left
-        int16_t x3 = W - halfW; // top-right
-        int16_t y3 = -halfH;    // top-right
-        Rotate_Point(x0, y0, angleDeg);
-        Rotate_Point(x1, y1, angleDeg);
-        Rotate_Point(x2, y2, angleDeg);
-        Rotate_Point(x3, y3, angleDeg);
-        x0 += cenX;
-        x1 += cenX;
-        x2 += cenX;
-        x3 += cenX;
-        y0 += cenY;
-        y1 += cenY;
-        y2 += cenY;
-        y3 += cenY;
-        Line(x0, y0, x1, y1, color); // bottom right to bottom left
-        Line(x1, y1, x2, y2, color); // bottom left to top left
-        Line(x2, y2, x3, y3, color); // top left to top right
-        Line(x3, y3, x0, y0, color); // top right to bottom right
+        const uint16_t c = color.getFC();
+        int16_t W = w - 1, H = h - 1;
+        int16_t halfW = (W >> 1); int16_t halfH = (H >> 1); // Midpoint should always be integer
+        int16_t x0 = W - halfW; int16_t y0 = H - halfH; // bottom-right
+        int16_t x1 = -halfW; int16_t y1 = H - halfH; // bottom-left
+        int16_t x2 = -halfW; int16_t y2 = -halfH;    // top-left
+        int16_t x3 = W - halfW; int16_t y3 = -halfH;    // top-right
+        Rotate_Point(x0, y0, angleDeg); Rotate_Point(x1, y1, angleDeg);
+        Rotate_Point(x2, y2, angleDeg); Rotate_Point(x3, y3, angleDeg);
+        x0 += cenX; x1 += cenX; x2 += cenX; x3 += cenX; y0 += cenY; y1 += cenY; y2 += cenY; y3 += cenY;
+        Line(x0, y0, x1, y1, c); // bottom right to bottom left
+        Line(x1, y1, x2, y2, c); // bottom left to top left
+        Line(x2, y2, x3, y3, c); // top left to top right
+        Line(x3, y3, x0, y0, c); // top right to bottom right
     }
 
     /*!
@@ -402,32 +370,18 @@ class LCD_GUI
     */
     void Fill_Rotated_Rectangle(int16_t cenX, int16_t cenY, int16_t w, int16_t h, int16_t angleDeg, const RGB color = RGB()) {
         if (w < 1 || h < 1) return; // We don't draw zero dimensioned objects
-        int16_t W = w - 1;
-        int16_t H = h - 1;
-        int16_t halfW = (W / 2); // Midpoint should always be integer
-        int16_t halfH = (H / 2); // Midpoint should always be integer
-        int16_t x0 = W - halfW; // bottom-right
-        int16_t y0 = H - halfH; // bottom-right
-        int16_t x1 = -halfW;    // bottom-left
-        int16_t y1 = H - halfH; // bottom-left
-        int16_t x2 = -halfW;    // top-left
-        int16_t y2 = -halfH;    // top-left
-        int16_t x3 = W - halfW; // top-right
-        int16_t y3 = -halfH;    // top-right
-        Rotate_Point(x0, y0, angleDeg);
-        Rotate_Point(x1, y1, angleDeg);
-        Rotate_Point(x2, y2, angleDeg);
-        Rotate_Point(x3, y3, angleDeg);
-        x0 += cenX;
-        x1 += cenX;
-        x2 += cenX;
-        x3 += cenX;
-        y0 += cenY;
-        y1 += cenY;
-        y2 += cenY;
-        y3 += cenY;
-        Fill_Triangle(x0, y0, x1, y1, x2, y2, color);
-        Fill_Triangle(x2, y2, x3, y3, x0, y0, color);
+        const uint16_t c = color.getFC();
+        int16_t W = w - 1, H = h - 1;
+        int16_t halfW = (W >> 1); int16_t halfH = (H >> 1); // Midpoint should always be integer
+        int16_t x0 = W - halfW; int16_t y0 = H - halfH; // bottom-right
+        int16_t x1 = -halfW; int16_t y1 = H - halfH; // bottom-left
+        int16_t x2 = -halfW; int16_t y2 = -halfH;    // top-left
+        int16_t x3 = W - halfW; int16_t y3 = -halfH;    // top-right
+        Rotate_Point(x0, y0, angleDeg); Rotate_Point(x1, y1, angleDeg);
+        Rotate_Point(x2, y2, angleDeg); Rotate_Point(x3, y3, angleDeg);
+        x0 += cenX; x1 += cenX; x2 += cenX; x3 += cenX; y0 += cenY; y1 += cenY; y2 += cenY; y3 += cenY;
+        Fill_Triangle(x0, y0, x1, y1, x2, y2, c);
+        Fill_Triangle(x2, y2, x3, y3, x0, y0, c);
     }
 
     /*!
@@ -438,22 +392,14 @@ class LCD_GUI
         @param    color 16-bit or RGB(r,g,b) Color to draw with
     */
     void Circle(int16_t x, int16_t y, int16_t r, const RGB color = RGB()) {
+        const uint16_t c = color.getFC();
         int16_t f = 1 - r, ddF_x = 1, ddF_y = -2 * r, x1= 0, y1= r;
-        Pixe(x, y+r, color);
-        Pixe(x, y-r, color);
-        Pixe(x+r, y, color);
-        Pixe(x-r, y, color);
+        Pixe(x, y+r, c); Pixe(x, y-r, c); Pixe(x+r, y, c); Pixe(x-r, y, c);
         while (x1<y1) {
             if (f >= 0)	{ y1--; ddF_y += 2; f += ddF_y; }
             x1++; ddF_x += 2; f += ddF_x;
-            Pixe(x + x1, y + y1, color);
-            Pixe(x - x1, y + y1, color);
-            Pixe(x + x1, y - y1, color);
-            Pixe(x - x1, y - y1, color);
-            Pixe(x + y1, y + x1, color);
-            Pixe(x - y1, y + x1, color);
-            Pixe(x + y1, y - x1, color);
-            Pixe(x - y1, y - x1, color);
+            Pixe(x + x1, y + y1, c); Pixe(x - x1, y + y1, c); Pixe(x + x1, y - y1, c); Pixe(x - x1, y - y1, c);
+            Pixe(x + y1, y + x1, c); Pixe(x - y1, y + x1, c); Pixe(x + y1, y - x1, c); Pixe(x - y1, y - x1, c);
         }
     }
 
@@ -464,29 +410,17 @@ class LCD_GUI
         @param    r    Radius of circle
         @param    corners  Mask bit #1, #2, #4, and #8 to indicate which quarters
                            of the circle we're doing
-        @param    color 16-bit or RGB(r,g,b) Color to draw with
+        @param    c     16-bit or RGB(r,g,b) Color to draw with
     */
-    void Circle_Helper(int16_t x0, int16_t y0, int16_t r, uint8_t corners, uint16_t color) {
+    void Circle_Helper(int16_t x0, int16_t y0, int16_t r, uint8_t corners, uint16_t c) {
         int16_t f = 1 - r, ddF_x = 1, ddF_y = -2 * r, x = 0, y = r;
         while (x<y)	{
             if (f >= 0)	{ y--; ddF_y += 2; f += ddF_y; }
             x++; ddF_x += 2; f += ddF_x;
-            if (corners & 0x4) {
-                Pixe(x0 + x, y0 + y, color);
-                Pixe(x0 + y, y0 + x, color);
-            }
-            if (corners & 0x2) {
-                Pixe(x0 + x, y0 - y, color);
-                Pixe(x0 + y, y0 - x, color);
-            }
-            if (corners & 0x8) {
-                Pixe(x0 - y, y0 + x, color);
-                Pixe(x0 - x, y0 + y, color);
-            }
-            if (corners & 0x1) {
-                Pixe(x0 - y, y0 - x, color);
-                Pixe(x0 - x, y0 - y, color);
-            }
+            if (corners & 0x4) { Pixe(x0 + x, y0 + y, c); Pixe(x0 + y, y0 + x, c); }
+            if (corners & 0x2) { Pixe(x0 + x, y0 - y, c); Pixe(x0 + y, y0 - x, c); }
+            if (corners & 0x8) { Pixe(x0 - y, y0 + x, c); Pixe(x0 - x, y0 + y, c); }
+            if (corners & 0x1) { Pixe(x0 - y, y0 - x, c); Pixe(x0 - x, y0 - y, c); }
         }
     }
 
@@ -498,8 +432,8 @@ class LCD_GUI
         @param    color 16-bit or RGB(r,g,b) Color to fill with
     */
     void Fill_Circle(int16_t x, int16_t y, int16_t r, const RGB color = RGB()) {
-        Fill_Rect(x, y-r, 1, 2*r+1, color);
-        Fill_Circle_Helper(x, y, r, 3, 0, color);
+        const uint16_t c = color.getFC();
+        Fill_Rect(x, y-r, 1, 2*r+1, c); Fill_Circle_Helper(x, y, r, 3, 0, c);
     }
 
     /*!
@@ -510,26 +444,21 @@ class LCD_GUI
         @param  corners  Mask bits indicating which sides of the circle we are
                          doing, left (1) and/or right (2)
         @param  delta    Offset from center-point, used for round-rects
-        @param  color    16-bit or RGB(r,g,b) Color to fill with
+        @param  c        16-bit or RGB(r,g,b) Color to fill with
     */
-    void Fill_Circle_Helper(int16_t x0, int16_t y0, int16_t r, uint8_t corners, int16_t delta, uint16_t color) {
+    void Fill_Circle_Helper(int16_t x0, int16_t y0, int16_t r, uint8_t corners, int16_t delta, uint16_t c) {
         int16_t f = 1 - r, ddF_x = 1, ddF_y = -2 * r, x = 0, y = r, last_y = r;
         while (x < y) {
             x++;
-            if (f >= 0) {
-                y--;
-                ddF_y += 2;
-                f += ddF_y;
-            }
-            ddF_x += 2;
-            f += ddF_x;
+            if (f >= 0) { y--; ddF_y += 2; f += ddF_y; }
+            ddF_x += 2; f += ddF_x;
             if (corners & 0x1) {
-                Fill_Rect(x0 + x, y0 - y, 1, 2 * y + 1 + delta, color);
-                if (y != last_y) Fill_Rect(x0 + last_y, y0 - x + 1, 1, 2 * x - 1 + delta, color);
+                Fill_Rect(x0 + x, y0 - y, 1, 2 * y + 1 + delta, c);
+                if (y != last_y) Fill_Rect(x0 + last_y, y0 - x + 1, 1, 2 * x - 1 + delta, c);
             }
             if (corners & 0x2) {
-                Fill_Rect(x0 - x, y0 - y, 1, 2 * y + 1 + delta, color);
-                if (y != last_y) Fill_Rect(x0 - last_y, y0 - x + 1, 1, 2 * x - 1 + delta, color);
+                Fill_Rect(x0 - x, y0 - y, 1, 2 * y + 1 + delta, c);
+                if (y != last_y) Fill_Rect(x0 - last_y, y0 - x + 1, 1, 2 * x - 1 + delta, c);
             }
             if (y != last_y) last_y = y;
         }
@@ -546,9 +475,8 @@ class LCD_GUI
         @param    color 16-bit or RGB(r,g,b) Color to draw with
     */
     void Triangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1,int16_t x2, int16_t y2,const RGB color = RGB()) {
-        Line(x0, y0, x1, y1, color);
-        Line(x1, y1, x2, y2, color);
-        Line(x2, y2, x0, y0, color);
+        const uint16_t c = color.getFC();
+        Line(x0, y0, x1, y1, c); Line(x1, y1, x2, y2, c); Line(x2, y2, x0, y0, c);
     }
 
     /*!
@@ -562,38 +490,28 @@ class LCD_GUI
         @param    color 16-bit or RGB(r,g,b) Color to fill/draw with
     */
     void Fill_Triangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, const RGB color = RGB()) {
-        int16_t a, b, y, last;
+        const uint16_t c = color.getFC();
         if (y0 > y1) { swap(y0, y1); swap(x0, x1); }
         if (y1 > y2) { swap(y2, y1); swap(x2, x1); }
         if (y0 > y1) { swap(y0, y1); swap(x0, x1); }
-
         if (y0 == y2) return; 
-
-        int16_t dx01 = x1 - x0, dy01 = y1 - y0;
-        int16_t dx02 = x2 - x0, dy02 = y2 - y0;
-        int16_t dx12 = x2 - x1, dy12 = y2 - y1;
-        int32_t sa = 0, sb = 0;
-
-        if (y1 == y2) last = y1; else last = y1 - 1; 
-
-        for (y = y0; y <= last; y++) {
-            a = x0 + sa / dy01;
-            b = x0 + sb / dy02;
-            sa += dx01;
-            sb += dx02;
+        int32_t dy01 = y1 - y0, dy02 = y2 - y0, dy12 = y2 - y1;
+        int32_t step01 = (dy01 > 0) ? ((int32_t)(x1 - x0) << 16) / dy01 : 0;
+        int32_t step02 = (dy02 > 0) ? ((int32_t)(x2 - x0) << 16) / dy02 : 0;
+        int32_t step12 = (dy12 > 0) ? ((int32_t)(x2 - x1) << 16) / dy12 : 0;
+        int32_t sa = (int32_t)x0 << 16, sb = (int32_t)x0 << 16;
+        for (int16_t y = y0; y < y1; y++) {
+            int16_t a = sa >> 16, b = sb >> 16;
+            sa += step01; sb += step02;
             if (a > b) swap(a, b);
-            Fill_Rect(a, y, b - a + 1, 1, color);
+            Fill_Rect(a, y, b - a + 1, 1, c);
         }
-
-        sa = (int32_t)dx12 * (y - y1);
-        sb = (int32_t)dx02 * (y - y0);
-        for (; y <= y2; y++) {
-            a = x1 + sa / dy12;
-            b = x0 + sb / dy02;
-            sa += dx12;
-            sb += dx02;
+        sa = (int32_t)x1 << 16; 
+        for (int16_t y = y1; y <= y2; y++) {
+            int16_t a = sa >> 16, b = sb >> 16;
+            sa += step12; sb += step02;
             if (a > b) swap(a, b);
-            Fill_Rect(a, y, b - a + 1, 1, color);
+            Fill_Rect(a, y, b - a + 1, 1, c);
         }
     }
 
@@ -607,39 +525,23 @@ class LCD_GUI
     */
     void Ellipse(int16_t x0, int16_t y0, int16_t rw, int16_t rh, const RGB color = RGB()) {
         // Bresenham's ellipse algorithm
+        const uint16_t c = color.getFC();
         int16_t x = 0, y = rh;
         int32_t rw2 = rw * rw, rh2 = rh * rh;
         int32_t twoRw2 = 2 * rw2, twoRh2 = 2 * rh2;
-        int32_t decision = rh2 - (rw2 * rh) + (rw2 / 4);
-        // region 1
+        int32_t decision = rh2 - (rw2 * rh) + (rw2 >> 2);
         while ((twoRh2 * x) < (twoRw2 * y)) {
-            Pixe(x0 + x, y0 + y, color);
-            Pixe(x0 - x, y0 + y, color);
-            Pixe(x0 + x, y0 - y, color);
-            Pixe(x0 - x, y0 - y, color);
+            Pixe(x0 + x, y0 + y, c); Pixe(x0 - x, y0 + y, c); Pixe(x0 + x, y0 - y, c); Pixe(x0 - x, y0 - y, c);
             x++;
-            if (decision < 0) {
-            decision += rh2 + (twoRh2 * x);
-            } else {
-            decision += rh2 + (twoRh2 * x) - (twoRw2 * y);
-            y--;
-            }
+            if (decision < 0) decision += rh2 + (twoRh2 * x); 
+                else { decision += rh2 + (twoRh2 * x) - (twoRw2 * y); y--; }
         }
-        // region 2
-        decision = ((rh2 * (2 * x + 1) * (2 * x + 1)) >> 2) +
-                    (rw2 * (y - 1) * (y - 1)) - (rw2 * rh2);
+        decision = ((rh2 * (2 * x + 1) * (2 * x + 1)) >> 2) + (rw2 * (y - 1) * (y - 1)) - (rw2 * rh2);
         while (y >= 0) {
-            Pixe(x0 + x, y0 + y, color);
-            Pixe(x0 - x, y0 + y, color);
-            Pixe(x0 + x, y0 - y, color);
-            Pixe(x0 - x, y0 - y, color);
+            Pixe(x0 + x, y0 + y, c); Pixe(x0 - x, y0 + y, c); Pixe(x0 + x, y0 - y, c); Pixe(x0 - x, y0 - y, c);
             y--;
-            if (decision > 0) {
-            decision += rw2 - (twoRw2 * y);
-            } else {
-            decision += rw2 + (twoRh2 * x) - (twoRw2 * y);
-            x++;
-            }
+            if (decision > 0) decision += rw2 - (twoRw2 * y); 
+                else { decision += rw2 + (twoRh2 * x) - (twoRw2 * y); x++; }
         }
     }
 
@@ -653,34 +555,27 @@ class LCD_GUI
     */
     void Fill_Ellipse(int16_t x0, int16_t y0, int16_t rw, int16_t rh, const RGB color = RGB()) {
         // Bresenham's ellipse algorithm
+        const uint16_t c = color.getFC();
         int16_t x = 0, y = rh;
         int32_t rw2 = rw * rw, rh2 = rh * rh;
         int32_t twoRw2 = 2 * rw2, twoRh2 = 2 * rh2;
-        int32_t decision = rh2 - (rw2 * rh) + (rw2 / 4);
-        // region 1
+        int32_t decision = rh2 - (rw2 * rh) + (rw2 >> 2);
         while ((twoRh2 * x) < (twoRw2 * y)) {
             x++;
-            if (decision < 0) {
-                decision += rh2 + (twoRh2 * x);
-            } else {
+            if (decision < 0) decision += rh2 + (twoRh2 * x); 
+            else {
                 decision += rh2 + (twoRh2 * x) - (twoRw2 * y);
-                Fast_HLine(x0 - (x - 1), y0 + y, 2 * (x - 1) + 1, color);
-                Fast_HLine(x0 - (x - 1), y0 - y, 2 * (x - 1) + 1, color);
+                Fill_Rect(x0 - (x - 1), y0 + y, 2 * (x - 1) + 1, 1, c);
+                Fill_Rect(x0 - (x - 1), y0 - y, 2 * (x - 1) + 1, 1, c);
                 y--;
             }
         }
-        // region 2
         decision = ((rh2 * (2 * x + 1) * (2 * x + 1)) >> 2) + (rw2 * (y - 1) * (y - 1)) - (rw2 * rh2);
         while (y >= 0) {
-            Fast_HLine(x0 - x, y0 + y, 2 * x + 1, color);
-            Fast_HLine(x0 - x, y0 - y, 2 * x + 1, color);
+            Fill_Rect(x0 - x, y0 + y, 2 * x + 1, 1, c); Fill_Rect(x0 - x, y0 - y, 2 * x + 1, 1, c);
             y--;
-            if (decision > 0) {
-                decision += rw2 - (twoRw2 * y);
-            } else {
-                decision += rw2 + (twoRh2 * x) - (twoRw2 * y);
-                x++;
-            }
+            if (decision > 0) decision += rw2 - (twoRw2 * y);
+                else { decision += rw2 + (twoRh2 * x) - (twoRw2 * y); x++; }
         }
     }
 

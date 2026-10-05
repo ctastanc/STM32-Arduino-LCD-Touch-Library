@@ -36,10 +36,10 @@ void full_screen_test() {
     lcd.Fill_Screen(BLUE); 
     uint32_t elapsed_us = micros() - start;
     Serial.print("Full Screen   : "); Serial.println(String(elapsed_us)+ " us"); 
-    lcd.Print((String)("MCU Frequency "+String(SystemCoreClock/1000000) + " MHz"),CENTER,55,3,WHITE,BLUE,0);
-    lcd.Print((String)("Full Screen "+String(elapsed_us)+" us"),CENTER,100,3,WHITE,BLUE,0);
-    lcd.Print((String)("PCLK1 "+String(HAL_RCC_GetPCLK1Freq()/1000000) +" Mhz"),CENTER,145,3,WHITE,BLACK,0);
-    lcd.Print((String)("PCLK2 "+String(HAL_RCC_GetPCLK2Freq()/1000000) +" Mhz"),CENTER,180,3,WHITE,BLACK,0);
+    lcd.Print((String)("Frequency:"+String(SystemCoreClock/1000000) + " MHz"),CENTER,55,3,WHITE,BLUE,0);
+    lcd.Print((String)("Full Screen:"+String(elapsed_us)+" us"),CENTER,100,3,WHITE,BLUE,0);
+    lcd.Print((String)("PCLK1:"+String(HAL_RCC_GetPCLK1Freq()/1000000) +" Mhz"),CENTER,145,3,WHITE,BLACK,0);
+    lcd.Print((String)("PCLK2:"+String(HAL_RCC_GetPCLK2Freq()/1000000) +" Mhz"),CENTER,180,3,WHITE,BLACK,0);
     while(true);
 }
 
@@ -47,6 +47,7 @@ void text_scrool() {
     const char* text = "What will happen in the future is also one of the mysteries of the universe.";
     lcd.Print_LeftScroll(text, lcd.Width, lcd.Height-125, 2, RED, BLACK, 10);
 }
+
 void setup(void) {
 /*****************************************************************************
     ATTENTION:
@@ -93,5 +94,4 @@ void loop(void) {
     //test1();
     //full_screen_test();
     //lcd.Print(String(12345,BIN),CENTER,100,2,RED);
-
 }
