@@ -103,9 +103,10 @@ void SystemClock_OC(int OC) {
 
 
     #if defined(__cplusplus) && defined(ARDUINO)
+        Serial.println();
         Serial.print(F("[SYS_OC] Target: "));
         Serial.print(OC);
-        Serial.print(F(" MHz, Active System Time: "));
+        Serial.print(F(" MHz, Active System Clock: "));
         Serial.print(SystemCoreClock / 1000000);
         Serial.println(F(" MHz"));
     #endif

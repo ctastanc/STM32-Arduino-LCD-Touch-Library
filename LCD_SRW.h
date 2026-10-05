@@ -22,24 +22,21 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
     using LCD_GUI<LCD_SRW>::text;
     using LCD_GUI<LCD_SRW>::text_mode;
     using LCD_GUI<LCD_SRW>::draw_color;
-    //uint8_t char_spc = 2;
 	int16_t Width, Height, rotation, rot_val;
     
-    LCD_SRW() {
+    LCD_SRW() : Width(WIDTH), Height(HEIGHT), rotation(LANDSCAPE), rot_val(0)  {}
+
+    void Init() {
         SET_PORTS();
         RS_DATA; CS_H; WR_H; RD_H; RST_L; RST_H;
-        rotation  = 0;
         SET_WRITE_DIR();
-        Width  = WIDTH;
-        Height = HEIGHT;
-    }
-
-    void Init(void) {
-        reset(); delay(200);
-        if constexpr( LCD_DRIVER == ID_932X ) {	init_table16(_regValues, sizeof(_regValues));}
+        reset(); 
+        delay(200);
+        if constexpr( LCD_DRIVER == ID_932X ) 
+            { init_table16(_regValues, sizeof(_regValues) );}
         else if constexpr(LCD_DRIVER == ID_9341 || LCD_DRIVER == ID_HX8357D || LCD_DRIVER == ID_7575 || LCD_DRIVER 
-                        == ID_9486 || LCD_DRIVER == ID_7735    || LCD_DRIVER == ID_9488 || LCD_DRIVER == ID_9481 ) 
-            { init_table8(_regValues, sizeof(_regValues)); }
+                          == ID_9486 || LCD_DRIVER == ID_7735    || LCD_DRIVER == ID_9488 || LCD_DRIVER == ID_9481 ) 
+            { init_table8(_regValues, sizeof(_regValues) ); }
         Set_Rotation(rotation);
         Invert_Display(false);
     }
@@ -364,7 +361,7 @@ class LCD_SRW:public LCD_GUI<LCD_SRW>
             if (*st == '\0') break;
         } CS_H;
     }
-
+    
     __attribute__((optimize("O3"), noinline))
     void Print_Str() {
         uint ts = text_size, ty = text_y, fc = text_fc, bc = text_bc;
