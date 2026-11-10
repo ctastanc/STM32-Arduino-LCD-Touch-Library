@@ -1,6 +1,6 @@
 #pragma once
 
-#include <settings.h>
+#include <SETTINGS.h>
 
 #define TFTLCD_DELAY16  0xFFFF
 #define TFTLCD_DELAY8   0x7F

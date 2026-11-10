@@ -1,7 +1,7 @@
 #pragma once
 
-#include <lcd_regs.h>
-#include <stdint.h>
+#include <LCD_REGS.h>
+//#include <stdint.h>
 
 #if defined(STM32F0xx)
   #include "stm32f0xx_ll_bus.h"
@@ -69,6 +69,7 @@ static constexpr uint32_t Data_Pins_8Bit[]  = {D0, D1, D2, D3, D4, D5, D6, D7, W
 static constexpr uint32_t Data_Pins_16Bit[] = {D8, D9, D10, D11, D12, D13, D14, D15};
 #define DATA_MASK1 0x01FF0000UL
 #define DATA_MASK2 0x07F80000UL
+#define DATA_MASK3 0xFF0100UL
 
 #define WR_L    do{ LL_GPIO_ResetOutputPin(DATA_PORT1, Data_Pins_8Bit[8]); } while(0)
 #define WR_H    do{ LL_GPIO_SetOutputPin(DATA_PORT1, Data_Pins_8Bit[8]); } while(0)
@@ -183,7 +184,7 @@ static inline void enable_gpio_clock(GPIO_TypeDef* GPIOx) {
     #define DATA16(x) do{ WRITE16(x); } while(0)
     #define CMDDATA8(a,d) do{ RS_CMD; WRITE8(a); RS_DATA; WRITE8(d); } while(0)
     #define CMDDATA16(a,d) do{ RS_CMD; WRITE16(a); RS_DATA; WRITE16(d); } while(0)
-    #define DATA_COLOR(hi,lo) do{ DATA_PORT1->BSRR = lo; DATA_PORT2->BSRR = DATA_MASK2 | ((hi&0xFF)<<3); WR_H; } while(0)
+    #define DATA_COLOR(hi,lo) do{ DATA_PORT1->BSRR = lo; DATA_PORT2->BSRR = hi; WR_H; } while(0)
 #endif
 
 #define SET_X(x1,x2) do{CMD8(XS); DATA16(x1); DATA16(x2);} while(0)

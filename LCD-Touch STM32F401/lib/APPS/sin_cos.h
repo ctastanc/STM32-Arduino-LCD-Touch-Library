@@ -17,8 +17,7 @@ void init_tables() {
 }
 
 void fast_sin_cos(void) {
-    static int delta = 0;
-    static int frame_count = 0;
+    static int delta = 0, frame_count = 0;
     lcd.Fill_Screen(BLACK);
     lcd.Set_Rotation(LANDSCAPE);
     lcd.Print("Sin", 110, 1, 2, CYAN);

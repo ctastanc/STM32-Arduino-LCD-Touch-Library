@@ -1,4 +1,13 @@
 #pragma once
+/****************************** pin usage as follow ************************************
+*     ILI9341      LCD_CS  LCD_RS  LCD_WR  LCD_RD  LCD_RST  SD_SS  SD_DI  SD_DO  SD_SCK
+*     STM32          B1      B0      PA8    PB14     PB15
+*     Touch          YP      XM
+*
+*     ILI9341      LCD_D0  LCD_D1  LCD_D2  LCD_D3  LCD_D4  LCD_D5  LCD_D6  LCD_D7
+*     STM32          PA0     PA1     PA2     PA3     PA4     PA5     PA6     PA7
+*     Touch           XP     YM
+****************************************************************************************/
 
 // Set LCD MODEL
 //#define LCD_MODEL ILI9325 //0 0x9325,240,320, LCD_DRIVER ID_932X
@@ -31,6 +40,7 @@
 #define RD LL_GPIO_PIN_14  // PB14
 #define RST LL_GPIO_PIN_15 // PB15
 // For 16 bit lcd interface
+#if (LCD_SYS_INTERFACE == 16)
 #define D8 LL_GPIO_PIN_3   // PB3
 #define D9 LL_GPIO_PIN_4   // PB4
 #define D10 LL_GPIO_PIN_5  // PB5
@@ -39,9 +49,11 @@
 #define D13 LL_GPIO_PIN_8  // PB8
 #define D14 LL_GPIO_PIN_9  // PB9
 #define D15 LL_GPIO_PIN_10 // PB10
-#define CTRL_PORT  GPIOB
-#define DATA_PORT1 GPIOA
 #define DATA_PORT2 GPIOB
+#endif
+#define DATA_PORT1 GPIOA
+#define CTRL_PORT  GPIOB
+
 // Set Touch Pins (Port, Pin, ADC Channel)
 // ILI9341 Touch pins are very important. If XM and YP are not analog pins, it will not work. 
 // These correspond to XM:RS and YP:CS pins. XP and YM correspond to Dataport PA0 and PA1.

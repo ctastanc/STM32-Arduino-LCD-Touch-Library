@@ -1,9 +1,13 @@
 #pragma once
+/*****************************************************************************
+    ATTENTION:
+    SystemClock_OC applies to STM32F401 devices equipped with a 25MHz crystal and 
+    STM32F103 devices equipped with 8MHz crystal. 
+    Do not use it if you lack sufficient knowledge about your hardware.
+    Adverse results may occur. You bear full responsibility. */
+/*****************************************************************************/
 
-    // This file applies to STM32F401 devices equipped with a 25MHz crystal and 
-    // STM32F103 devices equipped with 8MHz crystal. 
-    // Do not use it if you lack sufficient knowledge about your hardware.
-    // Adverse results may occur. You bear full responsibility.
+#include <Arduino.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -100,7 +104,6 @@ void SystemClock_OC(int OC) {
         case 96:  SystemClock_Cfg(RCC_CFGR_PLLMULL12, RCC_CFGR_PPRE1_DIV2, RCC_CFGR_PPRE2_DIV1, RCC_CFGR_ADCPRE_DIV8); break;
     }
     #endif
-
 
     #if defined(__cplusplus) && defined(ARDUINO)
         Serial.println();

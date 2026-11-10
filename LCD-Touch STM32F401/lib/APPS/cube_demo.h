@@ -17,7 +17,7 @@
 
 #include <LCD_SRW.h>
 
-#define BACK_COLOR WHITE  // You can change
+#define BACK_COLOR BLACK  // You can change
 
     const float sin_d[] = {
     0, 0.17, 0.34, 0.5, 0.64, 0.77, 0.87, 0.94, 0.98, 1, 0.98, 0.94,
@@ -78,48 +78,47 @@
 class cub{
     public:
     uint16_t cube1_x, cube1_y, cube2_x, cube2_y, cube1_color, cube2_color;
+    
     void cube(float *px, float *py, float *pz, float *p2x, float *p2y, int *r, uint16_t *x, uint16_t *y, uint16_t *color) {
+        for (int i = 0; i < 3; i++) {
+            lcd.Line(p2x[i], p2y[i], p2x[i + 1], p2y[i + 1], BACK_COLOR);
+            lcd.Line(p2x[i + 4], p2y[i + 4], p2x[i + 5], p2y[i + 5], BACK_COLOR);
+            lcd.Line(p2x[i], p2y[i], p2x[i + 4], p2y[i + 4], BACK_COLOR);
+        }
+        lcd.Line(p2x[3], p2y[3], p2x[0], p2y[0], BACK_COLOR);
+        lcd.Line(p2x[7], p2y[7], p2x[4], p2y[4], BACK_COLOR);
+        lcd.Line(p2x[3], p2y[3], p2x[7], p2y[7], BACK_COLOR);
 
-    for (int i = 0; i < 3; i++) {
-        lcd.Line(p2x[i], p2y[i], p2x[i + 1], p2y[i + 1], BACK_COLOR);
-        lcd.Line(p2x[i + 4], p2y[i + 4], p2x[i + 5], p2y[i + 5], BACK_COLOR);
-        lcd.Line(p2x[i], p2y[i], p2x[i + 4], p2y[i + 4], BACK_COLOR);
-    }
-    lcd.Line(p2x[3], p2y[3], p2x[0], p2y[0], BACK_COLOR);
-    lcd.Line(p2x[7], p2y[7], p2x[4], p2y[4], BACK_COLOR);
-    lcd.Line(p2x[3], p2y[3], p2x[7], p2y[7], BACK_COLOR);
+        r[0] = r[0] + 1;
+        r[1] = r[1] + 1;
+        if (r[0] == 36) r[0] = 0;
+        if (r[1] == 36) r[1] = 0;
+        if (r[2] == 36) r[2] = 0;
+        for (int i = 0; i < 8; i++) {
+            float px2 = px[i];
+            float py2 = cos_d[r[0]] * py[i] - sin_d[r[0]] * pz[i];
+            float pz2 = sin_d[r[0]] * py[i] + cos_d[r[0]] * pz[i];
 
-    r[0] = r[0] + 1;
-    r[1] = r[1] + 1;
-    if (r[0] == 36) r[0] = 0;
-    if (r[1] == 36) r[1] = 0;
-    if (r[2] == 36) r[2] = 0;
-    for (int i = 0; i < 8; i++)
-    {
-        float px2 = px[i];
-        float py2 = cos_d[r[0]] * py[i] - sin_d[r[0]] * pz[i];
-        float pz2 = sin_d[r[0]] * py[i] + cos_d[r[0]] * pz[i];
+            float px3 = cos_d[r[1]] * px2 + sin_d[r[1]] * pz2;
+            float py3 = py2;
+            float pz3 = -sin_d[r[1]] * px2 + cos_d[r[1]] * pz2;
 
-        float px3 = cos_d[r[1]] * px2 + sin_d[r[1]] * pz2;
-        float py3 = py2;
-        float pz3 = -sin_d[r[1]] * px2 + cos_d[r[1]] * pz2;
+            float ax = cos_d[r[2]] * px3 - sin_d[r[2]] * py3;
+            float ay = sin_d[r[2]] * px3 + cos_d[r[2]] * py3;
+            float az = pz3 - 190;
 
-        float ax = cos_d[r[2]] * px3 - sin_d[r[2]] * py3;
-        float ay = sin_d[r[2]] * px3 + cos_d[r[2]] * py3;
-        float az = pz3 - 190;
+            p2x[i] = *x + ax * 500 / az;
+            p2y[i] = *y + ay * 500 / az;
+        }
 
-        p2x[i] = *x + ax * 500 / az;
-        p2y[i] = *y + ay * 500 / az;
-    }
-
-    for (int i = 0; i < 3; i++) {
-        lcd.Line(p2x[i], p2y[i], p2x[i + 1], p2y[i + 1], *color);
-        lcd.Line(p2x[i + 4], p2y[i + 4], p2x[i + 5], p2y[i + 5], *color);
-        lcd.Line(p2x[i], p2y[i], p2x[i + 4], p2y[i + 4], *color);
-    }
-    lcd.Line(p2x[3], p2y[3], p2x[0], p2y[0], *color);
-    lcd.Line(p2x[7], p2y[7], p2x[4], p2y[4], *color);
-    lcd.Line(p2x[3], p2y[3], p2x[7], p2y[7], *color);
+        for (int i = 0; i < 3; i++) {
+            lcd.Line(p2x[i], p2y[i], p2x[i + 1], p2y[i + 1], *color);
+            lcd.Line(p2x[i + 4], p2y[i + 4], p2x[i + 5], p2y[i + 5], *color);
+            lcd.Line(p2x[i], p2y[i], p2x[i + 4], p2y[i + 4], *color);
+        }
+        lcd.Line(p2x[3], p2y[3], p2x[0], p2y[0], *color);
+        lcd.Line(p2x[7], p2y[7], p2x[4], p2y[4], *color);
+        lcd.Line(p2x[3], p2y[3], p2x[7], p2y[7], *color);
     }
 
     void cube_demo() {
@@ -128,12 +127,12 @@ class cub{
         uint32_t height = lcd.Height;
         Serial.print("Height: "); Serial.println(height);
         
-        lcd.Fill_Screen(BACK_COLOR);
+        lcd.Cls(BACK_COLOR);
         cube1_x = ((lcd.Width) / 4);
         cube1_y = ((lcd.Height) / 4);
         cube2_x = ((lcd.Width) / 2);
         cube2_y = ((lcd.Height) / 2);
-        cube1_color = BLACK;
+        cube1_color = GREEN;
         cube2_color = RED;
 
         uint16_t x = 0;

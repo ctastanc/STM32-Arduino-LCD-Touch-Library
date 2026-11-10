@@ -3,7 +3,6 @@
     ATTENTION:
     To ensure the ADC operates cleanly and accurately, keep the USB power cable and 
     other cables as short as possible, and ensure there is no leakage in the cabling.
-
 ************************************************************************************/
 #include <LCD_SRW.h>
 
@@ -37,7 +36,7 @@ class TouchScreen {
 
     struct Points{ int16_t x; int16_t y; int16_t z; bool v;} p;
 
-    void set_pin(uint8_t in1, uint8_t in2, uint8_t out1, uint8_t out2, uint8_t h, uint8_t l) {
+    void set_pins(uint8_t in1, uint8_t in2, uint8_t out1, uint8_t out2, uint8_t h, uint8_t l) {
         digitalWrite(in1, LOW); pinMode(in1, INPUT);
         digitalWrite(in2, LOW); pinMode(in2, INPUT);
         pinMode(out1, OUTPUT);  pinMode(out2, OUTPUT); 
@@ -52,11 +51,11 @@ class TouchScreen {
 
     void getRaw(void) {
         p.v = 1;
-        set_pin(ym, yp, xp, xm, xp, xm); 
+        set_pins(ym, yp, xp, xm, xp, xm); 
         p.x = getXY(yp);
-        set_pin(xp, xm, yp, ym, yp, ym); 
+        set_pins(xp, xm, yp, ym, yp, ym); 
         p.y = getXY(xm);
-        set_pin(yp, xm, xp, ym, ym, xp); 
+        set_pins(yp, xm, xp, ym, ym, xp); 
         int z1 = analogRead(xm);
         int z2 = analogRead(yp);
         p.z = (RES_VALUE - (z2 - z1));
@@ -78,7 +77,6 @@ class TouchScreen {
                                { lcd.Width - ry, rx } };
         p.x = rot_table[lcd.rotation].x; 
         p.y = rot_table[lcd.rotation].y;
-
         if(p.x>lcd.Width || p.y>lcd.Height) p.v = 0; 
         if(p.z<50) p.v=p.z=0; // z should be tested independently of x and y. Because if x or y is false, z will be "0" as well.
         if(p.v) return TSPoint(p.x, p.y, p.z, p.v); else return TSPoint(p.z, p.v);

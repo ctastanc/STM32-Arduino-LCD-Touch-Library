@@ -8,7 +8,7 @@ unsigned long show_text(void){
     lcd.Print("* Universal Color TFT Display Library *",CENTER,3,1,0x07E0);
     lcd.Fill_Rectangle(0, lcd.Height-15, lcd.Width, 15,RGB(128, 128, 128));
     lcd.Print("---> http://www.lcdwiki.com <---",CENTER,lcd.Height-11,1,0xFFFF);
-    lcd.Rectangle(0, 15, lcd.Width, lcd.Height-30,RGB(32, 0, 255));   
+    lcd.Rectangle(0, 15, lcd.Width, lcd.Height-30,RGB(255, 0, 0));   
     return micros() - time_start;
 }
 
@@ -30,22 +30,22 @@ unsigned long show_triangle_function(void){
     // Draw sin lines
     lcd.Print("sin",5,17,1,0x07FF, 0,0);
     for (i=1; i<lcd.Width-2; i++) {
-    lcd.Pixel(i,lcd.Height/2-1+(sin(((i*1.13)*3.14)/180)*95),RGB(0, 255, 255));
+    lcd.Pixel(i,lcd.Height/2-1+(sin(((i*1.13)*3.14)/180)*95),CYAN);
     }
     // Draw cos lines
     lcd.Print("cos",5,25,1,0x07E0, 0,0);
     for (i=1; i<lcd.Width-2; i++) {
-    lcd.Pixel(i,lcd.Height/2-1+(cos(((i*1.13)*3.14)/180)*95),RGB(0, 255, 0));
+    lcd.Pixel(i,lcd.Height/2-1+(cos(((i*1.13)*3.14)/180)*95),GREEN);
     }
     // Draw tan lines
     lcd.Print("tan",5,33,1,0xFFE0, 0,0);
-    for (i=1; i<lcd.Width-2; i++) {
-    lcd.Pixel(i,lcd.Height/2-1+(tan(((i*1.13)*3.14)/180)*10),RGB(255, 255, 0));
+    for (i=1; i<lcd.Width-20; i++) {
+    lcd.Pixel(i,lcd.Height/2+(tan(((i*1.13)*3.14)/180))*1,YELLOW);
     }
     // Draw cot lines
     lcd.Print("cot",5,41,1,0xF800, 0,0);
-    for (i=1; i<lcd.Width-2; i++) {
-    lcd.Pixel(i,lcd.Height/2-1+1/(tan(((i*1.13)*3.14)/180)*0.1),RGB(255, 0, 0));
+    for (i=1; i<lcd.Width-20; i++) {
+    lcd.Pixel(i,lcd.Height/2+1/(tan(((i*1.13)*3.14)/180)*0.3),RED);
     }
     return micros()-time_start;
 }
@@ -233,16 +233,16 @@ unsigned long show_grid_lines(void){
      k = 1.6;  
     }
     for (i=16; i<lcd.Height-17; i+=5)  {
-        lcd.Line(1, i, (i*k)-10, lcd.Height-17,RGB(255,0,0));
+        lcd.Line(1, i, (i*k)-10, lcd.Height-17,RED);
     }
     for (i=lcd.Height-17; i>16; i-=5) {
-        lcd.Line(lcd.Width-2, i, (i*k)-11, 16,RGB(255,0,0));
+        lcd.Line(lcd.Width-2, i, (i*k)-11, 16,RED);
     }
     for (i=lcd.Height-16; i>16; i-=5) {
-        lcd.Line(1, i, (lcd.Height-17)*k+10-(i*k), 16,RGB(0,255,255));
+        lcd.Line(1, i, (lcd.Height-17)*k+10-(i*k), 16,CYAN);
     }
-    for (int i=15; i<lcd.Height-17; i+=5) {
-        lcd.Line(lcd.Width-2, i, (lcd.Height-17)*k+10-(i*k), lcd.Height-17,RGB(0,255,255));
+    for (int i=16; i<lcd.Height-17; i+=5) {
+        lcd.Line(lcd.Width-2, i, (lcd.Height-17)*k+10-(i*k), lcd.Height-17,CYAN);
     }
     return micros()- time_start;   
 }
@@ -276,7 +276,8 @@ unsigned long show_random_rectangles(void){
         int y= 17+random(lcd.Height-34);
         int x2= 2+random(lcd.Width-4);
         int y2= 17+random(lcd.Height-34);
-        lcd.Rectangle(x,y, x2-x+1, y2-y+1, RGB(random(255),random(255),random(255)));    
+        if(x2-x>0 && y2-y>0)
+        lcd.Rectangle(x,y, x2-x, y2-y, RGB(random(255),random(255),random(255)));    
     }
     return micros()- time_start; 
 }
@@ -290,7 +291,8 @@ unsigned long show_random_round_rectangles(void){
         int y= 17+random(lcd.Height-34);
         int x2= 2+random(lcd.Width-4);
         int y2= 17+random(lcd.Height-34);
-       lcd.Round_Rectangle(x,y, x2-x+1, y2-y+1, 5, RGB(random(255),random(255),random(255)));
+        if(x2-x-10>0 && y2-y-10>0)
+        lcd.Round_Rectangle(x,y, x2-x, y2-y, 5, RGB(random(255),random(255),random(255)));
     }
     return micros()- time_start; 
 }

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <touch_screen.h>
 #include <buttons.h>
 
@@ -23,8 +25,8 @@ void print_coordinates(TSPoint p) {
 
 void touch_demo(void) {
     TSPoint p;
-    clrButton =  Buttons(lcd.Width/2-32,lcd.Height-35,64,30,BLUE,"Clear",WHITE,clrReleased);
-    Button2 =  Buttons(lcd.Width/2-32,lcd.Height-239,64,30,BLUE,"Clear",WHITE,clrReleased);
+    clrButton = Buttons(ROUND,lcd.Width/2-32,lcd.Height-35,64,30,BLUE,font19,"Clear",WHITE,2,clrReleased);
+    Button2 =   Buttons(ROUND,lcd.Width/2-32,lcd.Height-239,64,30,BLUE,font19,"Clear",WHITE,2,clrReleased);
     main_screen();
     while(true) {
         //int32_t start = micros();
@@ -32,17 +34,15 @@ void touch_demo(void) {
         if (p.v) {
             print_coordinates(p);
             lcd.Pixel(p.x, p.y, RED);
-            if( clrButton.isThis(p.x, p.y) ) {
+            if( clrButton.isPress(p.x, p.y) ) {
                 clrButton.Pressed();
-                while(true) { p = ts.getPoint(); if(!p.z) break; }
-                if(clrButton.isThis(p.x, p.y)) clrButton.Released(); else clrButton.Cancel();
+                while(p.z) { p = ts.getPoint(); }
+                if(clrButton.isPress(p.x, p.y)) clrButton.Released(); else clrButton.Cancel();
             }
-//Serial.print(p.z);Serial.print("-");Serial.print(p.v);Serial.print("-");Serial.print(p.x);Serial.print("-");Serial.println(p.y);
-            if( Button2.isThis(p.x, p.y) ) {
+            if( Button2.isPress(p.x, p.y) ) {
                 Button2.Pressed();
-                while(true) { p = ts.getPoint(); if(!p.z) break; }
-//Serial.print(p.z);Serial.print("-");Serial.print(p.v);Serial.print("-");Serial.print(p.x);Serial.print("-");Serial.println(p.y);
-                if(Button2.isThis(p.x, p.y)) Button2.Released(); else Button2.Cancel();
+                while(p.z) { p = ts.getPoint(); }
+                if(Button2.isPress(p.x, p.y)) Button2.Released(); else Button2.Cancel();
             }
             //lcd.Print((micros()-start),lcd.Width/2-70,lcd.Height-100,2,RED,BLACK,1);
         }
